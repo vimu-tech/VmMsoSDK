@@ -1,0 +1,703 @@
+﻿#ifndef VDSOLIB_H
+#define VDSOLIB_H
+
+#if defined(_MSC_VER) || defined(WIN64) || defined(_WIN64) || defined(__WIN64__) || defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#define _WINDOWS_PLATFORM
+#define VMMSO_DLL_EXPORT extern "C" __declspec(dllexport)
+#define VMMSO_DLL_IMPORT extern "C" __declspec(dllimport)
+#include <Windows.h>
+#else
+#  define VMMSO_DLL_EXPORT   extern "C"  __attribute__((visibility("default")))
+#  define VMMSO_DLL_IMPORT   extern "C"  __attribute__((visibility("default")))
+#  define CALLBACK
+#  define WINAPI
+#endif
+
+#ifdef VMMSO_LIBRARY
+#define DLL_API VMMSO_DLL_EXPORT
+#else
+#define DLL_API VMMSO_DLL_IMPORT
+#endif
+
+/*************************************************
+　　V1.0  20230331
+*************************************************/
+
+//////////////////////////////////////////////////////////////////////Initialization/Finished Dll//////////////////////////////////////////////////////////////////
+/*************************************************
+　　Description   Dll initialization
+    Input:       log enable		1 Enable Log
+								0 Not Enable Log
+　　Output:      Init Status
+　　             Return value 1 Success
+　　	                      0 Failed
+*************************************************/
+DLL_API int WINAPI InitDll(unsigned int en_log);
+
+/*************************************************
+　　Description   Dll finished
+    Input:       -
+　　Output:      -Finished Status
+　　              Return value 1 Success
+　　						   0 Failed
+*************************************************/
+DLL_API int WINAPI FinishDll();
+//////////////////////////////////////////////////////////////////////Initialization/Finished Dll//////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////Device/////////////////////////////////////////////////////////////////////////
+/*************************************************
+　　Description  This routines return only id(0-31)
+	Input:       -
+	Output:      -only id(0-31)
+	　　         Return only id(0-31)
+*************************************************/
+DLL_API unsigned int WINAPI GetOnlyId0();
+
+/*************************************************
+　　Description  This routines return only id(32-63)
+	Input:       -
+	Output:      -only id(32-63)
+  　　			Return only id(32-63)
+*************************************************/
+DLL_API unsigned int WINAPI GetOnlyId1();
+
+/*************************************************
+　　Description   Reset Device
+	Input:       -
+  　Output:      -Reset Status
+　　             Return value 1 Success
+　　	                      0 Failed
+   *************************************************/
+DLL_API int WINAPI ResetDevice();
+///////////////////////////////////////////////////////////////////////////Device/////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////USB status/////////////////////////////////////////////////////////////////////////
+/**********************************callback functio****************************************
+	 Description    This routines sets the callback function of equipment status changed. 
+     Input:			ppara			the parameter of the callback function
+　　				addcallback		a pointer to a function with the following prototype:
+										void AddCallBack( void * ppara)
+					rmvcallback		a pointer to a function with the following prototype:
+										Void RemoveCallBack( void * ppara)
+     Output      
+*******************************************************************************************/
+typedef void (CALLBACK *AddCallBack)(void* ppara);
+typedef void (CALLBACK *RemoveCallBack)(void* ppara);
+DLL_API void WINAPI SetDevNoticeCallBack(void* ppara, AddCallBack addcallback, RemoveCallBack rmvcallback);
+
+/**************************************Event*************************************************
+	Description  This routines set the event handle, these will be set, when equipment status changed. 
+    Input:       addevent   the event handle
+				 rmvevent   the event handle
+	Output  
+*******************************************************************************************/
+#ifdef _WINDOWS_PLATFORM
+DLL_API void WINAPI SetDevNoticeEvent(HANDLE addevent, HANDLE rmvevent);
+#endif
+/**************************************Event*************************************************
+	Description  This routines return the device is available or not.
+　　Input:      -
+　　Output     Return value 1 available
+　　						0 not available
+*******************************************************************************************/
+DLL_API int WINAPI IsDevAvailable();
+///////////////////////////////////////////////////////////////////////////USB status/////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////Oscilloscope///////////////////////////////////////////////////////////////////////////
+/**************************************Capture range*************************************************
+	Description  This routines set the range of input signal.
+　　Input:      channel     the set channel 
+　　                                    0  channel 1
+　　                                    1  channel 2
+               minmv     the minimum voltage of the input signal (mV)
+               maxmv     the maximum voltage of the input signal (mV)
+　　Output     Return value 1 Success
+　　	                    0 Failed
+*************************************************************************************************/
+DLL_API int WINAPI SetOscChannelRange(int channel, int minmv, int maxmv);
+
+/**************************************Support Sample Number********************************************
+	Description  This routines get the number of samples that the equipment support.
+　　Input:		-               
+	Output		Return value	the sample number
+*************************************************************************************************/
+DLL_API int WINAPI GetOscSupportSampleNum();
+
+/**************************************Support Sample********************************************
+	Description  This routines get support samples of equipment.
+　　Input:		sample			the array store the support samples of the equipment
+				maxnum			the length of the array               
+	Output		Return value	the sample number of array stored
+*************************************************************************************************/
+DLL_API int WINAPI GetOscSupportSamples(unsigned int* sample, int maxnum);
+
+/**************************************Sample*****************************************************
+	Description  This routines get the sample.
+　　Input:      
+　　Output      Return value sample
+*************************************************************************************************/
+DLL_API unsigned int WINAPI GetOscSample();
+/**************************************Sample*****************************************************
+	Description  This routines set the sample.
+　　Input:      sample       the set sample
+　　Output      Return value 0 Failed
+							 other value new sample					 
+*************************************************************************************************/
+DLL_API unsigned int WINAPI SetOscSample(unsigned int sample);
+
+
+/**************************************Hardware Trigger********************************************
+	Description  This routines get the equipment support hardware trigger or not .
+　　Input:      -
+　　Output     Return value 1 support hardware trigger
+							0 not support hardware trigger
+	关于触发：需要设备支持硬件触发
+****************************************Hardware Trigger*******************************************/
+DLL_API int WINAPI IsSupportHardTrigger();
+
+
+#define TRIGGER_MODE_AUTO 0
+#define TRIGGER_MODE_LIANXU 1
+/**************************************Trigger Mode***********************************************
+    Description  This routines get the trigger mode.
+　　Input:      -
+　　Output     Return value TRIGGER_MODE_AUTO
+                            TRIGGER_MODE_LIANXU
+*************************************************************************************************/
+DLL_API unsigned int WINAPI GetTriggerMode();
+/**************************************Trigger Mode***********************************************
+    Description  This routines set the trigger mode.
+　　Input:      mode  TRIGGER_MODE_AUTO
+　　                  TRIGGER_MODE_LIANXU
+    Output
+*************************************************************************************************/
+DLL_API void WINAPI SetTriggerMode(unsigned int mode);
+
+
+#define TRIGGER_STYLE_NONE 0x0000    		//not trigger
+#define TRIGGER_STYLE_RISE_EDGE 0x0001		//Rising edge
+#define TRIGGER_STYLE_FALL_EDGE 0x0002 		//Falling edge
+#define TRIGGER_STYLE_EDGE 0x0004 			//Edge
+#define TRIGGER_STYLE_P_MORE 0x0008 		//Positive Pulse width(>)
+#define TRIGGER_STYLE_P_LESS 0x0010 		//Positive Pulse width(>)
+#define TRIGGER_STYLE_P      0x0020 		//Positive Pulse width(<>)
+#define TRIGGER_STYLE_N_MORE 0x0040 		//Negative Pulse width(>)
+#define TRIGGER_STYLE_N_LESS 0x0080 		//Negative Pulse width(>)
+#define TRIGGER_STYLE_N      0x0100  		//Negative Pulse width(<>)
+/**************************************Trigger Style***********************************************
+	Description  This routines get the trigger style.
+　　Input:      -
+　　Output     Return value TRIGGER_STYLE_NONE
+							TRIGGER_STYLE_RISE_EDGE
+							TRIGGER_STYLE_FALL_EDGE
+							TRIGGER_STYLE_EDGE
+							TRIGGER_STYLE_P_MORE
+							TRIGGER_STYLE_P_LESS 		
+							TRIGGER_STYLE_P
+							TRIGGER_STYLE_N_MORE
+							TRIGGER_STYLE_N_LESS
+							TRIGGER_STYLE_N
+*************************************************************************************************/
+DLL_API unsigned int WINAPI GetTriggerStyle();
+/**************************************Trigger Style***********************************************
+	Description  This routines set the trigger style.
+　　Input:       style	TRIGGER_STYLE_NONE
+						TRIGGER_STYLE_RISE_EDGE
+						TRIGGER_STYLE_FALL_EDGE
+						TRIGGER_STYLE_EDGE
+						TRIGGER_STYLE_P_MORE
+						TRIGGER_STYLE_P_LESS 		
+						TRIGGER_STYLE_P
+						TRIGGER_STYLE_N_MORE
+						TRIGGER_STYLE_N_LESS
+						TRIGGER_STYLE_N
+　　Output     -
+*************************************************************************************************/
+DLL_API void WINAPI SetTriggerStyle(unsigned int style);
+
+
+/**************************************Pulse Width***************************************************
+	Description  This routines get the min time of pulse width.
+　　Input:      -
+　　Output     Return min time value of pulse width(ns)
+*******************************************************************************************************/
+DLL_API int WINAPI GetTriggerPulseWidthNsMin();
+/**************************************Pulse Width***************************************************
+	Description  This routines get the max time of pulse width.
+　　Input:      -
+　　Output     Return max time value of pulse width(ns)
+*******************************************************************************************************/
+DLL_API int WINAPI GetTriggerPulseWidthNsMax();
+/**************************************Pulse Width***************************************************
+	Description  This routines get the down time of pulse width.
+　　Input:      -
+　　Output     Return down time value of pulse width(ns)
+*******************************************************************************************************/
+DLL_API int WINAPI GetTriggerPulseWidthDownNs();
+/**************************************Pulse Width***************************************************
+	Description  This routines set the down time of pulse width.
+　　Input:      down time value of pulse width(ns)
+　　Output     - 
+*******************************************************************************************************/
+DLL_API int WINAPI GetTriggerPulseWidthUpNs();
+/**************************************Pulse Width***************************************************
+	Description  This routines set the up time of pulse width.
+　　Input:      up time value of pulse width(ns)
+　　Output     _ 
+*******************************************************************************************************/
+DLL_API void WINAPI SetTriggerPulseWidthNs(int down_ns, int up_ns);
+
+
+/**************************************Trigger Source***********************************************
+	Description  This routines get the trigger source.
+　　Input:      -
+　　Output     Return value  0 :channel 1
+　　                         1 :channel 2
+*************************************************************************************************/
+DLL_API unsigned int WINAPI GetTriggerSource();
+/**************************************Trigger Source***********************************************
+	Description  This routines set the trigger source.
+    Input:      source  0 :channel 1
+　　                    1 :channel 2
+　　Output      -
+*************************************************************************************************/
+DLL_API void WINAPI SetTriggerSource(unsigned int source); 
+
+
+/**************************************Trigger level***********************************************
+    Description  This routines get the trigger level.
+　　Input:      -
+　　Output     Return value  level (mV)
+*************************************************************************************************/
+DLL_API int WINAPI GetTriggerLevel();
+/**************************************Trigger level***********************************************
+    Description  This routines set the trigger level.
+　　Input:      level (mV)
+    Output     -
+*************************************************************************************************/
+DLL_API void WINAPI SetTriggerLevel(int level);
+
+
+/**************************************Trigger Sense********************************************
+	Description  This routines get the equipment support trigger sense or not .
+　　Input:      -
+　　Output     Return value 1 support
+							0 not support
+****************************************Trigger Sense*******************************************/
+DLL_API int WINAPI IsSupportTriggerSense();
+/**************************************Trigger Sense***********************************************
+    Description  This routines get the trigger Sense.
+　　Input:      -
+　　Output     Return value  Sense (0-1 div)
+*************************************************************************************************/
+DLL_API double WINAPI GetTriggerSenseDiv();
+/**************************************Trigger Sense***********************************************
+    Description  This routines set the trigger Sense.
+　　Input:      Sense (0-1div)
+    Output     -
+*************************************************************************************************/
+DLL_API void WINAPI SetTriggerSenseDiv(double sense, double y_scale);
+
+
+//
+/**************************************Pre-trigger Percent 预触发比例********************************************
+	Description  This routines get the equipment support Pre-trigger Percent or not .
+　　Input:      -
+　　Output     Return value 1 support
+							0 not support
+****************************************Trigger Sense*******************************************/
+DLL_API bool WINAPI IsSupportPreTriggerPercent();
+/**************************************Pre-trigger Percent***********************************************
+    Description  This routines get the Pre-trigger Percent.
+　　Input:      -
+　　Output     Return value Percent (5-95)
+*************************************************************************************************/
+DLL_API int WINAPI GetPreTriggerPercent();
+/**************************************Pre-trigger Percent***********************************************
+    Description  This routines set the Pre-trigger Percent.
+　　Input:      Percent (5-95)
+    Output     -
+*************************************************************************************************/
+DLL_API void WINAPI SetPreTriggerPercent(int front);
+
+
+/**************************************Trigger Force********************************************
+	Description  This routines get the equipment support trigger force or not .
+　　Input:      -
+　　Output     Return value 1 support
+							0 not support
+****************************************Trigger Force*******************************************/
+DLL_API int WINAPI IsSupportTriggerForce();
+/**************************************Trigger Force***********************************************
+    Description  This routines force capture once
+　　Input:      
+    Output     -
+*************************************************************************************************/
+DLL_API void WINAPI TriggerForce();
+
+
+/********************************************Support AC/DC****************************************
+	Description  This routines get the device support AC/DC switch or not.
+　　Input:      -
+　　Output     Return value  0 :support AC/DC switch
+							 1 :not support AC/DC switch
+*************************************************************************************************/
+DLL_API int WINAPI IsSupportAcDc(unsigned char channel_index);
+
+/********************************************Set AC/DC****************************************
+	Description  This routines set the device AC coupling.
+　　Input:      1 : set AC coupling
+　　            0 : set DC coupling
+	Output     -
+*************************************************************************************************/
+DLL_API void WINAPI SetAcDc(unsigned int chn, int ac);
+
+/********************************************Get AC/DC****************************************
+	Description  This routines get the device AC coupling.
+　　Input:      -
+　　Output     Return value  1 : AC coupling
+　　                         0 : DC coupling
+*************************************************************************************************/
+DLL_API int WINAPI GetAcDc(unsigned int chn);
+
+
+/**************************************Roll Mode********************************************
+	Description  This routines get the equipment support roll mode or not .
+　　Input:      -
+　　Output     Return value 1 support roll mode
+							0 not support roll mode
+	关于Roll Mode：需要设备支持Roll Mode
+******************************************************************************************/
+DLL_API int WINAPI IsSupportRollMode();
+
+/**************************************Set Roll Mode********************************************
+	Description  This routines enable or disenable the equipment into roll mode.
+　　Input:      -
+　　Output     Return value 1 success
+							0 failed
+******************************************************************************************/
+DLL_API int WINAPI SetRollMode(unsigned int en);
+
+
+/******************************************Capture***********************************************
+	Description    This routines get memory depth of equipment (KB). 
+    Input:         -
+    Output         memory depth of equipment
+*************************************************************************************************/
+DLL_API unsigned int WINAPI GetMemoryLength();
+
+/******************************************Capture***********************************************
+	Description  This routines set the capture length and start capture.
+　　Input:      length  capture length(KB)
+				capture_channel: //ch1=0x0001 ch2=0x0020 ch3=0x0040 ch4=0x0080 logic=0x0100
+								ch1+ch2 0x03 
+								ch1+ch2+ch3 0x07
+				force_length 1: force usint the length, no longer limits the maximum collection 1 seconds
+    Output     Return value  the real capture length(KB)
+*************************************************************************************************/
+DLL_API int WINAPI Capture(int length, unsigned short capture_channel, char force_length);
+
+/******************************************AbortCapture***********************************************
+	Description  This routines set the abort capture
+　　Input:     
+	Output     Return value 1:success 0:failed
+*************************************************************************************************/
+DLL_API int WINAPI AbortCapture();
+
+//******************************************Data Ready***********************************************
+/******************************************************************************************
+	Description    This routines sets the callback function of capture complete. 
+    Input:       ppara        the parameter of the callback function
+　　             datacallback  a pointer to a function with the following prototype:
+                                 void DataReadyCallBack ( void * ppara)
+    Output       -
+******************************************************************************************/
+typedef void (CALLBACK *DataReadyCallBack)(void* ppara);
+DLL_API void WINAPI SetDataReadyCallBack(void* ppara, DataReadyCallBack datacallback);
+
+/******************************************************************************************
+	Description  This routines set the event handle, these will be set, when capture complete                   
+    Input:       dataevent   the event handle
+    Output      -
+******************************************************************************************/
+#ifdef _WINDOWS_PLATFORM
+DLL_API void WINAPI SetDataReadyEvent(HANDLE dataevent);
+#endif
+/******************************************************************************************
+	Description  This routines return the capture is complete or not.
+　　Input:      -
+　　Output     Return value 1 complete 
+　　						0 not complete
+******************************************************************************************/
+DLL_API int WINAPI IsDataReady();
+//******************************************Data Ready***********************************************
+
+
+//******************************************Read Data***********************************************
+/******************************************************************************************
+	Description  This routines read the voltage datas. (V)
+    Input:      channel     read channel  0 :channel 1
+　　                                   1 :channel 2
+　　           buffer      the buffer to store voltage datas   
+　　           length      the buffer length
+	Output     Return value the read length
+******************************************************************************************/
+DLL_API unsigned int WINAPI ReadVoltageDatas(char channel, double* buffer, unsigned int length);
+
+/******************************************************************************************
+Description  This routines return the voltage datas is out range or not.
+	Input:     channel     read channel	0 :channel 1
+　　									1 :channel 2
+	Output     Return value 0 :not out range
+　　						1 :out range
+ ******************************************************************************************/
+DLL_API int WINAPI IsVoltageDatasOutRange(char channel);
+
+/******************************************************************************************
+Description  This routines return the current voltage resolution value
+	One ADC resolution for the voltage value: 
+		Full scale is 1000mv 
+		the ADC is 8 bits
+		voltage resolution value = 1000mV/256
+	Input:     channel     read channel	0 :channel 1
+　　									1 :channel 2
+	Output     Return value : voltage resolution value
+ ******************************************************************************************/
+DLL_API double WINAPI GetVoltageResolution(char channel);
+
+/******************************************************************************************
+	Description  This routines read the logic datas. (V)
+	Input:     
+　　           buffer      the buffer to store logic datas
+　　           length      the buffer length
+	Output     Return value the read length
+******************************************************************************************/
+DLL_API unsigned int WINAPI ReadLogicDatas(unsigned char* buffer, unsigned int length);
+
+//******************************************Read Data***********************************************
+
+///////////////////////////////////////////////////////////////////////////Oscilloscope///////////////////////////////////////////////////////////////////////////
+
+
+//******************************************************************DDS**********************************************************************************************
+/******************************************************************************************
+	Description  This routines get support dds or not 
+　　Input:      -
+	Output     Return value support dds or not 
+******************************************************************************************/
+DLL_API int WINAPI IsSupportDDSDevice();
+
+#define BX_SINE 0x0001           //Sine
+#define BX_SQUARE 0x0002         //Square
+#define BX_RAMP 0x0004			//Ramp
+#define BX_PULSE 0x0008    //Pulse
+#define BX_NOISE 0x0010  //Noise
+#define BX_DC 0x0020  //Dc
+#define BX_ARB 0x0040  //Arb
+/******************************************************************************************
+　　Description  This routines get support wave styles
+　　Input:     style         array to store support wave styles
+　　Output     Return value  if style==NULL return number of support wave styles
+                             else store the styles to array, and return number of wave style
+******************************************************************************************/
+DLL_API int WINAPI GetDDSSupportBoxingStyle(int* style);
+/******************************************************************************************
+　　Description  This routines set wave style  
+　　Input:      channel_index	0 :channel 1
+								1 :channel 2
+				boxing  
+						W_SINE = 0x0001, 
+						W_SQUARE = 0x0002, 
+						W_RAMP = 0x0004, 
+						W_PULSE = 0x0008, 
+						W_NOISE = 0x0010, 
+						W_DC = 0x0020, 
+						W_ARB = 0x0040 
+　　Output:     -
+******************************************************************************************/
+DLL_API void WINAPI SetDDSBoxingStyle(unsigned char channel_index, unsigned int boxing);
+
+/******************************************************************************************
+　　Description  This routines set frequence
+　　Input:      channel_index	0 :channel 1
+								1 :channel 2
+				pinlv	frequence
+　　Output:     -
+******************************************************************************************/
+DLL_API void WINAPI SetDDSPinlv(unsigned char channel_index, unsigned int pinlv);
+
+/******************************************************************************************
+　　Description  This routines set duty cycle
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+				cycle  duty cycle
+	Output:      -
+******************************************************************************************/
+DLL_API void WINAPI SetDDSDutyCycle(unsigned char channel_index, int cycle);
+
+/******************************************************************************************
+　　Description  This routines get dds amplitdude of wave
+	Input:      boxing		BX_SINE~BX_ARB
+	Output:     Return the amplitdude(mV) of wave
+******************************************************************************************/
+DLL_API int WINAPI GetDDSCurBoxingAmplitudeMv(unsigned int boxing);
+
+/******************************************************************************************
+　　Description  This routines set dds amplitdude(mV)
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+				amplitdude  amplitdude(mV)
+	Output:      -
+******************************************************************************************/
+DLL_API void WINAPI SetDDSAmplitudeMv(unsigned char channel_index, int amplitdude);
+
+/******************************************************************************************
+　　Description  This routines get dds amplitdude(mV)
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+	Output:      return amplitdude(mV)
+******************************************************************************************/
+DLL_API int WINAPI GetDDSAmplitudeMv(unsigned char channel_index);
+
+/******************************************************************************************
+　　Description  This routines get dds bias of wave
+	Input:      boxing		BX_SINE~BX_ARB
+	Output:     Return the bias(mV) range of wave
+******************************************************************************************/
+DLL_API int WINAPI GetDDSCurBoxingBiasMvMin(unsigned int boxing);
+DLL_API int WINAPI GetDDSCurBoxingBiasMvMax(unsigned int boxing);
+
+/******************************************************************************************
+　　Description  This routines set dds bias(mV)
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+				bias  bias(mV)
+	Output:      -
+******************************************************************************************/
+DLL_API void WINAPI SetDDSBiasMv(unsigned char channel_index, int bias);
+
+/******************************************************************************************
+　　Description  This routines get dds bias(mV)
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+	Output:      Return the bias(mV) of wave
+******************************************************************************************/
+DLL_API int WINAPI GetDDSBiasMv(unsigned char channel_index);
+
+/******************************************************************************************
+　　Description  This routines enable dds output or not
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+				enable		1 enable 
+　　						0 not enable
+　　Output:      -
+******************************************************************************************/
+DLL_API void WINAPI DDSOutputEnable(unsigned char channel_index, int enable);
+
+/******************************************************************************************
+	Description  This routines get dds output enable or not 
+　　Input:      channel_index	0 :channel 1
+								1 :channel 2
+　　Output     Return value dds enable or not
+******************************************************************************************/
+DLL_API int WINAPI IsDDSOutputEnable(unsigned char channel_index);
+
+//******************************************************************DDS**********************************************************************************************
+
+//******************************************************************IO**********************************************************************************************
+/******************************************************************************************
+	Description  This routines get support IO ctrl or not
+　　Input:      -
+	Output     Return value support io ctrl or not
+******************************************************************************************/
+DLL_API int WINAPI IsSupportIODevice();
+
+/**************************************Support IO Num********************************************
+	Description  This routines get support io nums of equipment.
+	Output		Return value	the sample number of io nums
+*************************************************************************************************/
+DLL_API int WINAPI GetSupportIoNumber();
+
+/**********************************callback function****************************************
+	 Description    This routines sets the callback function of read io status.
+	 Input:			ppara			the parameter of the callback function
+　　				callback		a pointer to a function with the following prototype:
+										void IOReadStateCallBack(unsigned char channel, unsigned char state)
+	 Output
+*******************************************************************************************/
+typedef void (CALLBACK* IOReadStateCallBack)(void* ppara, unsigned int state);
+DLL_API void WINAPI SetIOReadStateCallBack(void* ppara, IOReadStateCallBack callback);
+
+/******************************************************************************************
+	Description  This routines set the event handle, these will be set, when read io status complete
+	Input:       dataevent   the event handle
+	Output      -
+******************************************************************************************/
+#ifdef _WINDOWS_PLATFORM
+DLL_API void WINAPI SetIOReadStateReadyEvent(HANDLE dataevent);
+#endif
+/******************************************************************************************
+	Description  This routines return the read io status is complete or not.
+　　Input:      -
+　　Output     Return value 1 complete
+　　						0 not complete
+******************************************************************************************/
+DLL_API int WINAPI IsIOReadStateReady();
+
+/******************************************************************************************
+　　Description  This routines set io enable or not
+　　Input:       channel	channel number
+				 enable		not enable 0
+							enable 1
+	Output:      -
+******************************************************************************************/
+DLL_API void WINAPI IOEnable(unsigned char channel, unsigned char enable);
+
+/******************************************************************************************
+　　Description  This routines get io enable or not
+　　Input:       channel  channel number
+	Output:      not enable 0
+				 enable 1
+******************************************************************************************/
+DLL_API unsigned char WINAPI IsIOEnable(unsigned char channel);
+
+/******************************************************************************************
+　　Description  This routines set io in or out
+　　Input:       channel  channel number
+				 in 0 
+				 out 1
+	Output:      -
+******************************************************************************************/
+DLL_API void WINAPI SetIOInOut(unsigned char channel, unsigned char inout);
+
+/******************************************************************************************
+　　Description  This routines get io in or out
+　　Input:       channel  channel number
+	Output:      in 0
+				 out 1
+******************************************************************************************/
+DLL_API unsigned char WINAPI GetIOInOut(unsigned char channel);
+
+/******************************************************************************************
+　　Description  This routines set io state
+　　Input:       channel  channel number
+				 state 0 or 1
+	Output:      -
+******************************************************************************************/
+DLL_API void WINAPI SetIOOutState(unsigned char channel, unsigned char state);
+
+/******************************************************************************************
+　　Description  This routines get io state 
+		If the SetIOReadStateCallBack setting callback function is used, IOReadStateCallBack will directly notify the IO input status; 
+		If you use SetIOReadStateReadyEvent and IsIOReadStateReady to read the query, you need to call GetIOState to get the IO input status
+　　Input:       channel  channel number
+	Output:      0 state
+				 1 state
+******************************************************************************************/
+DLL_API char WINAPI GetIOInState(unsigned char channel);
+
+//******************************************************************IO**********************************************************************************************
+
+
+#endif

@@ -1,0 +1,45 @@
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.ipch
+*.gch
+*.pch
+*.pdb
+*.idb
+.vs
+*.sdf
+*.opensdf
+
+# Fortran module files
+*.mod
+
+
+# Executables
+*.exe
+*.out
+*.app
+
+#
+*.log
+*.tlog
+*.spd
+*.iic
+*.cache
+*.aps
+*.db
+
+# 忽略指定文件夹下的除某一文件之外的其他文件 parent_dir/!spec_file_name.html
+# 忽略指定文件夹下的除某一类后缀名的文件 parent_dir/*[!*.html]
+!Driver/x86/*
+!Driver/amd64/*
+!Dll/X64/*
+!Dll/Win32/*
+
+build
+
+build-DllTestQt-Desktop_Qt_6_3_0_GCC_64bit-Debug
