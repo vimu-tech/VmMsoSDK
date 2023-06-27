@@ -14,6 +14,7 @@
 #endif
 
 #define EN_LOG 1
+#define EN_WATCHDOG 1
 
 #define USBNOTICE_ADD_MSG  (WM_USER+1544)
 #define USBNOTICE_REMOVE_MSG  (WM_USER+1545)
@@ -109,14 +110,30 @@ static const char* BOXING_STYLE_NAME[] =
 #ifdef AFX_TARG_CHS
 static char* const CHUfA_SOURCE_NAME[] = 
 {
-	"左通道",
-	"右通道"
+	"CH1",
+	"CH2",
+	"Logic0",
+	"Logic1",
+	"Logic2",
+	"Logic3",
+	"Logic4",
+	"Logic5",
+	"Logic6",
+	"Logic7",
 };
 #else
 static char* const CHUfA_SOURCE_NAME[] = 
 {
 	"CH1",
-	"CH2"
+	"CH2",
+	"Logic0",
+	"Logic1",
+	"Logic2",
+	"Logic3",
+	"Logic4",
+	"Logic5",
+	"Logic6",
+	"Logic7",
 };
 #endif
 
@@ -179,12 +196,6 @@ CDLLTESTDlg::CDLLTESTDlg(CWnd* pParent /*=NULL*/)
 	, iosupport(false)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-
-	//初始化Dll
-	InitDll(EN_LOG);
-	SetDevNoticeCallBack(this, UsbDevNoticeAddCallBack, UsbDevNoticeRemoveCallBack);
-	SetDataReadyCallBack(this, DataReadyCallBack);
-	SetIOReadStateCallBack(this, IOReadStateCallBack);
 }
 
 
@@ -443,6 +454,13 @@ BOOL CDLLTESTDlg::OnInitDialog()
 	m_enable_io7.EnableWindow(FALSE);
 
 	UpdateData(FALSE);
+
+	//初始化Dll
+	InitDll(EN_LOG, EN_WATCHDOG);
+	SetDevNoticeCallBack(this, UsbDevNoticeAddCallBack, UsbDevNoticeRemoveCallBack);
+	SetDataReadyCallBack(this, DataReadyCallBack);
+	SetIOReadStateCallBack(this, IOReadStateCallBack);
+
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -510,7 +528,7 @@ void CDLLTESTDlg::OnBnClickedDllReconnectBtn()
 	Sleep(1000);
 
 	//初始化Dll
-	InitDll(EN_LOG);
+	InitDll(EN_LOG, EN_WATCHDOG);
 	SetDevNoticeCallBack(this, UsbDevNoticeAddCallBack, UsbDevNoticeRemoveCallBack);
 	SetDataReadyCallBack(this, DataReadyCallBack);
 }
@@ -613,8 +631,8 @@ LRESULT CDLLTESTDlg::OnUsbNoticeAddMsg(WPARAM wParam, LPARAM lParam)
 		m_trigger_style.SetCurSel(3);
 
 	m_trigger_source.ResetContent();
-	m_trigger_source.AddString(CHUfA_SOURCE_NAME[0]);
-	m_trigger_source.AddString(CHUfA_SOURCE_NAME[1]);
+	for(int i=0; i<sizeof(CHUfA_SOURCE_NAME)/sizeof(CHUfA_SOURCE_NAME[0]); i++)
+		m_trigger_source.AddString(CHUfA_SOURCE_NAME[i]);
 	unsigned int chufa_source=GetTriggerSource();
 	m_trigger_source.SetCurSel(chufa_source);
 
@@ -895,7 +913,7 @@ LRESULT CDLLTESTDlg::OnDataUpdateMsg(WPARAM wParam, LPARAM lParam)
 
 		unsigned int length = ReadVoltageDatas(channel, m_buffer, m_real_length);
 		int outrange = IsVoltageDatasOutRange(channel);
-		TRACE("%d is outrange %d\n", channel, outrange);
+		//TRACE("%d is outrange %d\n", channel, outrange);
 
 		double min, max;
 		min = max = m_buffer[0];
@@ -904,7 +922,7 @@ LRESULT CDLLTESTDlg::OnDataUpdateMsg(WPARAM wParam, LPARAM lParam)
 			min = min > m_buffer[i] ? m_buffer[i] : min;
 			max = max < m_buffer[i] ? m_buffer[i] : max;
 		}
-		TRACE("%d min=%0.3f max=%0.3f\n", channel, min, max);
+		//TRACE("%d min=%0.3f max=%0.3f\n", channel, min, max);
 
 		bool addline=false;
 		if(!m_plot.HaveLine(CH_NAME[channel]))
@@ -1053,10 +1071,36 @@ void CDLLTESTDlg::OnCbnSelchangeTriggerSource()
 {
 	CString str;
 	m_trigger_source.GetWindowText(str);
+	unsigned int index = 0;
 	if(str==CHUfA_SOURCE_NAME[0])
-		SetTriggerSource(0);
+		index = 0;
 	else if(str==CHUfA_SOURCE_NAME[1])
-		SetTriggerSource(1);	
+		index = 1;
+	else if (str == CHUfA_SOURCE_NAME[2])
+		index = 16;
+	else if (str == CHUfA_SOURCE_NAME[3])
+		index = 17;
+	else if (str == CHUfA_SOURCE_NAME[4])
+		index = 18;
+	else if (str == CHUfA_SOURCE_NAME[5])
+		index = 19;
+	else if (str == CHUfA_SOURCE_NAME[6])
+		index = 20;
+	else if (str == CHUfA_SOURCE_NAME[7])
+		index = 21;
+	else if (str == CHUfA_SOURCE_NAME[8])
+		index = 22;
+	else if (str == CHUfA_SOURCE_NAME[9])
+		index = 23;
+
+	SetTriggerSource(index);
+
+	//对应IO和逻辑分析仪复用的设备，需要将IO打开并设置为输入
+	if ((index>=16)&&(index<=23)&&IsSupportIODevice())
+	{
+		IOEnable(index - 16, 1);
+		SetIOInOut(index - 16, 0);
+	}
 }
 
 void CDLLTESTDlg::OnEnChangeTriggerLevel()

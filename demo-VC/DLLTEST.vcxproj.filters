@@ -81,9 +81,6 @@
     <ClInclude Include="CLedState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\SharedLibrary\VmMsoLib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DLLTEST.cpp">

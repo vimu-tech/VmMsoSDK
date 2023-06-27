@@ -6,10 +6,10 @@ from ctypes import *
 import os
 ## python 64bit load this
 os.add_dll_directory("D:\VmMsoSDK\SharedLibrary\Windows\X64\Release")
-#os.environ["PATH"] += ";D:\VmMsoSDK\SharedLibrary\Windows\X64"
+#os.environ["PATH"] += ";D:\VmMsoSDK\windows\Dll\X64"
 ## python 32bit load this
-#os.add_dll_directory("D:\VmMsoSDK\SharedLibrary\Windows\X86")
-#os.environ["PATH"] += ";D:\VmMsoSDK\SharedLibrary\Windows\X86"
+#os.add_dll_directory("D:\github-SDK\windows\Dll\Win32")
+#os.environ["PATH"] += ";D:\github-SDK\windows\Dll\Win32"
 #print ('path: ', os.environ["PATH"])
 
 
@@ -19,6 +19,7 @@ mdll = ctypes.WinDLL("vmmso.dll")
 ############################ Initialization/Finished Dll ##############################
 ## init Dll
 fInitDll = mdll.InitDll
+fInitDll.argtypes = [ctypes.c_int, ctypes.c_int]
 fInitDll.restype = ctypes.c_int
 ## finish Dll
 fFinishDll = mdll.FinishDll  
@@ -77,6 +78,7 @@ fGetMemoryLength.restype = ctypes.c_uint
 
 ## Capture
 fCapture = mdll.Capture
+fCapture.argtypes = [ctypes.c_uint, ctypes.c_ushort, ctypes.c_byte]
 fCapture.restype = ctypes.c_int
 ############################ Capture ##############################
 
@@ -94,7 +96,7 @@ fReadVoltageDatas.restype = ctypes.c_uint
 
 
 ## init Dll
-print ('## Init Dll: ', fInitDll())
+print ('## Init Dll: ', fInitDll(1, 1))
 
 ##Data Revice
 @ctypes.WINFUNCTYPE(ctypes.c_int, ctypes.c_void_p)
@@ -118,7 +120,7 @@ def DevDataReadyCallBack_func(p):
 
     #Next Capture
     length = fGetMemoryLength();
-    fCapture(length, 3);
+    fCapture(length, 3, 0);
     return 0
     
 ##USB status
@@ -157,7 +159,7 @@ def DevNoticeAddCallBack_func(p):
     
     para = ctypes.c_void_p(2000)
     fSetDataReadyCallBack(para, DevDataReadyCallBack_func);
-    fCapture(length, 3);
+    fCapture(length, 3, 0);
     
     return 0
 

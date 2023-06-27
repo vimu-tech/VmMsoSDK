@@ -2,6 +2,9 @@
 #include <QDebug>
 #include <thread>
 
+#define EN_LOG 1
+#define EN_WATCH_DOG 1
+
 VmUsbWave::VmUsbWave(QObject *parent)
     : QObject{parent}
     , m_devState(0)
@@ -21,7 +24,7 @@ VmUsbWave::VmUsbWave(QObject *parent)
     , m_ch2_plot_range_min(0)
     , m_ch2_plot_range_max(0)
 {
-     InitDll(1);
+     InitDll(EN_LOG, EN_WATCH_DOG);
      SetDevNoticeCallBack(this, UsbDevAddCallBack, UsbDevRemoveCallBack);
      SetDataReadyCallBack(this, UsbDataReadyCallBack);
      SetIOReadStateCallBack(this, IOReadStateCallBack);
@@ -121,7 +124,7 @@ void VmUsbWave::resetDll()
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     //初始化Dll
-    InitDll(1);
+    InitDll(EN_LOG, EN_WATCH_DOG);
     SetDevNoticeCallBack(this, UsbDevAddCallBack, UsbDevRemoveCallBack);
     SetDataReadyCallBack(this, UsbDataReadyCallBack);
 }
@@ -270,6 +273,13 @@ int VmUsbWave::getTriggerSource()
 void VmUsbWave::setTriggerSource(int sr)
 {
     SetTriggerSource(sr);
+
+    //对应IO和逻辑分析仪复用的设备，需要将IO打开并设置为输入
+    if ((sr>=16)&&(sr<=23)&&IsSupportIODevice())
+    {
+        IOEnable(sr - 16, 1);
+        SetIOInOut(sr - 16, 0);
+    }
 }
 
 int VmUsbWave::getTriggerLevel()

@@ -20,7 +20,7 @@
 #endif
 
 /*************************************************
-　　V1.0  20230331
+　　V1.2  20230626
 *************************************************/
 
 //////////////////////////////////////////////////////////////////////Initialization/Finished Dll//////////////////////////////////////////////////////////////////
@@ -28,11 +28,13 @@
 　　Description   Dll initialization
     Input:       log enable		1 Enable Log
 								0 Not Enable Log
+				 watchdog enable	1 Enable hard watchdog		
+									0 Not Enable hard watchdog
 　　Output:      Init Status
 　　             Return value 1 Success
 　　	                      0 Failed
 *************************************************/
-DLL_API int WINAPI InitDll(unsigned int en_log);
+DLL_API int WINAPI InitDll(unsigned int en_log, unsigned int en_hard_watchdog);
 
 /*************************************************
 　　Description   Dll finished
@@ -249,6 +251,16 @@ DLL_API int WINAPI GetTriggerPulseWidthUpNs();
 DLL_API void WINAPI SetTriggerPulseWidthNs(int down_ns, int up_ns);
 
 
+#define TRIGGER_SOURCE_CH1 0    //CH1		
+#define TRIGGER_SOURCE_CH2 1    //CH2
+#define TRIGGER_SOURCE_LOGIC0 16  //Logic 0
+#define TRIGGER_SOURCE_LOGIC1 17  //Logic 1
+#define TRIGGER_SOURCE_LOGIC2 18  //Logic 2
+#define TRIGGER_SOURCE_LOGIC3 19  //Logic 3
+#define TRIGGER_SOURCE_LOGIC4 20  //Logic 4
+#define TRIGGER_SOURCE_LOGIC5 21  //Logic 5
+#define TRIGGER_SOURCE_LOGIC6 22  //Logic 6
+#define TRIGGER_SOURCE_LOGIC7 23  //Logic 7
 /**************************************Trigger Source***********************************************
 	Description  This routines get the trigger source.
 　　Input:      -
@@ -258,8 +270,16 @@ DLL_API void WINAPI SetTriggerPulseWidthNs(int down_ns, int up_ns);
 DLL_API unsigned int WINAPI GetTriggerSource();
 /**************************************Trigger Source***********************************************
 	Description  This routines set the trigger source.
-    Input:      source  0 :channel 1
-　　                    1 :channel 2
+    Input:      source  TRIGGER_SOURCE_CH1 0
+						TRIGGER_SOURCE_CH2 1
+						TRIGGER_SOURCE_LOGIC0 16  //Logic 0
+						TRIGGER_SOURCE_LOGIC1 17  //Logic 1
+						TRIGGER_SOURCE_LOGIC2 18  //Logic 2
+						TRIGGER_SOURCE_LOGIC3 19  //Logic 3
+						TRIGGER_SOURCE_LOGIC4 20  //Logic 4
+						TRIGGER_SOURCE_LOGIC5 21  //Logic 5
+						TRIGGER_SOURCE_LOGIC6 22  //Logic 6
+						TRIGGER_SOURCE_LOGIC7 23  //Logic 7
 　　Output      -
 *************************************************************************************************/
 DLL_API void WINAPI SetTriggerSource(unsigned int source); 
@@ -339,27 +359,34 @@ DLL_API void WINAPI TriggerForce();
 
 /********************************************Support AC/DC****************************************
 	Description  This routines get the device support AC/DC switch or not.
-　　Input:      -
-　　Output     Return value  0 :support AC/DC switch
-							 1 :not support AC/DC switch
+　　Input:      channel     the set channel 
+　　                                    0  channel 1
+　　                                    1  channel 2
+　　Output     Return value  0 :not support AC/DC switch
+							 1 :support AC/DC switch
 *************************************************************************************************/
-DLL_API int WINAPI IsSupportAcDc(unsigned char channel_index);
+DLL_API int WINAPI IsSupportAcDc(unsigned int channel);
 
 /********************************************Set AC/DC****************************************
 	Description  This routines set the device AC coupling.
-　　Input:      1 : set AC coupling
-　　            0 : set DC coupling
+　　Input:       channel     the set channel 
+　　                                    0  channel 1
+　　                                    1  channel 2
+				ac			1 : set AC coupling
+　　						0 : set DC coupling
 	Output     -
 *************************************************************************************************/
-DLL_API void WINAPI SetAcDc(unsigned int chn, int ac);
+DLL_API void WINAPI SetAcDc(unsigned int channel, int ac);
 
 /********************************************Get AC/DC****************************************
 	Description  This routines get the device AC coupling.
-　　Input:      -
+　　Input:     channel     the set channel 
+　　                                    0  channel 1
+　　                                    1  channel 2
 　　Output     Return value  1 : AC coupling
 　　                         0 : DC coupling
 *************************************************************************************************/
-DLL_API int WINAPI GetAcDc(unsigned int chn);
+DLL_API int WINAPI GetAcDc(unsigned int channel);
 
 
 /**************************************Roll Mode********************************************
@@ -682,8 +709,7 @@ DLL_API unsigned char WINAPI GetIOInOut(unsigned char channel);
 /******************************************************************************************
 　　Description  This routines set io state
 　　Input:       channel  channel number
-				 state 0 or 1
-	Output:      -
+	Output:       state 0 or 1
 ******************************************************************************************/
 DLL_API void WINAPI SetIOOutState(unsigned char channel, unsigned char state);
 

@@ -152,7 +152,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>vmmso.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\;..\SharedLibrary\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -173,10 +173,9 @@
       </Command>
     </PostBuildEvent>
     <PreLinkEvent>
-      <Command>copy $(SolutionDir)..\..\library\vmsignal\VS-Project\$(Platform)\$(Configuration)\signal.lib $(SolutionDir)$(Platform)\$(Configuration)\
-copy $(SolutionDir)..\..\library\vmsignal\VS-Project\$(Platform)\$(Configuration)\signal.pdb $(SolutionDir)$(Platform)\$(Configuration)\
-copy $(SolutionDir)..\..\library\vmsignal\VS-Project\$(Platform)\$(Configuration)\signal.dll $(SolutionDir)$(Platform)\$(Configuration)\
-copy $(SolutionDir)..\..\library\winusb\lib\$(Platform)\winusb.lib $(SolutionDir)$(Platform)\$(Configuration)\</Command>
+      <Command>copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.lib $(SolutionDir)$(Platform)\$(Configuration)\
+copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.pdb $(SolutionDir)$(Platform)\$(Configuration)\
+copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.dll $(SolutionDir)$(Platform)\$(Configuration)\</Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -194,7 +193,7 @@ copy $(SolutionDir)..\..\library\winusb\lib\$(Platform)\winusb.lib $(SolutionDir
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>vmmso.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\;..\SharedLibrary\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -214,10 +213,9 @@ copy $(SolutionDir)..\..\library\winusb\lib\$(Platform)\winusb.lib $(SolutionDir
       </Command>
     </PostBuildEvent>
     <PreLinkEvent>
-      <Command>copy $(SolutionDir)..\..\library\vmsignal\VS-Project\$(Platform)\$(Configuration)\signal.lib $(SolutionDir)$(Platform)\$(Configuration)\
-copy $(SolutionDir)..\..\library\vmsignal\VS-Project\$(Platform)\$(Configuration)\signal.pdb $(SolutionDir)$(Platform)\$(Configuration)\
-copy $(SolutionDir)..\..\library\vmsignal\VS-Project\$(Platform)\$(Configuration)\signal.dll $(SolutionDir)$(Platform)\$(Configuration)\
-copy $(SolutionDir)..\..\library\winusb\lib\$(Platform)\winusb.lib $(SolutionDir)$(Platform)\$(Configuration)\</Command>
+      <Command>copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.lib $(SolutionDir)$(Platform)\$(Configuration)\
+copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.pdb $(SolutionDir)$(Platform)\$(Configuration)\
+copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.dll $(SolutionDir)$(Platform)\$(Configuration)\</Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -237,7 +235,7 @@ copy $(SolutionDir)..\..\library\winusb\lib\$(Platform)\winusb.lib $(SolutionDir
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\;..\SharedLibrary\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>vmmso.lib</AdditionalDependencies>
     </Link>
     <Midl>
@@ -250,6 +248,10 @@ copy $(SolutionDir)..\..\library\winusb\lib\$(Platform)\winusb.lib $(SolutionDir
       <PreprocessorDefinitions>NDEBUG;AFX_RESOURCE_DLL;AFX_TARG_CHS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
+    <PreLinkEvent>
+      <Command>copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.lib $(SolutionDir)$(Platform)\$(Configuration)\
+copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.dll $(SolutionDir)$(Platform)\$(Configuration)\</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -268,7 +270,7 @@ copy $(SolutionDir)..\..\library\winusb\lib\$(Platform)\winusb.lib $(SolutionDir
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\;..\SharedLibrary\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>vmmso.lib</AdditionalDependencies>
     </Link>
     <Midl>
@@ -280,6 +282,10 @@ copy $(SolutionDir)..\..\library\winusb\lib\$(Platform)\winusb.lib $(SolutionDir
       <PreprocessorDefinitions>NDEBUG;AFX_RESOURCE_DLL;AFX_TARG_CHS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
+    <PreLinkEvent>
+      <Command>copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.lib $(SolutionDir)$(Platform)\$(Configuration)\
+copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.dll $(SolutionDir)$(Platform)\$(Configuration)\</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Eng|Win32'">
     <ClCompile>
@@ -298,7 +304,7 @@ copy $(SolutionDir)..\..\library\winusb\lib\$(Platform)\winusb.lib $(SolutionDir
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\;..\SharedLibrary\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>vmmso.lib</AdditionalDependencies>
     </Link>
     <Midl>
@@ -311,6 +317,10 @@ copy $(SolutionDir)..\..\library\winusb\lib\$(Platform)\winusb.lib $(SolutionDir
       <PreprocessorDefinitions>NDEBUG;AFX_RESOURCE_DLL;AFX_TARG_ENU;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
+    <PreLinkEvent>
+      <Command>copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.lib $(SolutionDir)$(Platform)\$(Configuration)\
+copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.dll $(SolutionDir)$(Platform)\$(Configuration)\</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Eng|x64'">
     <ClCompile>
@@ -329,7 +339,7 @@ copy $(SolutionDir)..\..\library\winusb\lib\$(Platform)\winusb.lib $(SolutionDir
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\;..\SharedLibrary\Windows\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>vmmso.lib</AdditionalDependencies>
     </Link>
     <Midl>
@@ -341,6 +351,10 @@ copy $(SolutionDir)..\..\library\winusb\lib\$(Platform)\winusb.lib $(SolutionDir
       <PreprocessorDefinitions>NDEBUG;AFX_RESOURCE_DLL;AFX_TARG_ENU;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
+    <PreLinkEvent>
+      <Command>copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.lib $(SolutionDir)$(Platform)\$(Configuration)\
+copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.dll $(SolutionDir)$(Platform)\$(Configuration)\</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -351,7 +365,6 @@ copy $(SolutionDir)..\..\library\winusb\lib\$(Platform)\winusb.lib $(SolutionDir
     <None Include="res\on.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\SharedLibrary\VmMsoLib.h" />
     <ClInclude Include="AdvPlot.h" />
     <ClInclude Include="AdvPlotBasic.h" />
     <ClInclude Include="CLedState.h" />

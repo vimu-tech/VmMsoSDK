@@ -1,6 +1,9 @@
 # SDK
 The Sdk support Vimu MSO Series Oscilloscopes. The SDK support MSO20 and MSO21 oscilloscopes.
 
+DebugView is a DLL debugging information display tool. 
+	When initDll, turn on the log function and start DebugView.exe to see the debugging information of the Dll.
+
 ######################demo######################
 
 1,demo-VC

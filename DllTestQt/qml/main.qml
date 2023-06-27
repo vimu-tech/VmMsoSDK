@@ -871,11 +871,11 @@ ApplicationWindow {
 
                         ComboBox {
                             id: triggerSourceCombox
-                            model:["CH1","CH2"]
+                            model:["CH1","CH2","Logic0","Logic1","Logic2","Logic3","Logic4","Logic5","Logic6","Logic7"]
 
                             onActivated: {
                                 console.log("triggerSourceCombox " + currentText);
-                                vmusbwave.setTriggerSource(triggerSourceCombox.currentIndex);
+                                vmusbwave.setTriggerSource(triggerSourceCombox.currentIndex>=2? triggerSourceCombox.currentIndex+14 : triggerSourceCombox.currentIndex);
                             }
                         }
                     }

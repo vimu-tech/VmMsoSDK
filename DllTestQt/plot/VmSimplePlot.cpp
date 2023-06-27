@@ -3,7 +3,7 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QFontMetrics>
-#include "VmMsoLib.h"
+#include "VmMsolib.h"
 
 VmSimplePlot::VmSimplePlot(QQuickItem *parent)
     : QQuickPaintedItem(parent)
@@ -509,7 +509,6 @@ bool VmSimplePlot::UpdateLine(QPainter* painter, QPixmap& MemPixmap, QRect& rect
                 {
                     pts[pts_count+1].rx() = pts[pts_count].rx() = x;
                     pts[pts_count+1].ry() = pts[pts_count].ry() = y;
-                    //qInfo() << pts[pts_count].rx() << " " << pts[pts_count].ry() <<" " << pts[pts_count+1].ry();
                 }
                 else
                 {
@@ -528,13 +527,8 @@ bool VmSimplePlot::UpdateLine(QPainter* painter, QPixmap& MemPixmap, QRect& rect
                     }
                 }
             }
-
-            //for(int i=0; i<pts_count; i++)
-            //    qInfo() << i << " " << pts[i].rx() << " " << pts[i].ry();
-
-            //painter->drawLines(pts, pts_count);
-
-            for(int i=0; i<pts_count-1; i++)
+           // painter->drawLines(pts, pts_count);
+           for(int i=0; i<pts_count-1; i++)
                  painter->drawLine(pts[i], pts[i+1]);
         }
     }
@@ -626,9 +620,9 @@ void VmSimplePlot::updateDatas(int real_length, int sample/*QVariantList list*/)
     int length_ch1 = ReadVoltageDatas(0, buffer_ch1, real_length);
     int length_ch2 = ReadVoltageDatas(1, buffer_ch2, real_length);
     qDebug()<<"ReadVoltageDatas "<< length_ch1 <<" "<<length_ch2;
-    //int outrange_ch1 = IsVoltageDatasOutRange(0);
-    //int outrange_ch2 = IsVoltageDatasOutRange(1);
-    //qDebug()<<" is outrange "<< outrange_ch1 <<" "<<outrange_ch2;
+    int outrange_ch1 = IsVoltageDatasOutRange(0);
+    int outrange_ch2 = IsVoltageDatasOutRange(1);
+    qDebug()<<" is outrange "<< outrange_ch1 <<" "<<outrange_ch2;
 
      //将采集点数换算成时间ns
     double timelength = (length_ch1<length_ch2? length_ch1:length_ch2)*1000000000.0/sample;

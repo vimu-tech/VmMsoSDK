@@ -37,11 +37,6 @@ void CALLBACK DevNoticeAddCallBack(void* ppara)
 
 	//
 	mem_length =  GetMemoryLength()*1024;  //KB
-
-	//some system not support larger 8192
-	if(mem_length>4096*1024)
-		mem_length = 4096*1024;
-
 	buffer = new double[mem_length];
 	if(buffer!=NULL)
 	{
@@ -74,7 +69,7 @@ int main()
 {
 	std::cout << "Vdso Test..." << std::endl;
 
-	InitDll(1);
+	InitDll(1, 1);
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	SetDevNoticeCallBack(NULL, DevNoticeAddCallBack, DevNoticeRemoveCallBack);
 	SetDataReadyCallBack(NULL, DevDataReadyCallBack);
