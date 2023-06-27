@@ -3,7 +3,7 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QFontMetrics>
-#include "VmMsolib.h"
+#include "VmMsoLib.h"
 
 VmSimplePlot::VmSimplePlot(QQuickItem *parent)
     : QQuickPaintedItem(parent)
