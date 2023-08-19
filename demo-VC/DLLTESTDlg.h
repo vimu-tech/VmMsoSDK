@@ -174,4 +174,6 @@ private:
 	CLedState m_in_io5;
 	CLedState m_in_io6;
 	CLedState m_in_io7;
+
+	unsigned short sinc4096[4096];
 };

@@ -173,9 +173,8 @@
       </Command>
     </PostBuildEvent>
     <PreLinkEvent>
-      <Command>copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.lib $(SolutionDir)$(Platform)\$(Configuration)\
-copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.pdb $(SolutionDir)$(Platform)\$(Configuration)\
-copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.dll $(SolutionDir)$(Platform)\$(Configuration)\</Command>
+      <Command>copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\wmmso.lib  $(SolutionDir)$(Platform)\$(Configuration)\
+copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\wmmso.dll  $(SolutionDir)$(Platform)\$(Configuration)\</Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -213,9 +212,8 @@ copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.d
       </Command>
     </PostBuildEvent>
     <PreLinkEvent>
-      <Command>copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.lib $(SolutionDir)$(Platform)\$(Configuration)\
-copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.pdb $(SolutionDir)$(Platform)\$(Configuration)\
-copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.dll $(SolutionDir)$(Platform)\$(Configuration)\</Command>
+      <Command>copy  $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.dll $(SolutionDir)$(Platform)\$(Configuration)\
+copy  $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.lib $(SolutionDir)$(Platform)\$(Configuration)\</Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -249,8 +247,8 @@ copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.d
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PreLinkEvent>
-      <Command>copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.lib $(SolutionDir)$(Platform)\$(Configuration)\
-copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.dll $(SolutionDir)$(Platform)\$(Configuration)\</Command>
+      <Command>copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\wmmso.lib  $(SolutionDir)$(Platform)\$(Configuration)\
+copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\wmmso.dll  $(SolutionDir)$(Platform)\$(Configuration)\</Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -283,8 +281,8 @@ copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.d
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PreLinkEvent>
-      <Command>copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.lib $(SolutionDir)$(Platform)\$(Configuration)\
-copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.dll $(SolutionDir)$(Platform)\$(Configuration)\</Command>
+      <Command>copy  $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.dll $(SolutionDir)$(Platform)\$(Configuration)\
+copy  $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.lib $(SolutionDir)$(Platform)\$(Configuration)\</Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Eng|Win32'">
@@ -318,8 +316,8 @@ copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.d
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PreLinkEvent>
-      <Command>copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.lib $(SolutionDir)$(Platform)\$(Configuration)\
-copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.dll $(SolutionDir)$(Platform)\$(Configuration)\</Command>
+      <Command>copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\wmmso.lib  $(SolutionDir)$(Platform)\$(Configuration)\
+copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\wmmso.dll  $(SolutionDir)$(Platform)\$(Configuration)\</Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Eng|x64'">
@@ -352,8 +350,8 @@ copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.d
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PreLinkEvent>
-      <Command>copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.lib $(SolutionDir)$(Platform)\$(Configuration)\
-copy $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.dll $(SolutionDir)$(Platform)\$(Configuration)\</Command>
+      <Command>copy  $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.dll $(SolutionDir)$(Platform)\$(Configuration)\
+copy  $(SolutionDir)..\SharedLibrary\Windows\$(Platform)\$(Configuration)\vmmso.lib $(SolutionDir)$(Platform)\$(Configuration)\</Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

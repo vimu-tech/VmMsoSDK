@@ -20,7 +20,7 @@
 #endif
 
 /*************************************************
-　　V1.2  20230626
+　　V1.3  20230820
 *************************************************/
 
 //////////////////////////////////////////////////////////////////////Initialization/Finished Dll//////////////////////////////////////////////////////////////////
@@ -507,13 +507,44 @@ DLL_API unsigned int WINAPI ReadLogicDatas(unsigned char* buffer, unsigned int l
 ///////////////////////////////////////////////////////////////////////////Oscilloscope///////////////////////////////////////////////////////////////////////////
 
 
-//******************************************************************DDS**********************************************************************************************
+///////////////////////////////////////////////////////////////////////////DDS///////////////////////////////////////////////////////////////////////////
 /******************************************************************************************
 	Description  This routines get support dds or not 
 　　Input:      -
 	Output     Return value support dds or not 
 ******************************************************************************************/
 DLL_API int WINAPI IsSupportDDSDevice();
+
+/******************************************************************************************
+　　Description  This routines set dds depth
+　　Input:      
+　　Output:   depth
+******************************************************************************************/
+DLL_API int WINAPI GetDDSDepth();
+
+#define DDS_OUT_MODE_CONTINUOUS  0x00
+#define DDS_OUT_MODE_SWEEP 0x01
+#define DDS_OUT_MODE_BURST 0x02
+/******************************************************************************************
+　　Description  This routines set dds out mode
+　　Input:      channel_index	0 :channel 1
+								1 :channel 2
+				out_mode    DDS_OUT_MODE_CONTINUOUS
+							DDS_OUT_MODE_SWEEP
+							DDS_OUT_MODE_BURST
+　　Output     
+******************************************************************************************/
+DLL_API void WINAPI SetDDSOutMode(unsigned char channel_index, unsigned int out_mode);
+
+/******************************************************************************************
+　　Description  This routines get dds out mode
+　　Input:      channel_index	0 :channel 1
+								1 :channel 2
+　　Output		mode    DDS_OUT_MODE_CONTINUOUS
+							DDS_OUT_MODE_SWEEP
+							DDS_OUT_MODE_BURST
+******************************************************************************************/
+DLL_API unsigned int WINAPI GetDDSOutMode(unsigned char channel_index);
 
 #define BX_SINE 0x0001           //Sine
 #define BX_SQUARE 0x0002         //Square
@@ -544,6 +575,16 @@ DLL_API int WINAPI GetDDSSupportBoxingStyle(int* style);
 　　Output:     -
 ******************************************************************************************/
 DLL_API void WINAPI SetDDSBoxingStyle(unsigned char channel_index, unsigned int boxing);
+
+/******************************************************************************************
+　　Description  This routines set frequence
+　　Input:      channel_index	0 :channel 1
+								1 :channel 2
+				arb_buffer			the dac buffer
+				arb_buffer_length	the dac buffer length need equal to the dds depth
+　　Output:     -
+******************************************************************************************/
+DLL_API void WINAPI UpdateDDSArbBuffer(unsigned char channel_index, unsigned short* arb_buffer, uint32_t arb_buffer_length);
 
 /******************************************************************************************
 　　Description  This routines set frequence
@@ -613,6 +654,160 @@ DLL_API void WINAPI SetDDSBiasMv(unsigned char channel_index, int bias);
 DLL_API int WINAPI GetDDSBiasMv(unsigned char channel_index);
 
 /******************************************************************************************
+　　Description  This routines set dds sweep start freq
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+				freq		
+　　Output:      -
+******************************************************************************************/
+DLL_API void WINAPI SetDDSSweepStartFreq(unsigned char channel_index, double freq);
+
+/******************************************************************************************
+　　Description  This routines get dds sweep start freq
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+　　Output:      freq
+******************************************************************************************/
+DLL_API double WINAPI GetDDSSweepStartFreq(unsigned char channel_index);
+
+/******************************************************************************************
+　　Description  This routines set dds sweep stop freq
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+				freq
+　　Output:      -
+******************************************************************************************/
+DLL_API void WINAPI SetDDSSweepStopFreq(unsigned char channel_index, double freq);
+
+/******************************************************************************************
+　　Description  This routines get dds sweep stop freq
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+　　Output:      freq
+******************************************************************************************/
+DLL_API double WINAPI GetDDSSweepStopFreq(unsigned char channel_index);
+
+/******************************************************************************************
+　　Description  This routines set dds sweep time
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+				time/ns
+　　Output:      -
+******************************************************************************************/
+DLL_API void WINAPI SetDDSSweepTime(unsigned char channel_index, unsigned long long int time_ns);
+
+/******************************************************************************************
+　　Description  This routines get dds sweep time
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+　　Output:     time/ns
+******************************************************************************************/
+DLL_API unsigned long long int WINAPI GetDDSSweepTime(unsigned char channel_index);
+
+
+#define DDS_TRIGGER_SOURCE_INTERNAL 0
+#define DDS_TRIGGER_SOURCE_EXTERNAL 1
+#define DDS_TRIGGER_SOURCE_MANUAL 2
+/******************************************************************************************
+　　Description  This routines set dds trigger source
+	Input:      channel_index	0 : channel 1
+								1 : channel 2
+				src				0 : internal
+								1 : external
+								2 : manual
+　　Output:      -
+******************************************************************************************/
+DLL_API void WINAPI SetDDSTriggerSource(unsigned char channel_index, unsigned int src);
+
+/******************************************************************************************
+　　Description  This routines get dds trigger source
+	Input:      channel_index	0	: channel 1
+								1	: channel 2
+　　Output:     trigger source		0 : internal
+									1 : external
+									2 : manual
+******************************************************************************************/
+DLL_API unsigned int WINAPI GetDDSTriggerSource(unsigned char channel_index);
+
+//注意：需要使用DIO API，将对应的DIO设置为输入/输出状态
+//Note: You need to use the DIO API to set the corresponding DIO to the input/output state
+/******************************************************************************************
+　　Description  This routines set dds trigger source io
+	Input:      channel_index	0 : channel 1
+								1 : channel 2
+				io				0 : DIO0
+								.....
+								7 : DIO7
+　　Output:      -
+******************************************************************************************/
+DLL_API void WINAPI SetDDSTriggerSourceIo(unsigned char channel_index, uint32_t io);
+
+/******************************************************************************************
+　　Description  This routines get dds trigger source io
+	Input:      channel_index	0	: channel 1
+								1	: channel 2
+　　Output:     trigger source io	0 : DIO0
+									.....
+									7 : DIO7
+******************************************************************************************/
+DLL_API uint32_t WINAPI GetDDSTriggerSourceIo(unsigned char channel_index);
+
+
+#define DDS_ENGES_RISING 0x00
+#define DDS_ENGES_FALLING 0x01
+/******************************************************************************************
+　　Description  This routines set dds trigger source enge
+	Input:      channel_index	0 : channel 1
+								1 : channel 2
+				enge			0 : rising
+								1 : falling
+　　Output:      -
+******************************************************************************************/
+DLL_API void WINAPI SetDDSTriggerSourceEnge(unsigned char channel_index, unsigned int enge);
+
+/******************************************************************************************
+　　Description  This routines get dds trigger enge
+	Input:      channel_index	0 : channel 1
+								1 : channel 2
+　　Output:     enge			0 : rising
+								1 : falling
+******************************************************************************************/
+DLL_API unsigned int WINAPI GetDDSTriggerSourceEnge(unsigned char channel_index);
+
+#define DDS_OUTPUT_ENGES_CLOSE  0x00
+#define DDS_OUTPUT_ENGES_RISING  0x01
+#define DDS_OUTPUT_ENGES_FALLING 0x02
+/******************************************************************************************
+　　Description  This routines set dds output gate enge
+	Input:      channel_index	0 : channel 1
+								1 : channel 2
+				enge			0 : close
+								1 : rising
+								2 : falling
+　　Output:      -
+******************************************************************************************/
+DLL_API void WINAPI SetDDSOutputGateEnge(unsigned char channel_index, unsigned int enge);
+
+/******************************************************************************************
+　　Description  This routines get dds output gate enge
+	Input:		channel_index	0 : channel 1
+								1 : channel 2
+　　Output:      enge			0 : close
+								1 : rising
+								2 : falling
+******************************************************************************************/
+DLL_API unsigned int WINAPI GetDDSOutputGateEnge(unsigned char channel_index);
+
+/******************************************************************************************
+　　Description  This routines manual trigger dds
+	Input:      channel_index	0 : channel 1
+								1 : channel 2
+　　Output:      -
+******************************************************************************************/
+DLL_API void WINAPI DDSManualTrigger(unsigned char channel_index);
+
+
+/******************************************************************************************
 　　Description  This routines enable dds output or not
 	Input:      channel_index	0 :channel 1
 								1 :channel 2
@@ -630,9 +825,9 @@ DLL_API void WINAPI DDSOutputEnable(unsigned char channel_index, int enable);
 ******************************************************************************************/
 DLL_API int WINAPI IsDDSOutputEnable(unsigned char channel_index);
 
-//******************************************************************DDS**********************************************************************************************
+///////////////////////////////////////////////////////////////////////////DDS///////////////////////////////////////////////////////////////////////////
 
-//******************************************************************IO**********************************************************************************************
+///////////////////////////////////////////////////////////////////////////IO///////////////////////////////////////////////////////////////////////////
 /******************************************************************************************
 	Description  This routines get support IO ctrl or not
 　　Input:      -
@@ -723,7 +918,7 @@ DLL_API void WINAPI SetIOOutState(unsigned char channel, unsigned char state);
 ******************************************************************************************/
 DLL_API char WINAPI GetIOInState(unsigned char channel);
 
-//******************************************************************IO**********************************************************************************************
+///////////////////////////////////////////////////////////////////////////IO///////////////////////////////////////////////////////////////////////////
 
 
 #endif

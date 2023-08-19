@@ -8,6 +8,7 @@
 #include "afxdialogex.h"
 #include "afxwin.h"
 #include <math.h>
+#include "sinc8192.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -196,6 +197,9 @@ CDLLTESTDlg::CDLLTESTDlg(CWnd* pParent /*=NULL*/)
 	, iosupport(false)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+
+	for (int k = 0; k < 4095; k++)
+		sinc4096[k] = sinc8192[k * 2];
 }
 
 
@@ -577,10 +581,6 @@ LRESULT CDLLTESTDlg::OnUsbNoticeAddMsg(WPARAM wParam, LPARAM lParam)
 
 	m_capture_length=GetMemoryLength();
 
-	//最大采集1M  太大绘图缓冲区需要优化
-	if (m_capture_length > 1024)
-		m_capture_length = 1024;
-
 	if (m_buffer != NULL)
 	{
 		delete m_buffer;
@@ -594,6 +594,10 @@ LRESULT CDLLTESTDlg::OnUsbNoticeAddMsg(WPARAM wParam, LPARAM lParam)
 		m_logic_buffer = NULL;
 	}
 	m_logic_buffer = new unsigned char[m_capture_length *2 * 1024];  //16路logic==2
+
+	//最大采集1M  太大绘图缓冲区需要优化
+	//if (m_capture_length > 1024)
+	//	m_capture_length = 1024;
 
 	m_check_ch1.SetCheck(true);
 	m_check_ch2.SetCheck(true);
@@ -1199,6 +1203,14 @@ void CDLLTESTDlg::OnCbnSelchangeComboBoxing()
 			SetDDSBoxingStyle(0, BX_NOISE);
 		else if (BoxingName == BOXING_STYLE_NAME[5])
 			SetDDSBoxingStyle(0, BX_DC);
+		else  if (BoxingName == BOXING_STYLE_NAME[6])
+		{
+			SetDDSBoxingStyle(0, BX_ARB);
+			if (GetDDSDepth() == 8192)
+				UpdateDDSArbBuffer(0, sinc8192,  sizeof(sinc8192));
+			else if (GetDDSDepth() == 4096)
+				UpdateDDSArbBuffer(0, sinc4096, sizeof(sinc4096));
+		}
 	}
 }
 
