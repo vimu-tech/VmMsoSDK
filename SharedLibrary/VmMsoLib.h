@@ -154,7 +154,6 @@ DLL_API unsigned int WINAPI SetOscSample(unsigned int sample);
 　　Input:      -
 　　Output     Return value 1 support hardware trigger
 							0 not support hardware trigger
-	关于触发：需要设备支持硬件触发
 ****************************************Hardware Trigger*******************************************/
 DLL_API int WINAPI IsSupportHardTrigger();
 
@@ -394,7 +393,6 @@ DLL_API int WINAPI GetAcDc(unsigned int channel);
 　　Input:      -
 　　Output     Return value 1 support roll mode
 							0 not support roll mode
-	关于Roll Mode：需要设备支持Roll Mode
 ******************************************************************************************/
 DLL_API int WINAPI IsSupportRollMode();
 
@@ -577,14 +575,14 @@ DLL_API int WINAPI GetDDSSupportBoxingStyle(int* style);
 DLL_API void WINAPI SetDDSBoxingStyle(unsigned char channel_index, unsigned int boxing);
 
 /******************************************************************************************
-　　Description  This routines set frequence
+　　Description  This routines update arb buffer
 　　Input:      channel_index	0 :channel 1
 								1 :channel 2
 				arb_buffer			the dac buffer
 				arb_buffer_length	the dac buffer length need equal to the dds depth
 　　Output:     -
 ******************************************************************************************/
-DLL_API void WINAPI UpdateDDSArbBuffer(unsigned char channel_index, unsigned short* arb_buffer, uint32_t arb_buffer_length);
+DLL_API void WINAPI UpdateDDSArbBuffer(unsigned char channel_index, unsigned short* arb_buffer, unsigned int arb_buffer_length);
 
 /******************************************************************************************
 　　Description  This routines set frequence
@@ -729,7 +727,6 @@ DLL_API void WINAPI SetDDSTriggerSource(unsigned char channel_index, unsigned in
 ******************************************************************************************/
 DLL_API unsigned int WINAPI GetDDSTriggerSource(unsigned char channel_index);
 
-//注意：需要使用DIO API，将对应的DIO设置为输入/输出状态
 //Note: You need to use the DIO API to set the corresponding DIO to the input/output state
 /******************************************************************************************
 　　Description  This routines set dds trigger source io
@@ -740,7 +737,7 @@ DLL_API unsigned int WINAPI GetDDSTriggerSource(unsigned char channel_index);
 								7 : DIO7
 　　Output:      -
 ******************************************************************************************/
-DLL_API void WINAPI SetDDSTriggerSourceIo(unsigned char channel_index, uint32_t io);
+DLL_API void WINAPI SetDDSTriggerSourceIo(unsigned char channel_index, unsigned int io);
 
 /******************************************************************************************
 　　Description  This routines get dds trigger source io
@@ -750,7 +747,7 @@ DLL_API void WINAPI SetDDSTriggerSourceIo(unsigned char channel_index, uint32_t 
 									.....
 									7 : DIO7
 ******************************************************************************************/
-DLL_API uint32_t WINAPI GetDDSTriggerSourceIo(unsigned char channel_index);
+DLL_API unsigned int WINAPI GetDDSTriggerSourceIo(unsigned char channel_index);
 
 
 #define DDS_ENGES_RISING 0x00
