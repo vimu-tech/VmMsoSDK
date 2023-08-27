@@ -33,6 +33,8 @@
 *.aps
 *.db
 
+/NETTest/NETTest/NETTest/obj/
+
 # 忽略指定文件夹下的除某一文件之外的其他文件 parent_dir/!spec_file_name.html
 # 忽略指定文件夹下的除某一类后缀名的文件 parent_dir/*[!*.html]
 !Driver/x86/*

@@ -917,5 +917,18 @@ DLL_API char WINAPI GetIOInState(unsigned char channel);
 
 ///////////////////////////////////////////////////////////////////////////IO///////////////////////////////////////////////////////////////////////////
 
+///////////////////////////////////////////////////////////////////////////algorithm///////////////////////////////////////////////////////////////////////////
+/******************************************************************************************
+　　Description  This routines cal the freq of buffer
+　　Input:       buffer		cal buffer
+				 buffer_length	the length of the cal buffer	
+				 voltage_resolution		using the GetVoltageResolution to get 
+				 sample		the sample of setting
+	Output:      freq
+	example:	double freq = CalFreq(m_buffer, m_real_length, GetVoltageResolution(channel), GetOscSample());
+******************************************************************************************/
+DLL_API double WINAPI CalFreq(double* buffer, unsigned int buffer_length, double voltage_resolution, unsigned int sample);
+
+///////////////////////////////////////////////////////////////////////////algorithm///////////////////////////////////////////////////////////////////////////
 
 #endif

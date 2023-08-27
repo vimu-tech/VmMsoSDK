@@ -198,7 +198,7 @@ CDLLTESTDlg::CDLLTESTDlg(CWnd* pParent /*=NULL*/)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
-	for (int k = 0; k < 4095; k++)
+	for (int k = 0; k < 4096; k++)
 		sinc4096[k] = sinc8192[k * 2];
 }
 
@@ -927,6 +927,11 @@ LRESULT CDLLTESTDlg::OnDataUpdateMsg(WPARAM wParam, LPARAM lParam)
 			max = max < m_buffer[i] ? m_buffer[i] : max;
 		}
 		//TRACE("%d min=%0.3f max=%0.3f\n", channel, min, max);
+
+		//
+		double freq = CalFreq(m_buffer, m_real_length, GetVoltageResolution(channel), GetOscSample());
+		TRACE("%d freq=%0.3f \n", channel, freq);
+
 
 		bool addline=false;
 		if(!m_plot.HaveLine(CH_NAME[channel]))
