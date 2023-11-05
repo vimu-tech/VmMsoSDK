@@ -5,15 +5,76 @@
 #include "VmMsoLib.h"
 #include <thread>
 
-bool runing = true;
+//////////////////////////////////////////////////////////////////
+//caputer channel num 
+#define CAPTURE_CHN_NUM 2
+//using callback read datas ?
+#define DATA_READ_CALLBACK_MODE 1
+
+//////////////////////////////////////////////////////////////////
+//bool runing = true;
 int sample_num = 0;
 unsigned int* sample = NULL;
 unsigned int mem_length = 0;
-double* buffer = NULL;
+
+double* buffer_ch1 = NULL;
+#if (CAPTURE_CHN_NUM == 2)
+double* buffer_ch2 = NULL;
+#endif
+
+void ReadDatas()
+{
+	unsigned int len = ReadVoltageDatas(0, buffer_ch1, mem_length);
+                
+	double minv=buffer_ch1[0];
+	double maxv=buffer_ch1[0];
+	for(unsigned int i=0; i<len; i++)
+	{
+		minv = buffer_ch1[i]<minv? buffer_ch1[i]:minv;
+		maxv = buffer_ch1[i]>maxv? buffer_ch1[i]:maxv;
+	}
+	std::cout << "Channel 1 ReadVoltageDatas " << len <<" minv " << minv << " maxv " << maxv << '\n';
+
+#if (CAPTURE_CHN_NUM == 2)
+	len = ReadVoltageDatas(1, buffer_ch2, mem_length);
+                
+	minv=buffer_ch2[0];
+	maxv=buffer_ch2[0];
+	for(unsigned int i=0; i<len; i++)
+	{
+		minv = buffer_ch2[i]<minv? buffer_ch2[i]:minv;
+		maxv = buffer_ch2[i]>maxv? buffer_ch2[i]:maxv;
+	}
+	std::cout << "Channel 2 ReadVoltageDatas " << len <<" minv " << minv << " maxv " << maxv << '\n';
+#endif
+}
+
+void NextCapture()
+{
+	//change  trigger
+	//SetTriggerMode(0x00);  //TRIGGER_MODE_AUTO 0
+	//SetTriggerMode(0x01);  //TRIGGER_MODE_LIANXU 1
+	//SetTriggerStyle(0x01);  //TRIGGER_STYLE_RISE_EDGE
+	//SetTriggerSource(0x00);  //TRIGGER_SOURCE_CH1
+	SetTriggerLevel(500); //500mv
+	//SetPreTriggerPercent(75);
+
+	//std::this_thread::sleep_for(std::chrono::milliseconds(100));
+#if (CAPTURE_CHN_NUM == 2)
+	int real_len = Capture(mem_length/1024, 3, 0);
+#else
+	int real_len = Capture(mem_length/1024, 1, 0);
+#endif
+	std::cout << "Capture " << real_len * 1024 << '\n';
+}
 
 void CALLBACK DevDataReadyCallBack(void* ppara)
 {
 	std::cout << "DevDataReadyCallBack\n";
+#ifdef DATA_READ_CALLBACK_MODE
+	ReadDatas();
+	NextCapture();
+#endif	
 }
 
 void CALLBACK DevNoticeAddCallBack(void* ppara)
@@ -35,22 +96,49 @@ void CALLBACK DevNoticeAddCallBack(void* ppara)
 	}
 	SetOscSample(sample[sample_num-2]);
 
+	// setting up trigger
+	SetTriggerMode(0x00);  //TRIGGER_MODE_AUTO 0
+	//SetTriggerMode(0x01);  //TRIGGER_MODE_LIANXU 1
+	SetTriggerStyle(0x01);  //TRIGGER_STYLE_RISE_EDGE
+	SetTriggerSource(0x00);  //TRIGGER_SOURCE_CH1
+	SetTriggerLevel(500); //500mv
+	SetPreTriggerPercent(50);
+
 	//
-	mem_length =  GetMemoryLength()*1024;  //KB
-	buffer = new double[mem_length];
-	if(buffer!=NULL)
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
-		Capture(mem_length/1024, 3, 0);
-	}
+#if (CAPTURE_CHN_NUM == 2)
+	mem_length =  GetMemoryLength()*1024 / 2;  //KB
+	//some linux system libusb not supprt 16MB or 32MB large buffer, set the buffer small
+	mem_length = mem_length/4;
+	
+	if (buffer_ch1 != NULL)
+		delete[]buffer_ch1;
+	buffer_ch1 = new double[mem_length];
+
+	if (buffer_ch2 != NULL)
+		delete[]buffer_ch2;
+	buffer_ch2 = new double[mem_length];
+
+	if((buffer_ch1!=NULL)&&(buffer_ch2!=NULL))
+		NextCapture();
 	else
 		std::cout << "new menory failed!" << std::endl;
+#else
+	mem_length =  GetMemoryLength()*1024;  //KB
+	if (buffer_ch1 != NULL)
+		delete[]buffer_ch1;
+	buffer_ch1 = new double[mem_length];
+
+	if(buffer_ch1!=NULL)
+		NextCapture();
+	else
+		std::cout << "new menory failed!" << std::endl;
+#endif
 }
 
 void CALLBACK DevNoticeRemoveCallBack(void* ppara)
 {
      std::cout << "DevNoticeRemoveCallBack\n";
-	 runing = false;
+	 /*runing = false;
 	sample_num = 0;
 	if (sample != NULL)
 	{
@@ -62,7 +150,7 @@ void CALLBACK DevNoticeRemoveCallBack(void* ppara)
 	{
 		delete[]buffer;
 		buffer = NULL;
-	}
+	}*/
 }
 
 int main()
@@ -74,27 +162,19 @@ int main()
 	SetDevNoticeCallBack(NULL, DevNoticeAddCallBack, DevNoticeRemoveCallBack);
 	SetDataReadyCallBack(NULL, DevDataReadyCallBack);
 	
-	while (runing)
+	while (true)
 	{
+#ifndef DATA_READ_CALLBACK_MODE
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         if(IsDevAvailable())
         {
             if (IsDataReady())
             {
-                unsigned int len = ReadVoltageDatas(0, buffer, mem_length);
-                
-				double minv=buffer[0];
-				double maxv=buffer[0];
-				for(unsigned int i=0; i<len; i++)
-				{
-					minv = buffer[i]<minv? buffer[i]:minv;
-					maxv = buffer[i]>maxv? buffer[i]:maxv;
-				}
-				std::cout << "ReadVoltageDatas " << len <<" minv " << minv << " maxv " << maxv << '\n';
-
-                Capture(mem_length / 1024, 3, 0);
+				ReadDatas();
+				NextCapture();
             }
         }
+#endif	
 	};
 
 	FinishDll();
