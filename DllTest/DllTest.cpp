@@ -56,7 +56,7 @@ void NextCapture()
 	//SetTriggerMode(0x01);  //TRIGGER_MODE_LIANXU 1
 	//SetTriggerStyle(0x01);  //TRIGGER_STYLE_RISE_EDGE
 	//SetTriggerSource(0x00);  //TRIGGER_SOURCE_CH1
-	SetTriggerLevel(500); //500mv
+	//SetTriggerLevel(500); //500mv
 	//SetPreTriggerPercent(75);
 
 	//std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -107,8 +107,10 @@ void CALLBACK DevNoticeAddCallBack(void* ppara)
 	//
 #if (CAPTURE_CHN_NUM == 2)
 	mem_length =  GetMemoryLength()*1024 / 2;  //KB
+#ifndef _WINDOWS_PLATFORM
 	//some linux system libusb not supprt 16MB or 32MB large buffer, set the buffer small
-	mem_length = mem_length/4;
+	mem_length = mem_length/16;
+#endif
 	
 	if (buffer_ch1 != NULL)
 		delete[]buffer_ch1;
@@ -124,6 +126,11 @@ void CALLBACK DevNoticeAddCallBack(void* ppara)
 		std::cout << "new menory failed!" << std::endl;
 #else
 	mem_length =  GetMemoryLength()*1024;  //KB
+#ifndef _WINDOWS_PLATFORM
+	//some linux system libusb not supprt 16MB or 32MB large buffer, set the buffer small
+	mem_length = mem_length/8;
+#endif
+
 	if (buffer_ch1 != NULL)
 		delete[]buffer_ch1;
 	buffer_ch1 = new double[mem_length];

@@ -37,6 +37,12 @@ DebugView is a DLL debugging information display tool.
 	a Demo written with Qt, test in windows and ubuntu linux
 	Note:To start Qt, please use sudo. This ensures that libusb can correctly detect the device
 	
+ 6,NetTest
+	Test platform: windows
+	Test tool: vs2022 
+	
+	a Demo written with C#, test in windows
+
 ######################linux######################
 
 1,install libsub

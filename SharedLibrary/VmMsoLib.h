@@ -915,6 +915,39 @@ DLL_API void WINAPI SetIOOutState(unsigned char channel, unsigned char state);
 ******************************************************************************************/
 DLL_API char WINAPI GetIOInState(unsigned char channel);
 
+/******************************************************************************************
+　　Description  This routines set dac enable or not
+　　Input:       channel	channel number
+				 enable		not enable 0
+							enable 1
+	Output:      -
+******************************************************************************************/
+DLL_API void WINAPI DACEnable(unsigned char channel, unsigned char enable);
+
+/******************************************************************************************
+　　Description  This routines get dac enable or not
+　　Input:       channel  channel number
+	Output:      not enable 0
+				 enable 1
+******************************************************************************************/
+DLL_API unsigned char WINAPI IsDACEnable(unsigned char channel);
+
+/******************************************************************************************
+　　Description  This routines set dac vol(mv)
+　　Input:       channel	channel number
+				 enable		not enable 0
+							enable 1
+	Output:      -
+******************************************************************************************/
+DLL_API void WINAPI SetDACmV(unsigned char channel, int vol_mv);
+
+/******************************************************************************************
+　　Description  This routines get dac vol(mv)
+　　Input:       channel  channel number
+	Output:      vol/mv
+******************************************************************************************/
+int GetDACmV(unsigned char channel_index);
+
 ///////////////////////////////////////////////////////////////////////////IO///////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////algorithm///////////////////////////////////////////////////////////////////////////
