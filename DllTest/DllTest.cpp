@@ -33,7 +33,8 @@ void ReadDatas()
 		minv = buffer_ch1[i]<minv? buffer_ch1[i]:minv;
 		maxv = buffer_ch1[i]>maxv? buffer_ch1[i]:maxv;
 	}
-	std::cout << "Channel 1 ReadVoltageDatas " << len <<" minv " << minv << " maxv " << maxv << '\n';
+	bool isoutrange = IsVoltageDatasOutRange(0);
+	std::cout << "Channel 1 isoutrange " <<  isoutrange << " ReadVoltageDatas " << len <<" minv " << minv << " maxv " << maxv << '\n';
 
 #if (CAPTURE_CHN_NUM == 2)
 	len = ReadVoltageDatas(1, buffer_ch2, mem_length);
@@ -45,7 +46,8 @@ void ReadDatas()
 		minv = buffer_ch2[i]<minv? buffer_ch2[i]:minv;
 		maxv = buffer_ch2[i]>maxv? buffer_ch2[i]:maxv;
 	}
-	std::cout << "Channel 2 ReadVoltageDatas " << len <<" minv " << minv << " maxv " << maxv << '\n';
+	isoutrange = IsVoltageDatasOutRange(1);
+	std::cout << "Channel 1 isoutrange " <<  isoutrange << " ReadVoltageDatas " << len <<" minv " << minv << " maxv " << maxv << '\n';
 #endif
 }
 
@@ -56,7 +58,7 @@ void NextCapture()
 	//SetTriggerMode(0x01);  //TRIGGER_MODE_LIANXU 1
 	//SetTriggerStyle(0x01);  //TRIGGER_STYLE_RISE_EDGE
 	//SetTriggerSource(0x00);  //TRIGGER_SOURCE_CH1
-	//SetTriggerLevel(500); //500mv
+	SetTriggerLevel(500); //500mv
 	//SetPreTriggerPercent(75);
 
 	//std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -80,6 +82,11 @@ void CALLBACK DevDataReadyCallBack(void* ppara)
 void CALLBACK DevNoticeAddCallBack(void* ppara)
 {
     std::cout << "DevNoticeAddCallBack\n";
+
+	//
+	SetOscChannelRange(0, -10000, 10000);
+	SetOscChannelRange(1, -10000, 10000);
+
 	//sample
 	int sample_num = GetOscSupportSampleNum();
 	if (sample != NULL)
@@ -107,10 +114,6 @@ void CALLBACK DevNoticeAddCallBack(void* ppara)
 	//
 #if (CAPTURE_CHN_NUM == 2)
 	mem_length =  GetMemoryLength()*1024 / 2;  //KB
-#ifndef _WINDOWS_PLATFORM
-	//some linux system libusb not supprt 16MB or 32MB large buffer, set the buffer small
-	mem_length = mem_length/16;
-#endif
 	
 	if (buffer_ch1 != NULL)
 		delete[]buffer_ch1;
@@ -126,10 +129,6 @@ void CALLBACK DevNoticeAddCallBack(void* ppara)
 		std::cout << "new menory failed!" << std::endl;
 #else
 	mem_length =  GetMemoryLength()*1024;  //KB
-#ifndef _WINDOWS_PLATFORM
-	//some linux system libusb not supprt 16MB or 32MB large buffer, set the buffer small
-	mem_length = mem_length/8;
-#endif
 
 	if (buffer_ch1 != NULL)
 		delete[]buffer_ch1;
