@@ -23,6 +23,30 @@ namespace ConsoleApp
         extern static int IsDataReady();
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        extern static int IsSupportDDSDevice();
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        extern static int GetDDSSupportBoxingStyle(int[] style);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        extern static void SetDDSOutMode(byte channel_index, int out_mode);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        extern static void SetDDSBoxingStyle(byte channel_index, int boxing);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        extern static void SetDDSPinlv(byte channel_index, int pinlv);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        extern static int GetDDSCurBoxingAmplitudeMv(int boxing);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        extern static void SetDDSAmplitudeMv(byte channel_index, int amplitdude);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        extern static void SetDDSBiasMv(byte channel_index, int bias);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
         extern static int GetOscSupportSampleNum();
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
@@ -38,16 +62,16 @@ namespace ConsoleApp
         extern static int GetMemoryLength();
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
-        extern static int ReadVoltageDatas(char channel, double[] buffer, int length);
+        extern static int ReadVoltageDatas(byte channel, double[] buffer, int length);
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
-        extern static int Capture(int length, short capture_channel, char force_length);
+        extern static int Capture(int length, short capture_channel, byte force_length);
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
         extern static double  CalFreq(double[] buffer, int buffer_length, double voltage_resolution, int sample);
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
-        extern static double GetVoltageResolution(char channel);
+        extern static double GetVoltageResolution(byte channel);
 
         public delegate void AddCallBackDelegate(IntPtr ppara); //声明委托
         public delegate void RemoveCallBackDelegate(IntPtr ppara); //声明委托
@@ -60,7 +84,29 @@ namespace ConsoleApp
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
         static extern void SetDataReadyCallBack(IntPtr ppara, DataReadyCallBack datacallback);
 
-        // 回调函数  
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern int IsSupportIODevice();
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern int GetSupportIoNumber();
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern void SetIOInOut(byte channel, byte inout);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern void SetIOOutState(byte channel, byte state);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern  void IOEnable(byte channel, byte enable);
+
+        public delegate void IOStateCallBack(IntPtr ppara, int state); //声明委托
+        // 接口定义  
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern void SetIOReadStateCallBack(IntPtr ppara, IOStateCallBack datacallback);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // 回调函数  
         public static void AddCallBackFunc(IntPtr ppara)
         {
             Console.WriteLine("AddCallBackFunc");
@@ -74,6 +120,11 @@ namespace ConsoleApp
         public static void DataReadyCallBackFunc(IntPtr ppara)
         {
             Console.WriteLine("DataReadyCallBackFunc");
+        }
+
+        public static void IOStateCallBackFunc(IntPtr ppara, int state)
+        {
+            Console.WriteLine("IOStateCallBack state %x \n", state);
         }
 
         public static void Main(string[] args)
@@ -99,6 +150,58 @@ namespace ConsoleApp
                 }
                 Console.WriteLine("Device Connected");
 
+                //DDS
+                if (IsSupportDDSDevice()>0)
+                {
+                    byte channel = 0;
+                    int num = GetDDSSupportBoxingStyle(null);
+                    int[] style = new int[num];
+                    if (GetDDSSupportBoxingStyle(style)>0)
+                    {
+                        Console.WriteLine("DDS Support Boxing Style \n");
+                        for (int i = 0; i < num; i++)
+                            Console.WriteLine("%x\n", style[i]);
+                    }
+                    SetDDSOutMode(channel, 0x00);
+                    int boxing = 0x0001;
+                    SetDDSBoxingStyle(channel, boxing);
+                    SetDDSPinlv(channel, 1000);
+                    //get max ampl mv
+                    int max_ampl_mv = GetDDSCurBoxingAmplitudeMv(boxing);
+                    //set dds ampl
+                    SetDDSAmplitudeMv(channel, max_ampl_mv / 2);
+                    SetDDSBiasMv(channel, 0);
+
+                    Console.WriteLine("DDS0 is started!\n");
+                }
+
+                //IOs
+                if (IsSupportIODevice()>0)
+                {
+                    Console.WriteLine("IO Number %d \n" , GetSupportIoNumber());
+                    SetIOReadStateCallBack(para_temp, IOStateCallBackFunc);
+
+                    //IO0 IO1 IO2 IO3 set output
+                    SetIOInOut(0, 1);
+                    SetIOInOut(1, 1);
+                    SetIOInOut(2, 1);
+                    SetIOInOut(3, 1);
+                    SetIOOutState(0, 0);
+                    SetIOOutState(1, 1);
+                    SetIOOutState(2, 0);
+                    SetIOOutState(3, 1);
+                    //IO4 IO5 IO6 IO7 set input
+                    SetIOInOut(4, 0);
+                    SetIOInOut(5, 0);
+                    SetIOInOut(6, 0);
+                    SetIOInOut(7, 0);
+
+                    for (byte i = 0; i < 8; i++)
+                        IOEnable(i, 1);
+
+                    Console.WriteLine("IO is started!\n");
+                }
+
                 //sample
                 int sample_num = GetOscSupportSampleNum();
                 int[] sample = new int[sample_num];
@@ -114,14 +217,14 @@ namespace ConsoleApp
                 if (buffer != null)
                 {
                     Thread.Sleep(500);
-                    Capture(mem_length / 1024, 3, (char)0);
+                    Capture(mem_length / 1024, 3, 0);
 
                     while (IsDevAvailable() == 1)
                     {
                         Thread.Sleep(1000); //延时1s
                         if (IsDataReady() > 0)
                         {
-                            int len = ReadVoltageDatas((char)0, buffer, mem_length);
+                            int len = ReadVoltageDatas(0, buffer, mem_length);
 
                             double minv = buffer[0];
                             double maxv = buffer[0];
@@ -131,11 +234,11 @@ namespace ConsoleApp
                                 maxv = buffer[i] > maxv ? buffer[i] : maxv;
                             }
 
-                            double freq = CalFreq(buffer, len, GetVoltageResolution((char)0), GetOscSample());
+                            double freq = CalFreq(buffer, len, GetVoltageResolution(0), GetOscSample());
 
                             Console.WriteLine($"ReadVoltageDatas {len} minv {minv} maxv {maxv} freq {freq}");
 
-                            Capture(mem_length / 1024, 3, (char)0);
+                            Capture(mem_length / 1024, 3, 0);
                         }
                     };
                 }

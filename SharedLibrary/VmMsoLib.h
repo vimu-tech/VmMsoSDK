@@ -20,7 +20,7 @@
 #endif
 
 /*************************************************
-　　V1.3  20230820
+　　V1.5  20240315
 *************************************************/
 
 //////////////////////////////////////////////////////////////////////Initialization/Finished Dll//////////////////////////////////////////////////////////////////
@@ -471,6 +471,13 @@ DLL_API int WINAPI IsDataReady();
 DLL_API unsigned int WINAPI ReadVoltageDatas(char channel, double* buffer, unsigned int length);
 
 /******************************************************************************************
+	Description  This routines read the trigger location where the data collected
+	Input:
+	Output     Return the trigger point
+******************************************************************************************/
+DLL_API unsigned int WINAPI ReadVoltageDatasTriggerPoint();
+
+/******************************************************************************************
 Description  This routines return the voltage datas is out range or not.
 	Input:     channel     read channel	0 :channel 1
 　　									1 :channel 2
@@ -499,6 +506,14 @@ DLL_API double WINAPI GetVoltageResolution(char channel);
 	Output     Return value the read length
 ******************************************************************************************/
 DLL_API unsigned int WINAPI ReadLogicDatas(unsigned char* buffer, unsigned int length);
+
+
+/******************************************************************************************
+	Description  This routines read the trigger location where the data collected
+	Input:     
+	Output     Return the trigger point
+******************************************************************************************/
+DLL_API unsigned int WINAPI ReadLogicDatasTriggerPoint();
 
 //******************************************Read Data***********************************************
 
@@ -701,6 +716,91 @@ DLL_API void WINAPI SetDDSSweepTime(unsigned char channel_index, unsigned long l
 　　Output:     time/ns
 ******************************************************************************************/
 DLL_API unsigned long long int WINAPI GetDDSSweepTime(unsigned char channel_index);
+
+/******************************************************************************************
+　　Description  This routines set dds burst style
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+				style   0--n loops
+						1--gate
+　　Output:      -
+******************************************************************************************/
+DLL_API void WINAPI SetDDSBurstStyle(unsigned char channel_index, int style);
+
+/******************************************************************************************
+　　Description  This routines get dds burst style
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+　　Output:     style   0--n loops
+						1--gate
+******************************************************************************************/
+DLL_API int WINAPI GetDDSBurstStyle(unsigned char channel_index);
+
+/******************************************************************************************
+　　Description  This routines set dds loops num
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+				num 
+　　Output:      -
+******************************************************************************************/
+DLL_API void WINAPI SetDDSLoopsNum(unsigned char channel_index, unsigned long long int num);
+
+/******************************************************************************************
+　　Description  This routines get dds loops num
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+　　Output:     num
+******************************************************************************************/
+DLL_API unsigned long long int WINAPI GetDDSLoopsNum(unsigned char channel_index);
+
+/******************************************************************************************
+　　Description  This routines set dds loops num infinity
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+				en 
+　　Output:      -
+******************************************************************************************/
+DLL_API void WINAPI SetDDSLoopsNumInfinity(unsigned char channel_index, int en);
+/******************************************************************************************
+　　Description  This routines get dds loops num infinity
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+　　Output:    loops num infinity
+******************************************************************************************/
+DLL_API int WINAPI GetDDSLoopsNumInfinity(unsigned char channel_index);
+
+/******************************************************************************************
+　　Description  This routines set dds burst period(ns)
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+				ns 
+　　Output:      -
+******************************************************************************************/
+DLL_API void WINAPI SetDDSBurstPeriodNs(unsigned char channel_index, unsigned long long int ns);
+
+/******************************************************************************************
+　　Description  This routines get dds burst period(ns)
+	Input:      channel_index	0 :channel 1
+								1 :channel 2 
+　　Output:      ns
+******************************************************************************************/
+DLL_API unsigned long long int WINAPI GetDDSBurstPeriodNs(unsigned char channel_index);
+ 
+/******************************************************************************************
+　　Description  This routines set dds burst delay time(ns)
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+				ns 
+　　Output:      -
+******************************************************************************************/
+DLL_API void WINAPI SetDDSBurstDelayNs(unsigned char channel_index, unsigned long long int ns);
+/******************************************************************************************
+　　Description  This routines get dds burst delay time(ns)
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+　　Output:     ns
+******************************************************************************************/
+DLL_API unsigned long long int WINAPI GetDDSBurstDelayNs(unsigned char channel_index);
 
 
 #define DDS_TRIGGER_SOURCE_INTERNAL 0
@@ -910,8 +1010,11 @@ DLL_API void WINAPI SetIOOutState(unsigned char channel, unsigned char state);
 		If the SetIOReadStateCallBack setting callback function is used, IOReadStateCallBack will directly notify the IO input status; 
 		If you use SetIOReadStateReadyEvent and IsIOReadStateReady to read the query, you need to call GetIOState to get the IO input status
 　　Input:       channel  channel number
-	Output:      0 state
-				 1 state
+	Output:      state  0--0
+						1--1
+						2--z
+						3--pulse
+						4--dds gate
 ******************************************************************************************/
 DLL_API char WINAPI GetIOInState(unsigned char channel);
 

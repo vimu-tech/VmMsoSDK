@@ -616,6 +616,9 @@ void VmSimplePlot::updateDatas(int real_length, int sample/*QVariantList list*/)
         }
     }*/
 
+    unsigned int trigger_point = ReadVoltageDatasTriggerPoint();
+	qDebug() << "trigger_point " << trigger_point;
+
     qDebug()<<" real_length "<< real_length <<"sample "<<sample;
     int length_ch1 = ReadVoltageDatas(0, buffer_ch1, real_length);
     int length_ch2 = ReadVoltageDatas(1, buffer_ch2, real_length);

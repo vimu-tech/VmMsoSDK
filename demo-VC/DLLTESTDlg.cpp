@@ -908,6 +908,9 @@ void WINAPI CDLLTESTDlg::DataReadyCallBack(void* owner)
 
 LRESULT CDLLTESTDlg::OnDataUpdateMsg(WPARAM wParam, LPARAM lParam)
 {
+	unsigned int trigger_point = ReadVoltageDatasTriggerPoint();
+	TRACE("trigger_point = %d\n", trigger_point);
+
 	for(int channel=0; channel<2; channel++)
 	{
 		if ((!m_check_ch1.GetCheck()) && (channel == 0))

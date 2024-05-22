@@ -4,14 +4,105 @@
 #include "DllTest.h"
 #include "VmMsoLib.h"
 #include <thread>
+#include "arb.h"
 
-//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////DDS////////////////////////////////////////////////////////
+void DDSInit(unsigned char channel_index, unsigned int out_mode)
+{
+	if(IsSupportDDSDevice())
+	{
+		int num = GetDDSSupportBoxingStyle(NULL);
+		int* style = new int[num];
+		if(GetDDSSupportBoxingStyle(style))
+		{
+			std::cout << "DDS Support Boxing Style \n";  
+			for(int i=0; i<num; i++)
+				std::cout << std::hex << style[i] << "\n";  
+		}
+		std::cout << std::dec;
+		//unsigned int boxing = BX_SINE;
+		//SetDDSBoxingStyle(channel_index, boxing);
+
+		UpdateDDSArbBuffer(channel_index, arb, sizeof(arb));
+		unsigned int boxing = BX_ARB;
+		SetDDSBoxingStyle(channel_index, boxing);
+
+		if(out_mode==DDS_OUT_MODE_CONTINUOUS)
+		{
+			SetDDSPinlv(channel_index, 1000);
+		}
+		else if(out_mode==DDS_OUT_MODE_SWEEP)
+		{
+			SetDDSSweepStartFreq(channel_index, 1000);  //1K
+			SetDDSSweepStopFreq(channel_index, 100000); //100K
+			SetDDSSweepTime(channel_index, 10000000); //10ms
+		}
+		else
+		{
+			SetDDSBurstStyle(channel_index, 0); //nloops
+			SetDDSLoopsNum(channel_index, 1);  //1
+			SetDDSBurstPeriodNs(channel_index, 10000000); //10ms
+			SetDDSBurstDelayNs(channel_index, 0);
+
+		}
+		SetDDSOutMode(channel_index, out_mode);
+
+		//get max ampl mv
+		int max_ampl_mv = GetDDSCurBoxingAmplitudeMv(boxing);
+		//set dds ampl
+		SetDDSAmplitudeMv(channel_index, max_ampl_mv/2);
+		SetDDSBiasMv(channel_index, 0);
+
+		DDSOutputEnable(channel_index, 1);
+		std::cout << "DDS " << channel_index << "is started!\n";  
+		delete [] style;
+	}
+}
+//////////////////////////////////////////////DDS////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////IO/////////////////////////////////////////////////////////
+ void CALLBACK IOStateCallBack(void* ppara, unsigned int state)
+{
+	std::cout << "IOStateCallBack state  " << std::hex << state <<" \n";  
+}
+
+void IOInit()
+{
+	if(IsSupportIODevice())
+	{
+		std::cout << "IO Number " << GetSupportIoNumber() <<" \n";  
+		SetIOReadStateCallBack(NULL, IOStateCallBack);
+
+		//IO0 IO1 IO2 IO3 set output
+		SetIOInOut(0, 1);
+		SetIOInOut(1, 1);
+		SetIOInOut(2, 1);
+		SetIOInOut(3, 1);
+		SetIOOutState(0, 0);
+		SetIOOutState(1, 1);
+		SetIOOutState(2, 0);
+		SetIOOutState(3, 1);
+		//IO4 IO5 IO6 IO7 set input
+		SetIOInOut(4, 0);
+		SetIOInOut(5, 0);
+		SetIOInOut(6, 0);
+		SetIOInOut(7, 0);
+
+		for(int i=0; i<8; i++)
+			IOEnable(i, 1);
+
+		std::cout << "IO is started!\n";  
+	}
+}
+//////////////////////////////////////////////IO/////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////OSC////////////////////////////////////////////////////////
 //caputer channel num 
 #define CAPTURE_CHN_NUM 2
 //using callback read datas ?
 #define DATA_READ_CALLBACK_MODE 1
 
-//////////////////////////////////////////////////////////////////
+/////////////////////////////////////
 //bool runing = true;
 int sample_num = 0;
 unsigned int* sample = NULL;
@@ -24,6 +115,9 @@ double* buffer_ch2 = NULL;
 
 void ReadDatas()
 {
+	unsigned int trigger_point = ReadVoltageDatasTriggerPoint();
+	std::cout << std::dec << "trigger_point " << trigger_point << '\n';
+	
 	unsigned int len = ReadVoltageDatas(0, buffer_ch1, mem_length);
                 
 	double minv=buffer_ch1[0];
@@ -79,10 +173,19 @@ void CALLBACK DevDataReadyCallBack(void* ppara)
 #endif	
 }
 
+//////////////////////////////////////////////OSC////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////Device////////////////////////////////////////////////////////
 void CALLBACK DevNoticeAddCallBack(void* ppara)
 {
     std::cout << "DevNoticeAddCallBack\n";
 
+	//DDS
+	DDSInit(0, DDS_OUT_MODE_BURST);  //DDS_OUT_MODE_CONTINUOUS DDS_OUT_MODE_SWEEP   DDS_OUT_MODE_BURST
+	
+	//IOs
+	IOInit();
+	
 	//
 	SetOscChannelRange(0, -10000, 10000);
 	SetOscChannelRange(1, -10000, 10000);
@@ -158,6 +261,7 @@ void CALLBACK DevNoticeRemoveCallBack(void* ppara)
 		buffer = NULL;
 	}*/
 }
+//////////////////////////////////////////////Device////////////////////////////////////////////////////////
 
 int main()
 {
@@ -165,9 +269,11 @@ int main()
 
 	InitDll(1, 1);
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+	//OSC
 	SetDevNoticeCallBack(NULL, DevNoticeAddCallBack, DevNoticeRemoveCallBack);
 	SetDataReadyCallBack(NULL, DevDataReadyCallBack);
-	
+
 	while (true)
 	{
 #ifndef DATA_READ_CALLBACK_MODE
