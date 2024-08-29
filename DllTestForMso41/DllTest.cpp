@@ -109,9 +109,6 @@ void ReadDatas()
 {
 	unsigned int trigger_point = ReadVoltageDatasTriggerPoint();
 	std::cout << std::dec << "trigger_point " << trigger_point << '\n';
-	
-	unsigned int trigger_point = ReadVoltageDatasTriggerPoint();
-	std::cout << std::dec << "trigger_point " << trigger_point << '\n';
 
 	unsigned int len = ReadVoltageDatas(0, buffer_ch1, mem_length);             
 	double minv=buffer_ch1[0];

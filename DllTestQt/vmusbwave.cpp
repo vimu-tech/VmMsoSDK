@@ -46,8 +46,8 @@ void CALLBACK VmUsbWave::UsbDevAddCallBack(void* ppara)
     vmusbwave->m_captureLength = GetMemoryLength();
     //为了刷新速度，demo使用最大1M，可以根据需求修改
     //For the refresh speed, the demo uses a maximum of 1M, which can be modified according to needs
-    if(vmusbwave->m_captureLength>1024*2)
-        vmusbwave->m_captureLength = 1024*2;
+    if(vmusbwave->m_captureLength>1024*4)
+        vmusbwave->m_captureLength = 1024*4;
 
     vmusbwave->m_sample = GetOscSample();
 

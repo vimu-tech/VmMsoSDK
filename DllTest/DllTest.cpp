@@ -4,7 +4,6 @@
 #include "DllTest.h"
 #include "VmMsoLib.h"
 #include <thread>
-#include "arb.h"
 
 //////////////////////////////////////////////DDS////////////////////////////////////////////////////////
 void DDSInit(unsigned char channel_index, unsigned int out_mode)
@@ -19,12 +18,7 @@ void DDSInit(unsigned char channel_index, unsigned int out_mode)
 			for(int i=0; i<num; i++)
 				std::cout << std::hex << style[i] << "\n";  
 		}
-		std::cout << std::dec;
-		//unsigned int boxing = BX_SINE;
-		//SetDDSBoxingStyle(channel_index, boxing);
-
-		UpdateDDSArbBuffer(channel_index, arb, sizeof(arb));
-		unsigned int boxing = BX_ARB;
+		unsigned int boxing = BX_SINE;
 		SetDDSBoxingStyle(channel_index, boxing);
 
 		if(out_mode==DDS_OUT_MODE_CONTINUOUS)
@@ -117,7 +111,7 @@ void ReadDatas()
 {
 	unsigned int trigger_point = ReadVoltageDatasTriggerPoint();
 	std::cout << std::dec << "trigger_point " << trigger_point << '\n';
-	
+
 	unsigned int len = ReadVoltageDatas(0, buffer_ch1, mem_length);
                 
 	double minv=buffer_ch1[0];
@@ -181,7 +175,7 @@ void CALLBACK DevNoticeAddCallBack(void* ppara)
     std::cout << "DevNoticeAddCallBack\n";
 
 	//DDS
-	DDSInit(0, DDS_OUT_MODE_BURST);  //DDS_OUT_MODE_CONTINUOUS DDS_OUT_MODE_SWEEP   DDS_OUT_MODE_BURST
+	DDSInit(0, DDS_OUT_MODE_CONTINUOUS);  // DDS_OUT_MODE_SWEEP   DDS_OUT_MODE_BURST
 	
 	//IOs
 	IOInit();
