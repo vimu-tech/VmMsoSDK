@@ -1061,10 +1061,15 @@ int GetDACmV(unsigned char channel_index);
 				 voltage_resolution		using the GetVoltageResolution to get 
 				 sample		the sample of setting
 	Output:      freq
-	example:	double freq = CalFreq(m_buffer, m_real_length, GetVoltageResolution(channel), GetOscSample());
+	example:	if(CalFreq(m_buffer, m_real_length, GetVoltageResolution(channel), GetOscSample()))
+				{
+					double freq = GetFreq();
+					double phase = GetPhase();
+				}
 ******************************************************************************************/
-DLL_API double WINAPI CalFreq(double* buffer, unsigned int buffer_length, double voltage_resolution, unsigned int sample);
-
+DLL_API int WINAPI CalFreq(double* buffer, unsigned int buffer_length, double voltage_resolution, unsigned int sample);
+DLL_API double WINAPI GetFreq();
+DLL_API double WINAPI GetPhase();
 ///////////////////////////////////////////////////////////////////////////algorithm///////////////////////////////////////////////////////////////////////////
 
 #endif

@@ -93,10 +93,13 @@ source_group(src FILES ${ALL_SOURCES})
 #qt
 add_custom_target(files SOURCES ${ALL_INCLUDE} ${ALL_SOURCES})
 
-link_directories( ../SharedLibrary/${CMAKE_SYSTEM_NAME}/${PLAT_DIR}/Release)
+link_directories( ../SharedLibrary/${HOST}/${PLAT_DIR}/Release)
 if (CMAKE_SYSTEM_NAME MATCHES "Linux") 
     link_directories( ${LIB_USB_DIR}/lib )
 endif ()
+get_directory_property(result LINK_DIRECTORIES)
+message("LINK_DIRECTORIES: ${result}")
+
 
 # 将源代码添加到此项目的可执行文件。
 add_executable (${PROJECT_NAME} ${ALL_INCLUDE} ${ALL_SOURCES})

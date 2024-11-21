@@ -1,11 +1,13 @@
 import ctypes
+import time
+
 #from ctypes import CDLL ## for 64bit code
 #from ctypes import WinDLL
 from ctypes import *
 
 import os
 ## python 64bit load this
-os.add_dll_directory("D:\VmMsoSDK\SharedLibrary\Windows\X64\Release")
+os.add_dll_directory("O:\VmMsoSDK\SharedLibrary\Windows\X64\Release")
 #os.environ["PATH"] += ";D:\VmMsoSDK\windows\Dll\X64"
 ## python 32bit load this
 #os.add_dll_directory("D:\github-SDK\windows\Dll\Win32")
@@ -67,8 +69,12 @@ fGetOscSupportSamples = mdll.GetOscSupportSamples
 fGetOscSupportSamples.restype = ctypes.c_int
 
 ## set sample
-fSetOscSupportSamples = mdll.SetOscSample
-fSetOscSupportSamples.restype = ctypes.c_uint
+fSetOscSample = mdll.SetOscSample
+fSetOscSample.restype = ctypes.c_uint
+
+## get sample
+fGetOscSample = mdll.GetOscSample
+fGetOscSample.restype = ctypes.c_uint
 ############################ Oscilloscope ##############################
 
 ############################ Capture ##############################
@@ -91,7 +97,21 @@ fReadVoltageDatas = mdll.ReadVoltageDatas
 fReadVoltageDatas.restype = ctypes.c_uint
 ############################ Read Data ##############################
 
+############################ CalFreq ##############################
+fGetVoltageResolution = mdll.GetVoltageResolution
+fGetVoltageResolution.restype = ctypes.c_double
 
+fCalFreq = mdll.CalFreq
+#fCalFreq.argtypes = [ctype.c_void_p, ctypes.c_uint, ctypes.c_double, ctypes.c_uint]
+fCalFreq.restype = ctypes.c_uint
+
+fGetFreq = mdll.GetFreq
+fGetFreq.restype = ctypes.c_double
+
+fGetPhase = mdll.GetPhase
+fGetPhase.restype = ctypes.c_double
+
+############################ CalFreq ##############################
 
 
 
@@ -106,6 +126,7 @@ def DevDataReadyCallBack_func(p):
     totallength = fGetMemoryLength()*1024;
     arraytypedouble = ctypes.c_double * totallength
     datas = arraytypedouble()
+    
     num = fReadVoltageDatas(ctypes.c_char(0), datas, totallength);
     minv = datas[0];
     maxv = datas[0];
@@ -114,10 +135,36 @@ def DevDataReadyCallBack_func(p):
             minv = datas[index];
         if(datas[index]>maxv):
             maxv = datas[index];
-    print('## fReadVoltageDatas',num)
+    print('## CHannel 1 fReadVoltageDatas',num)
     print(' minv',minv)
     print(' maxv',maxv)
 
+    volres = fGetVoltageResolution(0);
+    sample = fGetOscSample();
+
+    if(fCalFreq(datas, num, ctypes.c_double(volres), sample)!=0):
+        print(' freq', fGetFreq());
+        print(' phase',fGetPhase());
+
+    num = fReadVoltageDatas(ctypes.c_char(1), datas, totallength);
+    minv = datas[0];
+    maxv = datas[0];
+    for index in range(num):
+        if(datas[index]<minv):
+            minv = datas[index];
+        if(datas[index]>maxv):
+            maxv = datas[index];
+    print('## CHannel 2 fReadVoltageDatas',num)
+    print(' minv',minv)
+    print(' maxv',maxv)
+
+    volres = fGetVoltageResolution(1);
+    sample = fGetOscSample();
+
+    if(fCalFreq(datas, num, ctypes.c_double(volres), sample)!=0):
+        print(' freq', fGetFreq());
+        print(' phase',fGetPhase());
+        
     #Next Capture
     length = fGetMemoryLength();
     fCapture(length, 3, 0);
@@ -152,7 +199,7 @@ def DevNoticeAddCallBack_func(p):
     for s in samples: 
         print(s)
         
-    fSetOscSupportSamples(samples[samplenum-1]);
+    fSetOscSample(samples[samplenum-1]);
     
     length = fGetMemoryLength();
     print ('## MemoryLength ', length*1024)
@@ -175,7 +222,9 @@ para = ctypes.c_void_p(1000)
 fSetDevNoticeCallBack(para, DevNoticeAddCallBack_func, DevNoticeRemoveCallBack_func)
 
 
-
+var = 1
+while var == 1 :
+    time.sleep(1000)
 
 
 
