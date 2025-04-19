@@ -20,7 +20,7 @@
 #endif
 
 /*************************************************
-　　V1.5  20240315
+　　V1.11  20250415
 *************************************************/
 
 //////////////////////////////////////////////////////////////////////Initialization/Finished Dll//////////////////////////////////////////////////////////////////
@@ -62,6 +62,15 @@ DLL_API unsigned int WINAPI GetOnlyId0();
   　　			Return only id(32-63)
 *************************************************/
 DLL_API unsigned int WINAPI GetOnlyId1();
+
+/*************************************************
+　　Description   Rescan Device
+	Input:       -
+  　Output:      -Rescan Status
+　　             Return value 1 Success
+　　	                      0 Failed
+   *************************************************/
+  DLL_API int WINAPI ScanDevice();
 
 /*************************************************
 　　Description   Reset Device
@@ -252,6 +261,8 @@ DLL_API void WINAPI SetTriggerPulseWidthNs(int down_ns, int up_ns);
 
 #define TRIGGER_SOURCE_CH1 0    //CH1		
 #define TRIGGER_SOURCE_CH2 1    //CH2
+#define TRIGGER_SOURCE_CH3 2    //CH3
+#define TRIGGER_SOURCE_CH4 3    //CH4
 #define TRIGGER_SOURCE_LOGIC0 16  //Logic 0
 #define TRIGGER_SOURCE_LOGIC1 17  //Logic 1
 #define TRIGGER_SOURCE_LOGIC2 18  //Logic 2
@@ -260,6 +271,14 @@ DLL_API void WINAPI SetTriggerPulseWidthNs(int down_ns, int up_ns);
 #define TRIGGER_SOURCE_LOGIC5 21  //Logic 5
 #define TRIGGER_SOURCE_LOGIC6 22  //Logic 6
 #define TRIGGER_SOURCE_LOGIC7 23  //Logic 7
+#define TRIGGER_SOURCE_LOGIC8 24  //Logic 8
+#define TRIGGER_SOURCE_LOGIC9 25  //Logic 9
+#define TRIGGER_SOURCE_LOGIC10 26  //Logic 10
+#define TRIGGER_SOURCE_LOGIC11 27  //Logic 11
+#define TRIGGER_SOURCE_LOGIC12 28  //Logic 12
+#define TRIGGER_SOURCE_LOGIC13 29  //Logic 13
+#define TRIGGER_SOURCE_LOGIC14 30  //Logic 14
+#define TRIGGER_SOURCE_LOGIC15 31  //Logic 15
 /**************************************Trigger Source***********************************************
 	Description  This routines get the trigger source.
 　　Input:      -
@@ -325,7 +344,10 @@ DLL_API void WINAPI SetTriggerSenseDiv(double sense, double y_scale);
 　　Input:      -
 　　Output     Return value 1 support
 							0 not support
-****************************************Trigger Sense*******************************************/
+****************************************Trigger Percent*******************************************/
+/*
+Note: Need using the ReadVoltageDatasTriggerPoint to get the real trigger point
+*/
 DLL_API bool WINAPI IsSupportPreTriggerPercent();
 /**************************************Pre-trigger Percent***********************************************
     Description  This routines get the Pre-trigger Percent.
@@ -459,16 +481,46 @@ DLL_API int WINAPI IsDataReady();
 //******************************************Data Ready***********************************************
 
 
-//******************************************Read Data***********************************************
+//******************************************Read Voltage Data***********************************************
 /******************************************************************************************
 	Description  This routines read the voltage datas. (V)
-    Input:      channel     read channel  0 :channel 1
-　　                                   1 :channel 2
+    Input:      channel     read channel  	0 :channel 1
+　　                                   		1 :channel 2
+											2 :channel 3
+											3 :channel 4
 　　           buffer      the buffer to store voltage datas   
 　　           length      the buffer length
 	Output     Return value the read length
 ******************************************************************************************/
 DLL_API unsigned int WINAPI ReadVoltageDatas(char channel, double* buffer, unsigned int length);
+
+//******************************************Read ADC Data***********************************************
+/******************************************************************************************
+	Description  This routines read the adc datas, zoom and bias
+    Input:      channel     read channel  0 :channel 1
+　　                                   		1 :channel 2
+											2 :channel 3
+											3 :channel 4
+　　           buffer      the buffer to store adc datas   
+　　           length      the buffer length
+	Output     Return value the read length
+
+--------------------for 8bit adc:---------------------------
+double zoom, bias;
+unsigned char* buffer = new unsigned char[length];
+int readlength = ReadADCDatas(0, buffer, length, &zoom, &bias);
+for(int k=0; k<readlength; k++)
+	double voltage = buffer[k]*zoom+bias;
+
+--------------------for 12bit adc:---------------------------
+double zoom, bias;
+unsigned short* buffer = new unsigned short[length];
+int readlength = ReadADCDatas(0, (unsigned char)buffer, length, &zoom, &bias);
+for(int k=0; k<readlength; k++)
+	double voltage = buffer[k]*zoom+bias;
+
+******************************************************************************************/
+DLL_API unsigned int WINAPI ReadADCDatas(char channel, unsigned char* buffer, unsigned int length, double* zoom, double* bias);
 
 /******************************************************************************************
 	Description  This routines read the trigger location where the data collected
@@ -1009,14 +1061,13 @@ DLL_API void WINAPI SetIOOutState(unsigned char channel, unsigned char state);
 　　Description  This routines get io state 
 		If the SetIOReadStateCallBack setting callback function is used, IOReadStateCallBack will directly notify the IO input status; 
 		If you use SetIOReadStateReadyEvent and IsIOReadStateReady to read the query, you need to call GetIOState to get the IO input status
-　　Input:       channel  channel number
 	Output:      state  0--0
 						1--1
 						2--z
 						3--pulse
 						4--dds gate
 ******************************************************************************************/
-DLL_API char WINAPI GetIOInState(unsigned char channel);
+DLL_API unsigned int WINAPI GetIOInState();
 
 /******************************************************************************************
 　　Description  This routines set dac enable or not
@@ -1049,9 +1100,12 @@ DLL_API void WINAPI SetDACmV(unsigned char channel, int vol_mv);
 　　Input:       channel  channel number
 	Output:      vol/mv
 ******************************************************************************************/
-int GetDACmV(unsigned char channel_index);
+DLL_API int WINAPI GetDACmV(unsigned char channel_index);
 
 ///////////////////////////////////////////////////////////////////////////IO///////////////////////////////////////////////////////////////////////////
+
+//自定义命令
+DLL_API void WINAPI SetSelfCmd(int channel, int cmd);
 
 ///////////////////////////////////////////////////////////////////////////algorithm///////////////////////////////////////////////////////////////////////////
 /******************************************************************************************
@@ -1070,6 +1124,9 @@ int GetDACmV(unsigned char channel_index);
 DLL_API int WINAPI CalFreq(double* buffer, unsigned int buffer_length, double voltage_resolution, unsigned int sample);
 DLL_API double WINAPI GetFreq();
 DLL_API double WINAPI GetPhase();
+DLL_API double WINAPI GetPositiveDuty();
+DLL_API double WINAPI GetNegativeDuty();
+
 ///////////////////////////////////////////////////////////////////////////algorithm///////////////////////////////////////////////////////////////////////////
 
 #endif
