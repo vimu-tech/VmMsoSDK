@@ -1,11 +1,11 @@
-A.最新版的DLL采用VS2019编译，运行的电脑需要安装相应的动态库
-The latest version of the DLL is compiled with VS2019, and the running computer needs to install the corresponding dynamic library
-1，You can install our software and install VC2019 dynamic library automatically
+A.最新版的DLL采用VS2022编译，运行的电脑需要安装相应的动态库
+The latest version of the DLL is compiled with VS2022, and the running computer needs to install the corresponding dynamic library
+1，You can install our software and install VS2022 dynamic library automatically
 2，Download the address separately
-     下载地址/Download Address    www.instrustar.com\upload\software\VC2019runtime.zip
+     下载地址/Download Address    https://learn.microsoft.com/zh-cn/cpp/windows/latest-supported-vc-redist?view=msvc-170
 
-B. Modify the location of the DLL based on your system.  My is  'D:\SDK-github-push\Dll\X64\VDSO.dll'
+B. Modify the location of the DLL based on your system.  My is  'D:\SDK-github-push\Dll\X64\vmmos.dll'
 ## python 64bit load this
-mdll = ctypes.WinDLL('D:\SDK-github-push\Dll\X64\VDSO.dll')
+mdll = ctypes.WinDLL('D:\SDK-github-push\Dll\X64\vmmos.dll')
 ## python 32bit load this
-#mdll = ctypes.WinDLL('D:\SDK-github-push\Dll\Win32\VDSO.dll')
+#mdll = ctypes.WinDLL('D:\SDK-github-push\Dll\Win32\vmmos.dll')

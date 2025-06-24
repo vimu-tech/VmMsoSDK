@@ -116,6 +116,15 @@ DLL_API int WINAPI IsDevAvailable();
 
 
 ///////////////////////////////////////////////////////////////////////////Oscilloscope///////////////////////////////////////////////////////////////////////////
+/**************************************Device Capture range*************************************************
+	Description  This routines set the range of input signal.
+　　Output     Return value 
+							minmv     the minimum voltage of the input signal (mV)
+              		 		maxmv     the maximum voltage of the input signal (mV)
+*************************************************************************************************/
+DLL_API int WINAPI GetOscRangeMin();
+DLL_API int WINAPI GetOscRangeMax();
+
 /**************************************Capture range*************************************************
 	Description  This routines set the range of input signal.
 　　Input:      channel     the set channel 
@@ -279,6 +288,24 @@ DLL_API void WINAPI SetTriggerPulseWidthNs(int down_ns, int up_ns);
 #define TRIGGER_SOURCE_LOGIC13 29  //Logic 13
 #define TRIGGER_SOURCE_LOGIC14 30  //Logic 14
 #define TRIGGER_SOURCE_LOGIC15 31  //Logic 15
+#define TRIGGER_SOURCE_LOGIC16 32  //Logic 16
+#define TRIGGER_SOURCE_LOGIC17 33  //Logic 17
+#define TRIGGER_SOURCE_LOGIC18 34  //Logic 18
+#define TRIGGER_SOURCE_LOGIC19 35  //Logic 19
+#define TRIGGER_SOURCE_LOGIC20 36  //Logic 20
+#define TRIGGER_SOURCE_LOGIC21 37  //Logic 21
+#define TRIGGER_SOURCE_LOGIC22 38  //Logic 22
+#define TRIGGER_SOURCE_LOGIC23 39  //Logic 23
+#define TRIGGER_SOURCE_LOGIC24 40  //Logic 24
+#define TRIGGER_SOURCE_LOGIC25 41  //Logic 25
+#define TRIGGER_SOURCE_LOGIC26 42  //Logic 26
+#define TRIGGER_SOURCE_LOGIC27 43  //Logic 27
+#define TRIGGER_SOURCE_LOGIC28 44  //Logic 28
+#define TRIGGER_SOURCE_LOGIC29 45  //Logic 29
+#define TRIGGER_SOURCE_LOGIC30 46  //Logic 30
+#define TRIGGER_SOURCE_LOGIC31 47  //Logic 31
+#define TRIGGER_SOURCE_OUT0 48  //OutOut
+
 /**************************************Trigger Source***********************************************
 	Description  This routines get the trigger source.
 　　Input:      -
@@ -520,7 +547,9 @@ for(int k=0; k<readlength; k++)
 	double voltage = buffer[k]*zoom+bias;
 
 ******************************************************************************************/
-DLL_API unsigned int WINAPI ReadADCDatas(char channel, unsigned char* buffer, unsigned int length, double* zoom, double* bias);
+DLL_API unsigned int WINAPI ReadADCDatas(char channel, unsigned char* buffer, unsigned int length);
+DLL_API double WINAPI ReadADCToVoltageZoom(char channel);
+DLL_API double WINAPI ReadADCToVoltageBias(char channel);
 
 /******************************************************************************************
 	Description  This routines read the trigger location where the data collected

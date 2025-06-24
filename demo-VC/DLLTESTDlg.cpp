@@ -543,7 +543,7 @@ void CDLLTESTDlg::OnBnClickedDllReconnectBtn()
 void WINAPI CDLLTESTDlg::UsbDevNoticeAddCallBack(void* ppara)
 {
 	CDLLTESTDlg *pthis=(CDLLTESTDlg*)ppara;
-	pthis->SendMessage(USBNOTICE_ADD_MSG, (WPARAM)(1), (LPARAM)(NULL)); 
+	pthis->PostMessage(USBNOTICE_ADD_MSG, (WPARAM)(1), (LPARAM)(NULL)); 
 }
 
 LRESULT CDLLTESTDlg::OnUsbNoticeAddMsg(WPARAM wParam, LPARAM lParam)
@@ -804,7 +804,7 @@ LRESULT CDLLTESTDlg::OnUsbNoticeAddMsg(WPARAM wParam, LPARAM lParam)
 void WINAPI CDLLTESTDlg::UsbDevNoticeRemoveCallBack(void* ppara)
 {
 	CDLLTESTDlg *pthis=(CDLLTESTDlg*)ppara;
-	pthis->SendMessage(USBNOTICE_REMOVE_MSG, (WPARAM)(1), (LPARAM)(NULL)); 
+	pthis->PostMessage(USBNOTICE_REMOVE_MSG, (WPARAM)(1), (LPARAM)(NULL));
 }
 
 LRESULT CDLLTESTDlg::OnUsbNoticeRemoveMsg(WPARAM wParam, LPARAM lParam)
@@ -903,7 +903,7 @@ CString CDLLTESTDlg::ValueStr(double maxv, double minv)
 void WINAPI CDLLTESTDlg::DataReadyCallBack(void* owner)
 {
 	CDLLTESTDlg *pthis=(CDLLTESTDlg*)owner;
-	pthis->SendMessage(DATASUPDATE_MSG, (WPARAM)(0), (LPARAM)(0));
+	pthis->PostMessage(DATASUPDATE_MSG, (WPARAM)(0), (LPARAM)(0));
 }
 
 LRESULT CDLLTESTDlg::OnDataUpdateMsg(WPARAM wParam, LPARAM lParam)
@@ -932,9 +932,10 @@ LRESULT CDLLTESTDlg::OnDataUpdateMsg(WPARAM wParam, LPARAM lParam)
 		//TRACE("%d min=%0.3f max=%0.3f\n", channel, min, max);
 
 		//
-		double freq = CalFreq(m_buffer, m_real_length, GetVoltageResolution(channel), GetOscSample());
-		TRACE("%d freq=%0.3f \n", channel, freq);
-
+		if (CalFreq(m_buffer, m_real_length, GetVoltageResolution(channel), GetOscSample()))
+		{
+			TRACE("%d freq = %0.3f start phase = %0.3f\n", channel, GetFreq(), GetPhase());
+		}
 
 		bool addline=false;
 		if(!m_plot.HaveLine(CH_NAME[channel]))
@@ -1518,7 +1519,7 @@ void CDLLTESTDlg::OnCbnSelchangeComOutIo7()
 void WINAPI CDLLTESTDlg::IOReadStateCallBack(void* owner, unsigned int state)
 {
 	CDLLTESTDlg* pthis = (CDLLTESTDlg*)owner;
-	pthis->SendMessage(IO_STATE_MSG, (WPARAM)(0), (LPARAM)(state));
+	pthis->PostMessage(IO_STATE_MSG, (WPARAM)(0), (LPARAM)(state));
 }
 
 LRESULT CDLLTESTDlg::OnIoUpdateMsg(WPARAM wParam, LPARAM lParam)
