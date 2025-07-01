@@ -271,11 +271,12 @@ int main()
 	std::cout << "Vdso Test..." << std::endl;
 
 	InitDll(1, 1);
-	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
 	//OSC
 	SetDevNoticeCallBack(NULL, DevNoticeAddCallBack, DevNoticeRemoveCallBack);
 	SetDataReadyCallBack(NULL, DevDataReadyCallBack);
+
+	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
 	while (true)
 	{
