@@ -1,11 +1,13 @@
 ﻿cmake_minimum_required(VERSION 3.16)
 
-project(DllTestQt VERSION 0.1 LANGUAGES CXX)
+project(DllTestQt VERSION 0.2 LANGUAGES CXX)
 
+set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 
     find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Quick Widgets REQUIRED)
     find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick Widgets REQUIRED)
@@ -13,6 +15,7 @@ if(QT_VERSION_MAJOR GREATER_EQUAL 6)
     find_package(Qt${QT_VERSION_MAJOR} COMPONENTS QuickControls2 REQUIRED)
 endif()
 
+#set(TS_FILES test_zh_CN.ts)
 
 #查询系统
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -75,56 +78,62 @@ INCLUDE_DIRECTORIES(
 
 #link directories
 link_directories( ${SHARED_LIB_SUBDIR}/$<$<CONFIG:Release>:Release>$<$<CONFIG:Debug>:Debug>)
-#link_directories( ${SHARED_LIB_SUBDIR}/Release)
 
 # collect sources and other files
-file(GLOB_RECURSE ALL_SOURCES "./*.cpp", "./plot/*.cpp")
-file(GLOB_RECURSE ALL_INCLUDE "./*.h", "./plot/*.h")
-#file(GLOB_RECURSE UI "src/*.ui")
-#file(GLOB_RECURSE QRC "res/*.qrc")
+set(ALL_SOURCES ./main.cpp
+    ./vmusbwave.cpp
+    ./plot/Axis.cpp
+    ./plot/PlotAxis.cpp
+    ./plot/PlotBasic.cpp
+    ./plot/PlotHelp.cpp
+    ./plot/SimplePlotBasic.cpp
+    ./plot/VmSimplePlot.cpp)
+
+set(ALL_INCLUDE ./vmusbwave.h
+    ./plot/Axis.h
+    ./plot/PlotAxis.h
+    ./plot/PlotBasic.h
+    ./plot/PlotHelp.h
+    ./plot/SimplePlotBasic.h
+    ./plot/VmSimplePlot.h)
 
 # 对inc src的源码分组到组里
 #vs
-source_group(inc FILES ${ALL_INCLUDE})
-source_group(src FILES ${ALL_SOURCES})
-#qt
-add_custom_target(files SOURCES ${ALL_INCLUDE} ${ALL_SOURCES})
+#source_group(inc FILES ${ALL_INCLUDE})
+#source_group(src FILES ${ALL_SOURCES})
 
-# Resources:
-#set(SOURCES main.cpp)
-qt_add_resources(ALL_SOURCES vmmso.qrc)
-
-#qt_add_resources(my_app "app_images"
-#    PREFIX "/"
-#    FILES
-#        images/copy.png
-#        images/cut.png
-#)
+set(PROJECT_SOURCES
+    ${ALL_INCLUDE}
+    ${ALL_SOURCES}
+    vmmso.qrc
+#    ${TS_FILES}
+)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(${PROJECT_NAME}
         MANUAL_FINALIZATION
-        ${ALL_INCLUDE}
-        ${ALL_SOURCES}
+        ${PROJECT_SOURCES}
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET qt5test APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
 # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
+
+#    qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 else()
     if(ANDROID)
         add_library(${PROJECT_NAME} SHARED
-            ${ALL_INCLUDE}
-            ${ALL_SOURCES}
+            ${PROJECT_SOURCES}
         )
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
         add_executable(${PROJECT_NAME}
-          ${ALL_INCLUDE}
-          ${ALL_SOURCES}
+            ${PROJECT_SOURCES}
         )
     endif()
+
+#   qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 endif()
 
 
@@ -132,12 +141,6 @@ if(QT_VERSION_MAJOR EQUAL 6)
     qt_import_qml_plugins(${PROJECT_NAME})
     qt_finalize_executable(${PROJECT_NAME})
 endif()
-
-
-#qt_add_qml_module(${PROJECT_NAME}
-#    URI VMMSO
-#   VERSION 1.0
-#)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER www.vimu.top

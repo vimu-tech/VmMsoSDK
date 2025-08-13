@@ -200,6 +200,9 @@ CDLLTESTDlg::CDLLTESTDlg(CWnd* pParent /*=NULL*/)
 
 	for (int k = 0; k < 4096; k++)
 		sinc4096[k] = sinc8192[k * 2];
+
+	//初始化Dll
+	InitDll(EN_LOG, EN_WATCHDOG);
 }
 
 
@@ -459,11 +462,11 @@ BOOL CDLLTESTDlg::OnInitDialog()
 
 	UpdateData(FALSE);
 
-	//初始化Dll
-	InitDll(EN_LOG, EN_WATCHDOG);
+	
 	SetDevNoticeCallBack(this, UsbDevNoticeAddCallBack, UsbDevNoticeRemoveCallBack);
 	SetDataReadyCallBack(this, DataReadyCallBack);
 	SetIOReadStateCallBack(this, IOReadStateCallBack);
+	ScanDevice();
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -562,12 +565,12 @@ LRESULT CDLLTESTDlg::OnUsbNoticeAddMsg(WPARAM wParam, LPARAM lParam)
 	////////////////////////////////////////////////////////////////
 	m_plot.SetTimeAxisRange(0,m_slider_time.GetRealValue()*10,FALSE,TRUE);
 
-	sample_num=GetOscSupportSampleNum();
+	sample_num=GetOscSupportSampleRateNum();
 	if(samples!=NULL)
 		delete samples;
 	samples=new unsigned int[sample_num];
-	GetOscSupportSamples(samples,sample_num);
-	m_sample = GetOscSample();
+	GetOscSupportSampleRates(samples,sample_num);
+	m_sample = GetOscSampleRate();
 
 	m_samples_combox.ResetContent();
 	CString temp;
@@ -640,7 +643,7 @@ LRESULT CDLLTESTDlg::OnUsbNoticeAddMsg(WPARAM wParam, LPARAM lParam)
 	unsigned int chufa_source=GetTriggerSource();
 	m_trigger_source.SetCurSel(chufa_source);
 
-	m_trigger_level=GetTriggerLevel();
+	m_trigger_level=GetTriggerLevelmV();
 
 	//SetPreTriggerPercent(5);
 	//////////////////////////////////////////////////////////////////
@@ -932,7 +935,7 @@ LRESULT CDLLTESTDlg::OnDataUpdateMsg(WPARAM wParam, LPARAM lParam)
 		//TRACE("%d min=%0.3f max=%0.3f\n", channel, min, max);
 
 		//
-		if (CalFreq(m_buffer, m_real_length, GetVoltageResolution(channel), GetOscSample()))
+		if (CalFreq(m_buffer, m_real_length, GetVoltageResolution(channel), GetOscSampleRate()))
 		{
 			TRACE("%d freq = %0.3f start phase = %0.3f\n", channel, GetFreq(), GetPhase());
 		}
@@ -1027,7 +1030,7 @@ void CDLLTESTDlg::LeftDisplayZoomCtrl(bool start)
 	m_plot.GetYLeftRange(&y_min,&y_max);
 	if (start||((y_min != m_left_range_min) || (y_max != m_left_range_max)))
 	{
-		SetOscChannelRange(0, y_min, y_max);
+		SetOscChannelRangemV(0, y_min*1000, y_max * 1000);
 		m_left_range_min = y_min;
 		m_left_range_max = y_max;
 	}
@@ -1040,7 +1043,7 @@ void CDLLTESTDlg::RightDisplayZoomCtrl(bool start)
 	m_plot.GetYRightRange(&y_min,&y_max);
 	if (start||((m_right_range_min != y_min) || (m_right_range_max != y_max)))
 	{
-		SetOscChannelRange(1, y_min, y_max);
+		SetOscChannelRangemV(1, y_min * 1000, y_max * 1000);
 		m_right_range_min = y_min;
 		m_right_range_max = y_max;
 	}
@@ -1051,7 +1054,7 @@ void CDLLTESTDlg::OnCbnSelchangeComboSamples()
 	if(samples!=NULL)
 	{
 		m_sample=samples[m_samples_combox.GetCurSel()];
-		SetOscSample(m_sample); 
+		SetOscSampleRate(m_sample);
 	}
 }
 
@@ -1119,7 +1122,10 @@ void CDLLTESTDlg::OnCbnSelchangeTriggerSource()
 void CDLLTESTDlg::OnEnChangeTriggerLevel()
 {
 	UpdateData(TRUE);
-	SetTriggerLevel(m_trigger_level);
+	if (GetTriggerSource() == TRIGGER_SOURCE_CH1)
+		SetTriggerLevelmV(m_trigger_level, (m_left_range_max - m_left_range_min) * 1000 / 10.0 / 5.0);
+	else if (GetTriggerSource() == TRIGGER_SOURCE_CH2)
+		SetTriggerLevelmV(m_trigger_level, (m_right_range_max - m_right_range_min) * 1000 / 10.0 / 5.0);
 }
 
 void CDLLTESTDlg::OnBnClickedCheckCapture()

@@ -20,7 +20,7 @@
 #endif
 
 /*************************************************
-　　V1.11  20250415
+　　V1.20 20250813
 *************************************************/
 
 //////////////////////////////////////////////////////////////////////Initialization/Finished Dll//////////////////////////////////////////////////////////////////
@@ -122,8 +122,8 @@ DLL_API int WINAPI IsDevAvailable();
 							minmv     the minimum voltage of the input signal (mV)
               		 		maxmv     the maximum voltage of the input signal (mV)
 *************************************************************************************************/
-DLL_API int WINAPI GetOscRangeMin();
-DLL_API int WINAPI GetOscRangeMax();
+DLL_API int WINAPI GetOscRangeMinmV();
+DLL_API int WINAPI GetOscRangeMaxmV();
 
 /**************************************Capture range*************************************************
 	Description  This routines set the range of input signal.
@@ -135,36 +135,36 @@ DLL_API int WINAPI GetOscRangeMax();
 　　Output     Return value 1 Success
 　　	                    0 Failed
 *************************************************************************************************/
-DLL_API int WINAPI SetOscChannelRange(int channel, int minmv, int maxmv);
+DLL_API int WINAPI SetOscChannelRangemV(int channel, int minmv, int maxmv);
 
-/**************************************Support Sample Number********************************************
+/**************************************Support Sample Rate Number********************************************
 	Description  This routines get the number of samples that the equipment support.
 　　Input:		-               
 	Output		Return value	the sample number
 *************************************************************************************************/
-DLL_API int WINAPI GetOscSupportSampleNum();
+DLL_API int WINAPI GetOscSupportSampleRateNum();
 
-/**************************************Support Sample********************************************
+/**************************************Support Sample Rate********************************************
 	Description  This routines get support samples of equipment.
 　　Input:		sample			the array store the support samples of the equipment
 				maxnum			the length of the array               
 	Output		Return value	the sample number of array stored
 *************************************************************************************************/
-DLL_API int WINAPI GetOscSupportSamples(unsigned int* sample, int maxnum);
+DLL_API int WINAPI GetOscSupportSampleRates(unsigned int* sample, int maxnum);
 
-/**************************************Sample*****************************************************
+/**************************************Sample Rate*****************************************************
 	Description  This routines get the sample.
 　　Input:      
 　　Output      Return value sample
 *************************************************************************************************/
-DLL_API unsigned int WINAPI GetOscSample();
-/**************************************Sample*****************************************************
+DLL_API unsigned int WINAPI GetOscSampleRate();
+/**************************************Sample Rate*****************************************************
 	Description  This routines set the sample.
 　　Input:      sample       the set sample
 　　Output      Return value 0 Failed
 							 other value new sample					 
 *************************************************************************************************/
-DLL_API unsigned int WINAPI SetOscSample(unsigned int sample);
+DLL_API unsigned int WINAPI SetOscSampleRate(unsigned int sample);
 
 
 /**************************************Hardware Trigger********************************************
@@ -331,39 +331,26 @@ DLL_API void WINAPI SetTriggerSource(unsigned int source);
 
 
 /**************************************Trigger level***********************************************
+    Description  This routines set the trigger level.
+　　Input:      level (mV) 
+				sense (mV) 
+    Output     -
+*************************************************************************************************/
+DLL_API void WINAPI SetTriggerLevelmV(int level_mv, int sense_mv);
+
+/**************************************Trigger level***********************************************
     Description  This routines get the trigger level.
 　　Input:      -
 　　Output     Return value  level (mV)
 *************************************************************************************************/
-DLL_API int WINAPI GetTriggerLevel();
-/**************************************Trigger level***********************************************
-    Description  This routines set the trigger level.
-　　Input:      level (mV)
-    Output     -
-*************************************************************************************************/
-DLL_API void WINAPI SetTriggerLevel(int level);
+DLL_API int WINAPI GetTriggerLevelmV();
 
-
-/**************************************Trigger Sense********************************************
-	Description  This routines get the equipment support trigger sense or not .
-　　Input:      -
-　　Output     Return value 1 support
-							0 not support
-****************************************Trigger Sense*******************************************/
-DLL_API int WINAPI IsSupportTriggerSense();
 /**************************************Trigger Sense***********************************************
     Description  This routines get the trigger Sense.
 　　Input:      -
-　　Output     Return value  Sense (0-1 div)
+　　Output     Return value  Sense (mv)
 *************************************************************************************************/
-DLL_API double WINAPI GetTriggerSenseDiv();
-/**************************************Trigger Sense***********************************************
-    Description  This routines set the trigger Sense.
-　　Input:      Sense (0-1div)
-    Output     -
-*************************************************************************************************/
-DLL_API void WINAPI SetTriggerSenseDiv(double sense, double y_scale);
-
+DLL_API int WINAPI GetTriggerSensemV();
 
 //
 /**************************************Pre-trigger Percent 预触发比例********************************************
@@ -1003,6 +990,13 @@ DLL_API void WINAPI DDSOutputEnable(unsigned char channel_index, int enable);
 ******************************************************************************************/
 DLL_API int WINAPI IsDDSOutputEnable(unsigned char channel_index);
 
+/******************************************************************************************
+　　Description  This routines synchronized multiple devices 
+	Input:      
+　　Output:      -
+******************************************************************************************/
+DLL_API void WINAPI DDSMultSyn();
+
 ///////////////////////////////////////////////////////////////////////////DDS///////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////IO///////////////////////////////////////////////////////////////////////////
@@ -1082,9 +1076,26 @@ DLL_API unsigned char WINAPI GetIOInOut(unsigned char channel);
 /******************************************************************************************
 　　Description  This routines set io state
 　　Input:       channel  channel number
-	Output:       state 0 or 1
+	Output:       state  0--0
+						1--1
+						2--z
+						3--pulse
+						4--dds gate
 ******************************************************************************************/
 DLL_API void WINAPI SetIOOutState(unsigned char channel, unsigned char state);
+
+/******************************************************************************************
+　　Description  This routines set auto read thread io in state time interval
+    Input:      ms  the time min is 100ms
+******************************************************************************************/
+DLL_API void WINAPI SendAutoReadIOInTimeMs(unsigned int ms);
+
+/******************************************************************************************
+　　Description  This routines send read hardware io cmd
+
+Note:When sent and the hardware has returned, IsIOReadStateReady returns true
+******************************************************************************************/
+DLL_API unsigned int WINAPI SendReadIOInStateCmd();
 
 /******************************************************************************************
 　　Description  This routines get io state 
@@ -1092,11 +1103,36 @@ DLL_API void WINAPI SetIOOutState(unsigned char channel, unsigned char state);
 		If you use SetIOReadStateReadyEvent and IsIOReadStateReady to read the query, you need to call GetIOState to get the IO input status
 	Output:      state  0--0
 						1--1
-						2--z
-						3--pulse
-						4--dds gate
 ******************************************************************************************/
 DLL_API unsigned int WINAPI GetIOInState();
+
+/******************************************************************************************
+　　Description  This routines set io pulse hz and duty 
+	Output:      hz  freq
+				 duty 5~95
+******************************************************************************************/
+DLL_API void WINAPI SetIOPulseData(unsigned char channel, double hz, double duty);
+
+/******************************************************************************************
+　　Description  This routines get io pulse hz 
+	Output:      hz  freq
+				 duty 5~95
+******************************************************************************************/
+DLL_API	double WINAPI GetIOPulseFreq(unsigned char channel);
+
+/******************************************************************************************
+　　Description  This routines get io pulse duty 
+	Output:      hz  freq
+				 duty 5~95
+******************************************************************************************/
+DLL_API	double WINAPI GetIOPulseDuty(unsigned char channel);
+
+/******************************************************************************************
+　　Description  This routines set io pulse syn output
+　　Input:     
+	Output:      -
+******************************************************************************************/
+DLL_API	void WINAPI SetIOPulseSyn();
 
 /******************************************************************************************
 　　Description  This routines set dac enable or not
@@ -1133,7 +1169,7 @@ DLL_API int WINAPI GetDACmV(unsigned char channel_index);
 
 ///////////////////////////////////////////////////////////////////////////IO///////////////////////////////////////////////////////////////////////////
 
-//自定义命令
+//Self define Cmd
 DLL_API void WINAPI SetSelfCmd(int channel, int cmd);
 
 ///////////////////////////////////////////////////////////////////////////algorithm///////////////////////////////////////////////////////////////////////////

@@ -1,4 +1,4 @@
-﻿#include <QtWidgets/QApplication>
+#include <QtWidgets/QApplication>
 #include <QQmlApplicationEngine>
 #include <QLocale>
 #include <QTranslator>
@@ -9,7 +9,7 @@
 #endif
 
 #include "vmusbwave.h"
-#include "VmSimplePlot.h"
+#include "plot/VmSimplePlot.h"
 
 int main(int argc, char *argv[])
 {

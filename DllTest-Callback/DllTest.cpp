@@ -122,7 +122,7 @@ void ReadDatas()
 	bool isoutrange = IsVoltageDatasOutRange(0);
 	double freq = 0;
 	double phase = 0;		
-	if(CalFreq(buffer_ch1, len, GetVoltageResolution(0), GetOscSample()))
+	if(CalFreq(buffer_ch1, len, GetVoltageResolution(0), GetOscSampleRate()))
 	{
 		freq = GetFreq();
 		phase = GetPhase();		
@@ -142,7 +142,7 @@ void ReadDatas()
 	isoutrange = IsVoltageDatasOutRange(1);
 	freq = 0;
 	phase = 0;	
-	if(CalFreq(buffer_ch2, len, GetVoltageResolution(1), GetOscSample()))
+	if(CalFreq(buffer_ch2, len, GetVoltageResolution(1), GetOscSampleRate()))
 	{
 		freq = GetFreq();
 		phase = GetPhase();		
@@ -158,7 +158,7 @@ void NextCapture()
 	//SetTriggerMode(0x01);  //TRIGGER_MODE_LIANXU 1
 	//SetTriggerStyle(0x01);  //TRIGGER_STYLE_RISE_EDGE
 	//SetTriggerSource(0x00);  //TRIGGER_SOURCE_CH1
-	SetTriggerLevel(500); //500mv
+	SetTriggerLevelmV(500, 50); //500mv
 	//SetPreTriggerPercent(75);
 
 	//std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -194,36 +194,36 @@ void CALLBACK DevNoticeAddCallBack(void* ppara)
 	IOInit();
 	
 	//
-	SetOscChannelRange(0, -10000, 10000);
-	SetOscChannelRange(1, -10000, 10000);
+    SetOscChannelRangemV(0, -10000, 10000);
+	SetOscChannelRangemV(1, -10000, 10000);
 
 	//sample
-	int sample_num = GetOscSupportSampleNum();
+	int sample_num = GetOscSupportSampleRateNum();
 	if (sample != NULL)
 	{
 		delete[]sample;
 		sample = NULL;
 	}
 	sample = new unsigned int[sample_num];
-	if (GetOscSupportSamples(sample, sample_num))
+	if (GetOscSupportSampleRates(sample, sample_num))
 	{
 		for (int i = 0; i < sample_num; i++)
 			std::cout << std::dec << sample[i] << '\n';
 		std::cout << std::endl;
 	}
-	SetOscSample(sample[sample_num-2]);
+	SetOscSampleRate(sample[sample_num-2]);
 
 	// setting up trigger
 	SetTriggerMode(0x00);  //TRIGGER_MODE_AUTO 0
 	//SetTriggerMode(0x01);  //TRIGGER_MODE_LIANXU 1
 	SetTriggerStyle(0x01);  //TRIGGER_STYLE_RISE_EDGE
 	SetTriggerSource(0x00);  //TRIGGER_SOURCE_CH1
-	SetTriggerLevel(500); //500mv
+	SetTriggerLevelmV(500, 50); //500mv
 	SetPreTriggerPercent(50);
 
 	//
 #if (CAPTURE_CHN_NUM == 2)
-	mem_length =  GetMemoryLength()*1024 / 2;  //KB
+	mem_length = GetMemoryLength()*1024 / 2;  //KB
 	
 	if (buffer_ch1 != NULL)
 		delete[]buffer_ch1;
@@ -275,13 +275,15 @@ int main()
 	std::cout << "Vdso Test..." << std::endl;
 
 	InitDll(1, 1);
-	
+
 	//OSC
 	SetDevNoticeCallBack(NULL, DevNoticeAddCallBack, DevNoticeRemoveCallBack);
 	SetDataReadyCallBack(NULL, DevDataReadyCallBack);
-	
+
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
-	
+
+	ScanDevice();
+
 	while (true)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));

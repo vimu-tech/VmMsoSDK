@@ -1,4 +1,4 @@
-﻿#include "vmusbwave.h"
+#include "vmusbwave.h"
 #include <QDebug>
 #include <thread>
 
@@ -45,22 +45,11 @@ void CALLBACK VmUsbWave::UsbDevAddCallBack(void* ppara)
 
     vmusbwave->m_captureLength = GetMemoryLength();
     //为了刷新速度，demo使用最大1M，可以根据需求修改
-    //For the refresh speed, the demo uses a maximum of 1M, which can be modified according to needs
+    //For the refresh speed, the demo uses a maximum of 4M, which can be modified according to needs
     if(vmusbwave->m_captureLength>1024*4)
         vmusbwave->m_captureLength = 1024*4;
 
-    vmusbwave->m_sample = GetOscSample();
-
-    /*if(vmusbwave->buffer_length!=vmusbwave->m_captureLength)
-    {
-        if(vmusbwave->buffer_ch1!=NULL)
-            delete [] vmusbwave->buffer_ch1;
-        vmusbwave->buffer_ch1 = new double[vmusbwave->m_captureLength*1024];
-        if(vmusbwave->buffer_ch2!=NULL)
-            delete [] vmusbwave->buffer_ch2;
-        vmusbwave->buffer_ch2 = new double[vmusbwave->m_captureLength*1024];
-        vmusbwave->buffer_length=vmusbwave->m_captureLength;
-    }*/
+    vmusbwave->m_sample = GetOscSampleRate();
     vmusbwave->setdevState(1);
     qInfo("UsbDevAddCallBack\n");
 }
@@ -87,23 +76,7 @@ void CALLBACK VmUsbWave::UsbDataReadyCallBack(void* ppara)
 
  void VmUsbWave::UsbDataProcess()
  {
-     /*int length_ch1 = ReadVoltageDatas(0, buffer_ch1, m_real_length);
-     int length_ch2 = ReadVoltageDatas(0, buffer_ch2, m_real_length);
-     //qDebug()<<"ReadVoltageDatas "<< length_ch1 <<" "<<length_ch2;
-     int outrange_ch1 = IsVoltageDatasOutRange(0);
-     int outrange_ch2 = IsVoltageDatasOutRange(1);
-     //qDebug()<<" is outrange "<< outrange_ch1 <<" "<<outrange_ch2;
-
-      //将采集点数换算成时间ns
-     double timelength = min(length_ch1,length_ch2)*1000000000.0/m_sample;
-
-     //qInfo() << buffer_ch1 << " " << length_ch1 << " " << buffer_ch2 << " " << length_ch2 << " " << timelength;
-     QVariantList list;
-     list << QVariant::fromValue(buffer_ch1) << length_ch1 << QVariant::fromValue(buffer_ch2) << length_ch2 << timelength;
-    */
-     emit updateDatas(m_real_length, m_sample);
-
-     //NextCapture();
+    emit updateDatas(m_real_length, m_sample);
  }
 
 void VmUsbWave::qmlcallcpp_style1()
@@ -114,6 +87,11 @@ void VmUsbWave::qmlcallcpp_style1()
 void VmUsbWave::qmlcallcpp_style2(const int8_t chn)
 {
     qDebug()<<"qmlcallcpp_style2";
+}
+
+void VmUsbWave::scanDevice()
+{
+    ScanDevice();
 }
 
 void VmUsbWave::resetDll()
@@ -137,9 +115,9 @@ void VmUsbWave::resetDevice()
 QStringList VmUsbWave::getsupportsamples()
 {
     m_support_samples.clear();
-    int num = GetOscSupportSampleNum();
+    int num = GetOscSupportSampleRateNum();
     unsigned int* samples = new unsigned int[num];
-    num = GetOscSupportSamples(samples, num);
+    num = GetOscSupportSampleRates(samples, num);
     if(num)
     {
         for(int i=0; i<num; i++)
@@ -152,7 +130,7 @@ QStringList VmUsbWave::getsupportsamples()
 void VmUsbWave::setsample(int s)
 {
     m_sample = s;
-    SetOscSample(m_sample);
+    SetOscSampleRate(m_sample);
     qDebug()<<"setsample " << s;
 }
 
@@ -195,7 +173,7 @@ void VmUsbWave::nextCapture()
         DisplayZoomCtrlCh1();
         DisplayZoomCtrlCh2();
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        //std::this_thread::sleep_for(std::chrono::milliseconds(200));
         m_real_length = Capture(m_captureLength, 0x03, 0);
         m_real_length *= 1024;  //转换成长度
     }
@@ -282,14 +260,17 @@ void VmUsbWave::setTriggerSource(int sr)
     }
 }
 
-int VmUsbWave::getTriggerLevel()
+int VmUsbWave::getTriggerLevelmV()
 {
-    return GetTriggerLevel();
+    return GetTriggerLevelmV();
 }
 
-void VmUsbWave::setTriggerLevel(int level)
+void VmUsbWave::setTriggerLevelmV(int level)
 {
-    SetTriggerLevel(level);
+    if(getTriggerSource()==TRIGGER_SOURCE_CH1)
+        SetTriggerLevelmV(level, (m_ch1_plot_range_max-m_ch1_plot_range_min)/10/5);
+    else
+        SetTriggerLevelmV(level, (m_ch2_plot_range_max-m_ch2_plot_range_min)/10/5);
 }
 
 void VmUsbWave::setPlotRangeCh1(QVariantList list)
@@ -317,7 +298,7 @@ void VmUsbWave::DisplayZoomCtrlCh1(bool start)
     if (start||((m_ch1_plot_range_min != m_ch1_range_min) || (m_ch1_plot_range_max != m_ch1_range_max)))
     {
         qInfo() << m_ch1_plot_range_min << " " << m_ch1_plot_range_max << " " << m_ch1_range_min << " " << m_ch1_range_max;
-        SetOscChannelRange(0, m_ch1_plot_range_min, m_ch1_plot_range_max);
+        SetOscChannelRangemV(0, m_ch1_plot_range_min*1000.0, m_ch1_plot_range_max*1000.0);
         m_ch1_range_min = m_ch1_plot_range_min;
         m_ch1_range_max = m_ch1_plot_range_max;
     }
@@ -328,7 +309,7 @@ void VmUsbWave::DisplayZoomCtrlCh2(bool start)
     if (start||((m_ch2_range_min != m_ch2_plot_range_min) || (m_ch2_range_max != m_ch2_plot_range_max)))
     {
         qInfo() << m_ch2_plot_range_min << " " << m_ch2_plot_range_max << " " << m_ch2_range_min << " " << m_ch2_range_max;
-        SetOscChannelRange(1, m_ch2_plot_range_min, m_ch2_plot_range_max);
+        SetOscChannelRangemV(1, m_ch2_plot_range_min*1000.0, m_ch2_plot_range_max*1000.0);
         m_ch2_range_min = m_ch2_plot_range_min;
         m_ch2_range_max = m_ch2_plot_range_max;
     }

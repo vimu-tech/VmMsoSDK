@@ -8,7 +8,7 @@ from ctypes import *
 
 import os
 ## python 64bit load this
-os.add_dll_directory("D:\VmMsoSDK\SharedLibrary\Windows\X64\Release")
+os.add_dll_directory("O:\MSO\library\SharedLibrary\Windows\X64\Release")
 #os.environ["PATH"] += ";D:\VmMsoSDK\windows\Dll\X64"
 ## python 32bit load this
 #os.add_dll_directory("D:\github-SDK\windows\Dll\Win32")
@@ -39,6 +39,9 @@ fGetOnlyId1.restype = ctypes.c_uint
 ## reset device
 fResetDevice = mdll.ResetDevice
 fResetDevice.restype = ctypes.c_int
+## Scan device
+fScanDevice = mdll.ScanDevice
+fScanDevice.restype = ctypes.c_int
 ############################ Device ##############################
 
 ############################ USB status ##############################
@@ -52,9 +55,9 @@ fIsDevAvailable.restype = ctypes.c_int
 
 ############################ Oscilloscope ##############################
 ## capture range set
-fSetOscChannelRange = mdll.SetOscChannelRange
-fSetOscChannelRange.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int]
-fSetOscChannelRange.restype = ctypes.c_int
+fSetOscChannelRangemV = mdll.SetOscChannelRangemV
+fSetOscChannelRangemV.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int]
+fSetOscChannelRangemV.restype = ctypes.c_int
 
 ## get coupling mode
 fGetAcDc = mdll.GetAcDc
@@ -62,23 +65,23 @@ fGetAcDc.argtypes = [ctypes.c_uint]
 fGetAcDc.restype = ctypes.c_int
 
 ## get sample num
-fGetOscSupportSampleNum = mdll.GetOscSupportSampleNum
-fGetOscSupportSampleNum.restype = ctypes.c_int
+fGetOscSupportSampleRateNum = mdll.GetOscSupportSampleRateNum
+fGetOscSupportSampleRateNum.restype = ctypes.c_int
 
 ## get support sample num
-fGetOscSupportSamples = mdll.GetOscSupportSamples
-fGetOscSupportSamples.restype = ctypes.c_int
+fGetOscSupportSampleRates = mdll.GetOscSupportSampleRates
+fGetOscSupportSampleRates.restype = ctypes.c_int
 
 ## set sample
-fSetOscSample = mdll.SetOscSample
-fSetOscSample.restype = ctypes.c_uint
+fSetOscSampleRate = mdll.SetOscSampleRate
+fSetOscSampleRate.restype = ctypes.c_uint
 
 ## get sample
-fGetOscSample = mdll.GetOscSample
-fGetOscSample.restype = ctypes.c_uint
+fGetOscSampleRate = mdll.GetOscSampleRate
+fGetOscSampleRate.restype = ctypes.c_uint
 
-fSetTriggerLevel = mdll.SetTriggerLevel
-fSetTriggerLevel.restype = None
+fSetTriggerLevelmV = mdll.SetTriggerLevelmV
+fSetTriggerLevelmV.restype = None
 
 fSetPreTriggerPercent = mdll.SetPreTriggerPercent
 fSetPreTriggerPercent.restype = None
@@ -128,6 +131,342 @@ fGetVoltageResolution.restype = ctypes.c_double
 
 ############################ Read Data ##############################
 
+
+#################################### DDS ###############################
+# IsSupportDDSDevice
+fIsSupportDDSDevice = mdll.IsSupportDDSDevice
+fIsSupportDDSDevice.argtypes = []
+fIsSupportDDSDevice.restype = ctypes.c_int
+
+# GetDDSDepth
+fGetDDSDepth = mdll.GetDDSDepth
+fGetDDSDepth.argtypes = []
+fGetDDSDepth.restype = ctypes.c_int
+
+# SetDDSOutMode
+fSetDDSOutMode = mdll.SetDDSOutMode
+fSetDDSOutMode.argtypes = [ctypes.c_ubyte, ctypes.c_uint]
+fSetDDSOutMode.restype = None
+
+# GetDDSOutMode
+fGetDDSOutMode = mdll.GetDDSOutMode
+fGetDDSOutMode.argtypes = [ctypes.c_ubyte]
+fGetDDSOutMode.restype = ctypes.c_uint
+
+# GetDDSSupportBoxingStyle
+fGetDDSSupportBoxingStyle = mdll.GetDDSSupportBoxingStyle
+fGetDDSSupportBoxingStyle.argtypes = [ctypes.POINTER(ctypes.c_int)]
+fGetDDSSupportBoxingStyle.restype = ctypes.c_int
+
+# SetDDSBoxingStyle
+fSetDDSBoxingStyle = mdll.SetDDSBoxingStyle
+fSetDDSBoxingStyle.argtypes = [ctypes.c_ubyte, ctypes.c_uint]
+fSetDDSBoxingStyle.restype = None
+
+# UpdateDDSArbBuffer
+fUpdateDDSArbBuffer = mdll.UpdateDDSArbBuffer
+fUpdateDDSArbBuffer.argtypes = [ctypes.c_ubyte, ctypes.POINTER(ctypes.c_ushort), ctypes.c_uint]
+fUpdateDDSArbBuffer.restype = None
+
+# SetDDSPinlv
+fSetDDSPinlv = mdll.SetDDSPinlv
+fSetDDSPinlv.argtypes = [ctypes.c_ubyte, ctypes.c_uint]
+fSetDDSPinlv.restype = None
+
+# SetDDSDutyCycle
+fSetDDSDutyCycle = mdll.SetDDSDutyCycle
+fSetDDSDutyCycle.argtypes = [ctypes.c_ubyte, ctypes.c_int]
+fSetDDSDutyCycle.restype = None
+
+# GetDDSCurBoxingAmplitudeMv
+fGetDDSCurBoxingAmplitudeMv = mdll.GetDDSCurBoxingAmplitudeMv
+fGetDDSCurBoxingAmplitudeMv.argtypes = [ctypes.c_uint]
+fGetDDSCurBoxingAmplitudeMv.restype = ctypes.c_int
+
+# SetDDSAmplitudeMv
+fSetDDSAmplitudeMv = mdll.SetDDSAmplitudeMv
+fSetDDSAmplitudeMv.argtypes = [ctypes.c_ubyte, ctypes.c_int]
+fSetDDSAmplitudeMv.restype = None
+
+# GetDDSAmplitudeMv
+fGetDDSAmplitudeMv = mdll.GetDDSAmplitudeMv
+fGetDDSAmplitudeMv.argtypes = [ctypes.c_ubyte]
+fGetDDSAmplitudeMv.restype = ctypes.c_int
+
+# GetDDSCurBoxingBiasMvMin
+fGetDDSCurBoxingBiasMvMin = mdll.GetDDSCurBoxingBiasMvMin
+fGetDDSCurBoxingBiasMvMin.argtypes = [ctypes.c_uint]
+fGetDDSCurBoxingBiasMvMin.restype = ctypes.c_int
+
+# GetDDSCurBoxingBiasMvMax
+fGetDDSCurBoxingBiasMvMax = mdll.GetDDSCurBoxingBiasMvMax
+fGetDDSCurBoxingBiasMvMax.argtypes = [ctypes.c_uint]
+fGetDDSCurBoxingBiasMvMax.restype = ctypes.c_int
+
+# SetDDSBiasMv
+fSetDDSBiasMv = mdll.SetDDSBiasMv
+fSetDDSBiasMv.argtypes = [ctypes.c_ubyte, ctypes.c_int]
+fSetDDSBiasMv.restype = None
+
+# GetDDSBiasMv
+fGetDDSBiasMv = mdll.GetDDSBiasMv
+fGetDDSBiasMv.argtypes = [ctypes.c_ubyte]
+fGetDDSBiasMv.restype = ctypes.c_int
+
+# SetDDSSweepStartFreq
+fSetDDSSweepStartFreq = mdll.SetDDSSweepStartFreq
+fSetDDSSweepStartFreq.argtypes = [ctypes.c_ubyte, ctypes.c_double]
+fSetDDSSweepStartFreq.restype = None
+
+# GetDDSSweepStartFreq
+fGetDDSSweepStartFreq = mdll.GetDDSSweepStartFreq
+fGetDDSSweepStartFreq.argtypes = [ctypes.c_ubyte]
+fGetDDSSweepStartFreq.restype = ctypes.c_double
+
+# SetDDSSweepStopFreq
+fSetDDSSweepStopFreq = mdll.SetDDSSweepStopFreq
+fSetDDSSweepStopFreq.argtypes = [ctypes.c_ubyte, ctypes.c_double]
+fSetDDSSweepStopFreq.restype = None
+
+# GetDDSSweepStopFreq
+fGetDDSSweepStopFreq = mdll.GetDDSSweepStopFreq
+fGetDDSSweepStopFreq.argtypes = [ctypes.c_ubyte]
+fGetDDSSweepStopFreq.restype = ctypes.c_double
+
+# SetDDSSweepTime
+fSetDDSSweepTime = mdll.SetDDSSweepTime
+fSetDDSSweepTime.argtypes = [ctypes.c_ubyte, ctypes.c_ulonglong]
+fSetDDSSweepTime.restype = None
+
+# GetDDSSweepTime
+fGetDDSSweepTime = mdll.GetDDSSweepTime
+fGetDDSSweepTime.argtypes = [ctypes.c_ubyte]
+fGetDDSSweepTime.restype = ctypes.c_ulonglong
+
+# SetDDSBurstStyle
+fSetDDSBurstStyle = mdll.SetDDSBurstStyle
+fSetDDSBurstStyle.argtypes = [ctypes.c_ubyte, ctypes.c_int]
+fSetDDSBurstStyle.restype = None
+
+# GetDDSBurstStyle
+fGetDDSBurstStyle = mdll.GetDDSBurstStyle
+fGetDDSBurstStyle.argtypes = [ctypes.c_ubyte]
+fGetDDSBurstStyle.restype = ctypes.c_int
+
+# SetDDSLoopsNum
+fSetDDSLoopsNum = mdll.SetDDSLoopsNum
+fSetDDSLoopsNum.argtypes = [ctypes.c_ubyte, ctypes.c_ulonglong]
+fSetDDSLoopsNum.restype = None
+
+# GetDDSLoopsNum
+fGetDDSLoopsNum = mdll.GetDDSLoopsNum
+fGetDDSLoopsNum.argtypes = [ctypes.c_ubyte]
+fGetDDSLoopsNum.restype = ctypes.c_ulonglong
+
+# SetDDSLoopsNumInfinity
+fSetDDSLoopsNumInfinity = mdll.SetDDSLoopsNumInfinity
+fSetDDSLoopsNumInfinity.argtypes = [ctypes.c_ubyte, ctypes.c_int]
+fSetDDSLoopsNumInfinity.restype = None
+
+# GetDDSLoopsNumInfinity
+fGetDDSLoopsNumInfinity = mdll.GetDDSLoopsNumInfinity
+fGetDDSLoopsNumInfinity.argtypes = [ctypes.c_ubyte]
+fGetDDSLoopsNumInfinity.restype = ctypes.c_int
+
+# SetDDSBurstPeriodNs
+fSetDDSBurstPeriodNs = mdll.SetDDSBurstPeriodNs
+fSetDDSBurstPeriodNs.argtypes = [ctypes.c_ubyte, ctypes.c_ulonglong]
+fSetDDSBurstPeriodNs.restype = None
+
+# GetDDSBurstPeriodNs
+fGetDDSBurstPeriodNs = mdll.GetDDSBurstPeriodNs
+fGetDDSBurstPeriodNs.argtypes = [ctypes.c_ubyte]
+fGetDDSBurstPeriodNs.restype = ctypes.c_ulonglong
+
+# SetDDSBurstDelayNs
+fSetDDSBurstDelayNs = mdll.SetDDSBurstDelayNs
+fSetDDSBurstDelayNs.argtypes = [ctypes.c_ubyte, ctypes.c_ulonglong]
+fSetDDSBurstDelayNs.restype = None
+
+# GetDDSBurstDelayNs
+fGetDDSBurstDelayNs = mdll.GetDDSBurstDelayNs
+fGetDDSBurstDelayNs.argtypes = [ctypes.c_ubyte]
+fGetDDSBurstDelayNs.restype = ctypes.c_ulonglong
+
+# SetDDSTriggerSource
+fSetDDSTriggerSource = mdll.SetDDSTriggerSource
+fSetDDSTriggerSource.argtypes = [ctypes.c_ubyte, ctypes.c_uint]
+fSetDDSTriggerSource.restype = None
+
+# GetDDSTriggerSource
+fGetDDSTriggerSource = mdll.GetDDSTriggerSource
+fGetDDSTriggerSource.argtypes = [ctypes.c_ubyte]
+fGetDDSTriggerSource.restype = ctypes.c_uint
+
+# SetDDSTriggerSourceIo
+fSetDDSTriggerSourceIo = mdll.SetDDSTriggerSourceIo
+fSetDDSTriggerSourceIo.argtypes = [ctypes.c_ubyte, ctypes.c_uint]
+fSetDDSTriggerSourceIo.restype = None
+
+# GetDDSTriggerSourceIo
+fGetDDSTriggerSourceIo = mdll.GetDDSTriggerSourceIo
+fGetDDSTriggerSourceIo.argtypes = [ctypes.c_ubyte]
+fGetDDSTriggerSourceIo.restype = ctypes.c_uint
+
+# SetDDSTriggerSourceEnge
+fSetDDSTriggerSourceEnge = mdll.SetDDSTriggerSourceEnge
+fSetDDSTriggerSourceEnge.argtypes = [ctypes.c_ubyte, ctypes.c_uint]
+fSetDDSTriggerSourceEnge.restype = None
+
+# GetDDSTriggerSourceEnge
+fGetDDSTriggerSourceEnge = mdll.GetDDSTriggerSourceEnge
+fGetDDSTriggerSourceEnge.argtypes = [ctypes.c_ubyte]
+fGetDDSTriggerSourceEnge.restype = ctypes.c_uint
+
+# SetDDSOutputGateEnge
+fSetDDSOutputGateEnge = mdll.SetDDSOutputGateEnge
+fSetDDSOutputGateEnge.argtypes = [ctypes.c_ubyte, ctypes.c_uint]
+fSetDDSOutputGateEnge.restype = None
+
+# GetDDSOutputGateEnge
+fGetDDSOutputGateEnge = mdll.GetDDSOutputGateEnge
+fGetDDSOutputGateEnge.argtypes = [ctypes.c_ubyte]
+fGetDDSOutputGateEnge.restype = ctypes.c_uint
+
+# DDSManualTrigger
+fDDSManualTrigger = mdll.DDSManualTrigger
+fDDSManualTrigger.argtypes = [ctypes.c_ubyte]
+fDDSManualTrigger.restype = None
+
+# DDSOutputEnable
+fDDSOutputEnable = mdll.DDSOutputEnable
+fDDSOutputEnable.argtypes = [ctypes.c_ubyte, ctypes.c_int]
+fDDSOutputEnable.restype = None
+
+# IsDDSOutputEnable
+fIsDDSOutputEnable = mdll.IsDDSOutputEnable
+fIsDDSOutputEnable.argtypes = [ctypes.c_ubyte]
+fIsDDSOutputEnable.restype = ctypes.c_int
+
+# Define constants for easier use
+DDS_OUT_MODE_CONTINUOUS = 0x00
+DDS_OUT_MODE_SWEEP = 0x01
+DDS_OUT_MODE_BURST = 0x02
+
+BX_SINE = 0x0001
+BX_SQUARE = 0x0002
+BX_RAMP = 0x0004
+BX_PULSE = 0x0008
+BX_NOISE = 0x0010
+BX_DC = 0x0020
+BX_ARB = 0x0040
+
+DDS_TRIGGER_SOURCE_INTERNAL = 0
+DDS_TRIGGER_SOURCE_EXTERNAL = 1
+DDS_TRIGGER_SOURCE_MANUAL = 2
+
+DDS_ENGES_RISING = 0x00
+DDS_ENGES_FALLING = 0x01
+
+DDS_OUTPUT_ENGES_CLOSE = 0x00
+DDS_OUTPUT_ENGES_RISING = 0x01
+DDS_OUTPUT_ENGES_FALLING = 0x02
+############################ DDS ##############################
+
+############################ IO ##############################
+# IsSupportIODevice
+fIsSupportIODevice = mdll.IsSupportIODevice
+fIsSupportIODevice.argtypes = []
+fIsSupportIODevice.restype = ctypes.c_int
+
+# GetSupportIoNumber
+fGetSupportIoNumber = mdll.GetSupportIoNumber
+fGetSupportIoNumber.argtypes = []
+fGetSupportIoNumber.restype = ctypes.c_int
+
+# SetIOReadStateCallBack
+IOReadStateCallBack = ctypes.WINFUNCTYPE(None, ctypes.c_void_p, ctypes.c_uint)
+fSetIOReadStateCallBack = mdll.SetIOReadStateCallBack
+fSetIOReadStateCallBack.argtypes = [ctypes.c_void_p, IOReadStateCallBack]
+fSetIOReadStateCallBack.restype = None
+
+# SetIOReadStateReadyEvent (Windows only)
+if hasattr(ctypes, 'windll'):
+    fSetIOReadStateReadyEvent = mdll.SetIOReadStateReadyEvent
+    fSetIOReadStateReadyEvent.argtypes = [ctypes.c_void_p]  # HANDLE
+    fSetIOReadStateReadyEvent.restype = None
+
+# IsIOReadStateReady
+fIsIOReadStateReady = mdll.IsIOReadStateReady
+fIsIOReadStateReady.argtypes = []
+fIsIOReadStateReady.restype = ctypes.c_int
+
+# IOEnable
+fIOEnable = mdll.IOEnable
+fIOEnable.argtypes = [ctypes.c_ubyte, ctypes.c_ubyte]
+fIOEnable.restype = None
+
+# IsIOEnable
+fIsIOEnable = mdll.IsIOEnable
+fIsIOEnable.argtypes = [ctypes.c_ubyte]
+fIsIOEnable.restype = ctypes.c_ubyte
+
+# SetIOInOut
+fSetIOInOut = mdll.SetIOInOut
+fSetIOInOut.argtypes = [ctypes.c_ubyte, ctypes.c_ubyte]
+fSetIOInOut.restype = None
+
+# GetIOInOut
+fGetIOInOut = mdll.GetIOInOut
+fGetIOInOut.argtypes = [ctypes.c_ubyte]
+fGetIOInOut.restype = ctypes.c_ubyte
+
+# SetIOOutState
+fSetIOOutState = mdll.SetIOOutState
+fSetIOOutState.argtypes = [ctypes.c_ubyte, ctypes.c_ubyte]
+fSetIOOutState.restype = None
+
+# GetIOInState
+fGetIOInState = mdll.GetIOInState
+fGetIOInState.argtypes = []
+fGetIOInState.restype = ctypes.c_uint
+
+# DACEnable
+fDACEnable = mdll.DACEnable
+fDACEnable.argtypes = [ctypes.c_ubyte, ctypes.c_ubyte]
+fDACEnable.restype = None
+
+# IsDACEnable
+fIsDACEnable = mdll.IsDACEnable
+fIsDACEnable.argtypes = [ctypes.c_ubyte]
+fIsDACEnable.restype = ctypes.c_ubyte
+
+# SetDACmV
+fSetDACmV = mdll.SetDACmV
+fSetDACmV.argtypes = [ctypes.c_ubyte, ctypes.c_int]
+fSetDACmV.restype = None
+
+# GetDACmV
+fGetDACmV = mdll.GetDACmV
+fGetDACmV.argtypes = [ctypes.c_ubyte]
+fGetDACmV.restype = ctypes.c_int
+
+# Constants for IO states
+IO_STATE_LOW = 0
+IO_STATE_HIGH = 1
+IO_STATE_Z = 2
+IO_STATE_PULSE = 3
+IO_STATE_DDS_GATE = 4
+
+# Constants for direction
+IO_DIRECTION_IN = 0
+IO_DIRECTION_OUT = 1
+
+# Constants for enable/disable
+IO_DISABLE = 0
+IO_ENABLE = 1
+############################ IO ##############################
+
 ############################ CalFreq ##############################
 fGetVoltageResolution = mdll.GetVoltageResolution
 fGetVoltageResolution.restype = ctypes.c_double
@@ -170,7 +509,7 @@ def ReadDatas():
     isoutrange = fIsVoltageDatasOutRange(ctypes.c_char(0))
     freq = phase = 0
     
-    if fCalFreq(datas, len_ch1, ctypes.c_double(fGetVoltageResolution(ctypes.c_char(0))), fGetOscSample()):
+    if fCalFreq(datas, len_ch1, ctypes.c_double(fGetVoltageResolution(ctypes.c_char(0))), fGetOscSampleRate()):
         freq = fGetFreq()
         phase = fGetPhase()
     
@@ -186,7 +525,7 @@ def ReadDatas():
     isoutrange = fIsVoltageDatasOutRange(ctypes.c_char(1))
     freq = phase = 0
     
-    if fCalFreq(datas, len_ch2, ctypes.c_double(fGetVoltageResolution(ctypes.c_char(1))), fGetOscSample()):
+    if fCalFreq(datas, len_ch2, ctypes.c_double(fGetVoltageResolution(ctypes.c_char(1))), fGetOscSampleRate()):
         freq = fGetFreq()
         phase = fGetPhase()
     
@@ -201,6 +540,76 @@ def NextCapture():
     print(f"Capture {real_len * 1024}")
 
 
+################################################### DDS ###################################################
+def DDS_init(channel_index, out_mode):
+    if fIsSupportDDSDevice():
+        # Get supported boxing styles
+        num = fGetDDSSupportBoxingStyle(None)
+        if num > 0:
+            style = (ctypes.c_int * num)()
+            if fGetDDSSupportBoxingStyle(style):
+                print("DDS Support Boxing Style")
+                for i in range(num):
+                    print(hex(style[i]))
+        
+        boxing = BX_SINE
+        fSetDDSBoxingStyle(channel_index, boxing)
+
+        if out_mode == DDS_OUT_MODE_CONTINUOUS:
+            fSetDDSPinlv(channel_index, 1000)
+        elif out_mode == DDS_OUT_MODE_SWEEP:
+            fSetDDSSweepStartFreq(channel_index, 1000.0)  # 1K
+            fSetDDSSweepStopFreq(channel_index, 100000.0)  # 100K
+            fSetDDSSweepTime(channel_index, 10000000)  # 10ms
+        else:  # DDS_OUT_MODE_BURST
+            fSetDDSBurstStyle(channel_index, 0)  # nloops
+            fSetDDSLoopsNum(channel_index, 1)  # 1
+            fSetDDSBurstPeriodNs(channel_index, 10000000)  # 10ms
+            fSetDDSBurstDelayNs(channel_index, 0)
+
+        fSetDDSOutMode(channel_index, out_mode)
+
+        # Get max amplitude and set to half
+        max_ampl_mv = fGetDDSCurBoxingAmplitudeMv(boxing)
+        fSetDDSAmplitudeMv(channel_index, max_ampl_mv // 2)
+        fSetDDSBiasMv(channel_index, 0)
+
+        fDDSOutputEnable(channel_index, 1)
+        print(f"DDS {channel_index} is started!")
+################################################### DDS ###################################################
+
+################################################### IO ###################################################
+@ctypes.WINFUNCTYPE(ctypes.c_int, ctypes.c_void_p)
+def IOReadStateCallBack_func(p, state):
+    print(f"IOStateCallBack state {state:#x}")                           
+    return 0
+
+def IOInit():
+    if fIsSupportIODevice():
+        print(f"IO Number {fGetSupportIoNumber()}")
+
+        # IO0-IO3 set as output
+        for i in range(4):
+            fSetIOInOut(i, IO_DIRECTION_OUT)
+        
+        # Set output states
+        fSetIOOutState(0, IO_STATE_LOW)
+        fSetIOOutState(1, IO_STATE_HIGH)
+        fSetIOOutState(2, IO_STATE_LOW)
+        fSetIOOutState(3, IO_STATE_HIGH)
+
+        # IO4-IO7 set as input
+        for i in range(4, 8):
+            fSetIOInOut(i, IO_DIRECTION_IN)
+
+        # Enable all IO channels
+        for i in range(8):
+            fIOEnable(i, IO_ENABLE)
+
+        print("IO is started!")
+
+################################################### IO ###################################################
+
 def init_function():
     global mem_length, buffer_ch1, buffer_ch2, devAvailable, inited # 全局变量
 
@@ -208,18 +617,18 @@ def init_function():
 
     # OSC
     # set capture range
-    fSetOscChannelRange(0, -10000, 10000) 
-    fSetOscChannelRange(1, -10000, 10000)
+    fSetOscChannelRangemV(0, -10000, 10000) 
+    fSetOscChannelRangemV(1, -10000, 10000)
 
     # sample
-    sample_num = fGetOscSupportSampleNum();
+    sample_num = fGetOscSupportSampleRateNum();
     print ('## support sample number: ', sample_num)
     arraytype = ctypes.c_uint * sample_num
     samples = arraytype()
-    fGetOscSupportSamples(samples, sample_num)
+    fGetOscSupportSampleRates(samples, sample_num)
     for s in samples: 
         print(s)
-    fSetOscSample(samples[sample_num - 1]) 
+    fSetOscSampleRate(samples[sample_num - 1]) 
 
     # setting up trigger
     #define TRIGGER_MODE_AUTO 0
@@ -257,19 +666,101 @@ def init_function():
     #define TRIGGER_SOURCE_LOGIC14 30  //Logic 14
     #define TRIGGER_SOURCE_LOGIC15 31  //Logic 15
     fSetTriggerSource(0x00)  # TRIGGER_SOURCE_CH1
-    fSetTriggerLevel(500)  # 500mv
+    fSetTriggerLevelmV(500, 50)  # 500mv
     fSetPreTriggerPercent(50) 
 
     # memory
     mem_length = int(fGetMemoryLength() * 1024 // 2)  # KB，Python 用 // 整除
 
+    #DDS
+    DDS_init(0, DDS_OUT_MODE_CONTINUOUS)
+
+    #IO
+    para = ctypes.c_void_p(1000)
+    fSetIOReadStateCallBack(para, IOReadStateCallBack_func)
+    IOInit()
+
     # Capture
     NextCapture()  
+
+
+################################################### DDS ###################################################
+def DDS_init(channel_index, out_mode):
+    if fIsSupportDDSDevice():
+        # Get supported boxing styles
+        num = fGetDDSSupportBoxingStyle(None)
+        if num > 0:
+            style = (ctypes.c_int * num)()
+            if fGetDDSSupportBoxingStyle(style):
+                print("DDS Support Boxing Style")
+                for i in range(num):
+                    print(hex(style[i]))
+        
+        boxing = BX_SINE
+        fSetDDSBoxingStyle(channel_index, boxing)
+
+        if out_mode == DDS_OUT_MODE_CONTINUOUS:
+            fSetDDSPinlv(channel_index, 1000)
+        elif out_mode == DDS_OUT_MODE_SWEEP:
+            fSetDDSSweepStartFreq(channel_index, 1000.0)  # 1K
+            fSetDDSSweepStopFreq(channel_index, 100000.0)  # 100K
+            fSetDDSSweepTime(channel_index, 10000000)  # 10ms
+        else:  # DDS_OUT_MODE_BURST
+            fSetDDSBurstStyle(channel_index, 0)  # nloops
+            fSetDDSLoopsNum(channel_index, 1)  # 1
+            fSetDDSBurstPeriodNs(channel_index, 10000000)  # 10ms
+            fSetDDSBurstDelayNs(channel_index, 0)
+
+        fSetDDSOutMode(channel_index, out_mode)
+
+        # Get max amplitude and set to half
+        max_ampl_mv = fGetDDSCurBoxingAmplitudeMv(boxing)
+        fSetDDSAmplitudeMv(channel_index, max_ampl_mv // 2)
+        fSetDDSBiasMv(channel_index, 0)
+
+        fDDSOutputEnable(channel_index, 1)
+        print(f"DDS {channel_index} is started!")
+################################################### DDS ###################################################
+
+################################################### IO ###################################################
+@ctypes.WINFUNCTYPE(None, ctypes.c_void_p, ctypes.c_uint)
+def IOReadStateCallBack_func(p, state):
+    print(f"IOStateCallBack state {state:#x}")                           
+    return 0
+
+def IOInit():
+    if fIsSupportIODevice():
+        print(f"IO Number {fGetSupportIoNumber()}")
+
+        # IO0-IO3 set as output
+        for i in range(4):
+            fSetIOInOut(i, IO_DIRECTION_OUT)
+        
+        # Set output states
+        fSetIOOutState(0, IO_STATE_LOW)
+        fSetIOOutState(1, IO_STATE_HIGH)
+        fSetIOOutState(2, IO_STATE_LOW)
+        fSetIOOutState(3, IO_STATE_HIGH)
+
+        # IO4-IO7 set as input
+        for i in range(4, 8):
+            fSetIOInOut(i, IO_DIRECTION_IN)
+
+        # Enable all IO channels
+        for i in range(8):
+            fIOEnable(i, IO_ENABLE)
+
+        print("IO is started!")
+
+################################################### IO ###################################################
+
 
 
 ## init Dll
 print ('## Init Dll: ', fInitDll(1, 1))
 time.sleep(0.5)
+
+fScanDevice()
 
 while True:
     # 检查设备是否可用

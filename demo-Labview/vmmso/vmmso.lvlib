@@ -8,9 +8,11 @@
 	<Item Name="Capture.vi" Type="VI" URL="../VIs/Capture.vi"/>
 	<Item Name="DAC Enable.vi" Type="VI" URL="../VIs/DAC Enable.vi"/>
 	<Item Name="DDS Manual Trigger.vi" Type="VI" URL="../VIs/DDS Manual Trigger.vi"/>
+	<Item Name="DDS Mult Syn.vi" Type="VI" URL="../VIs/DDS Mult Syn.vi"/>
 	<Item Name="DDS Output Enable.vi" Type="VI" URL="../VIs/DDS Output Enable.vi"/>
 	<Item Name="Finish Dll.vi" Type="VI" URL="../VIs/Finish Dll.vi"/>
 	<Item Name="Get Ac Dc.vi" Type="VI" URL="../VIs/Get Ac Dc.vi"/>
+	<Item Name="Get DA Cm V.vi" Type="VI" URL="../VIs/Get DA Cm V.vi"/>
 	<Item Name="Get DDS Amplitude Mv.vi" Type="VI" URL="../VIs/Get DDS Amplitude Mv.vi"/>
 	<Item Name="Get DDS Bias Mv.vi" Type="VI" URL="../VIs/Get DDS Bias Mv.vi"/>
 	<Item Name="Get DDS Burst Delay Ns.vi" Type="VI" URL="../VIs/Get DDS Burst Delay Ns.vi"/>
@@ -31,23 +33,31 @@
 	<Item Name="Get DDS Trigger Source Enge.vi" Type="VI" URL="../VIs/Get DDS Trigger Source Enge.vi"/>
 	<Item Name="Get DDS Trigger Source Io.vi" Type="VI" URL="../VIs/Get DDS Trigger Source Io.vi"/>
 	<Item Name="Get DDS Trigger Source.vi" Type="VI" URL="../VIs/Get DDS Trigger Source.vi"/>
+	<Item Name="Get Freq.vi" Type="VI" URL="../VIs/Get Freq.vi"/>
 	<Item Name="Get IO In Out.vi" Type="VI" URL="../VIs/Get IO In Out.vi"/>
 	<Item Name="Get IO In State.vi" Type="VI" URL="../VIs/Get IO In State.vi"/>
+	<Item Name="Get IO Pulse Duty.vi" Type="VI" URL="../VIs/Get IO Pulse Duty.vi"/>
+	<Item Name="Get IO Pulse Freq.vi" Type="VI" URL="../VIs/Get IO Pulse Freq.vi"/>
 	<Item Name="Get Memory Length.vi" Type="VI" URL="../VIs/Get Memory Length.vi"/>
+	<Item Name="Get Negative Duty.vi" Type="VI" URL="../VIs/Get Negative Duty.vi"/>
 	<Item Name="Get Only Id0.vi" Type="VI" URL="../VIs/Get Only Id0.vi"/>
 	<Item Name="Get Only Id1.vi" Type="VI" URL="../VIs/Get Only Id1.vi"/>
-	<Item Name="Get Osc Sample.vi" Type="VI" URL="../VIs/Get Osc Sample.vi"/>
-	<Item Name="Get Osc Support Sample Num.vi" Type="VI" URL="../VIs/Get Osc Support Sample Num.vi"/>
-	<Item Name="Get Osc Support Samples.vi" Type="VI" URL="../VIs/Get Osc Support Samples.vi"/>
+	<Item Name="Get Osc Range Maxm V.vi" Type="VI" URL="../VIs/Get Osc Range Maxm V.vi"/>
+	<Item Name="Get Osc Range Minm V.vi" Type="VI" URL="../VIs/Get Osc Range Minm V.vi"/>
+	<Item Name="Get Osc Sample Rate.vi" Type="VI" URL="../VIs/Get Osc Sample Rate.vi"/>
+	<Item Name="Get Osc Support Sample Rate Num.vi" Type="VI" URL="../VIs/Get Osc Support Sample Rate Num.vi"/>
+	<Item Name="Get Osc Support Sample Rates.vi" Type="VI" URL="../VIs/Get Osc Support Sample Rates.vi"/>
+	<Item Name="Get Phase.vi" Type="VI" URL="../VIs/Get Phase.vi"/>
+	<Item Name="Get Positive Duty.vi" Type="VI" URL="../VIs/Get Positive Duty.vi"/>
 	<Item Name="Get Pre Trigger Percent.vi" Type="VI" URL="../VIs/Get Pre Trigger Percent.vi"/>
 	<Item Name="Get Support Io Number.vi" Type="VI" URL="../VIs/Get Support Io Number.vi"/>
-	<Item Name="Get Trigger Level.vi" Type="VI" URL="../VIs/Get Trigger Level.vi"/>
+	<Item Name="Get Trigger Levelm V.vi" Type="VI" URL="../VIs/Get Trigger Levelm V.vi"/>
 	<Item Name="Get Trigger Mode.vi" Type="VI" URL="../VIs/Get Trigger Mode.vi"/>
 	<Item Name="Get Trigger Pulse Width Down Ns.vi" Type="VI" URL="../VIs/Get Trigger Pulse Width Down Ns.vi"/>
 	<Item Name="Get Trigger Pulse Width Ns Max.vi" Type="VI" URL="../VIs/Get Trigger Pulse Width Ns Max.vi"/>
 	<Item Name="Get Trigger Pulse Width Ns Min.vi" Type="VI" URL="../VIs/Get Trigger Pulse Width Ns Min.vi"/>
 	<Item Name="Get Trigger Pulse Width Up Ns.vi" Type="VI" URL="../VIs/Get Trigger Pulse Width Up Ns.vi"/>
-	<Item Name="Get Trigger Sense Div.vi" Type="VI" URL="../VIs/Get Trigger Sense Div.vi"/>
+	<Item Name="Get Trigger Sensem V.vi" Type="VI" URL="../VIs/Get Trigger Sensem V.vi"/>
 	<Item Name="Get Trigger Source.vi" Type="VI" URL="../VIs/Get Trigger Source.vi"/>
 	<Item Name="Get Trigger Style.vi" Type="VI" URL="../VIs/Get Trigger Style.vi"/>
 	<Item Name="Get Voltage Resolution.vi" Type="VI" URL="../VIs/Get Voltage Resolution.vi"/>
@@ -66,13 +76,18 @@
 	<Item Name="Is Support Pre Trigger Percent.vi" Type="VI" URL="../VIs/Is Support Pre Trigger Percent.vi"/>
 	<Item Name="Is Support Roll Mode.vi" Type="VI" URL="../VIs/Is Support Roll Mode.vi"/>
 	<Item Name="Is Support Trigger Force.vi" Type="VI" URL="../VIs/Is Support Trigger Force.vi"/>
-	<Item Name="Is Support Trigger Sense.vi" Type="VI" URL="../VIs/Is Support Trigger Sense.vi"/>
 	<Item Name="Is Voltage Datas Out Range.vi" Type="VI" URL="../VIs/Is Voltage Datas Out Range.vi"/>
+	<Item Name="Read ADC Datas.vi" Type="VI" URL="../VIs/Read ADC Datas.vi"/>
+	<Item Name="Read ADC To Voltage Bias.vi" Type="VI" URL="../VIs/Read ADC To Voltage Bias.vi"/>
+	<Item Name="Read ADC To Voltage Zoom.vi" Type="VI" URL="../VIs/Read ADC To Voltage Zoom.vi"/>
 	<Item Name="Read Logic Datas Trigger Point.vi" Type="VI" URL="../VIs/Read Logic Datas Trigger Point.vi"/>
 	<Item Name="Read Logic Datas.vi" Type="VI" URL="../VIs/Read Logic Datas.vi"/>
 	<Item Name="Read Voltage Datas Trigger Point.vi" Type="VI" URL="../VIs/Read Voltage Datas Trigger Point.vi"/>
 	<Item Name="Read Voltage Datas.vi" Type="VI" URL="../VIs/Read Voltage Datas.vi"/>
 	<Item Name="Reset Device.vi" Type="VI" URL="../VIs/Reset Device.vi"/>
+	<Item Name="Scan Device.vi" Type="VI" URL="../VIs/Scan Device.vi"/>
+	<Item Name="Send Auto Read IO In Time Ms.vi" Type="VI" URL="../VIs/Send Auto Read IO In Time Ms.vi"/>
+	<Item Name="Send Read IO In State Cmd.vi" Type="VI" URL="../VIs/Send Read IO In State Cmd.vi"/>
 	<Item Name="Set Ac Dc.vi" Type="VI" URL="../VIs/Set Ac Dc.vi"/>
 	<Item Name="Set DA Cm V.vi" Type="VI" URL="../VIs/Set DA Cm V.vi"/>
 	<Item Name="Set Data Ready Call Back.vi" Type="VI" URL="../VIs/Set Data Ready Call Back.vi"/>
@@ -99,16 +114,18 @@
 	<Item Name="Set Dev Notice Event.vi" Type="VI" URL="../VIs/Set Dev Notice Event.vi"/>
 	<Item Name="Set IO In Out.vi" Type="VI" URL="../VIs/Set IO In Out.vi"/>
 	<Item Name="Set IO Out State.vi" Type="VI" URL="../VIs/Set IO Out State.vi"/>
+	<Item Name="Set IO Pulse Data.vi" Type="VI" URL="../VIs/Set IO Pulse Data.vi"/>
+	<Item Name="Set IO Pulse Syn.vi" Type="VI" URL="../VIs/Set IO Pulse Syn.vi"/>
 	<Item Name="Set IO Read State Call Back.vi" Type="VI" URL="../VIs/Set IO Read State Call Back.vi"/>
 	<Item Name="Set IO Read State Ready Event.vi" Type="VI" URL="../VIs/Set IO Read State Ready Event.vi"/>
-	<Item Name="Set Osc Channel Range.vi" Type="VI" URL="../VIs/Set Osc Channel Range.vi"/>
-	<Item Name="Set Osc Sample.vi" Type="VI" URL="../VIs/Set Osc Sample.vi"/>
+	<Item Name="Set Osc Channel Rangem V.vi" Type="VI" URL="../VIs/Set Osc Channel Rangem V.vi"/>
+	<Item Name="Set Osc Sample Rate.vi" Type="VI" URL="../VIs/Set Osc Sample Rate.vi"/>
 	<Item Name="Set Pre Trigger Percent.vi" Type="VI" URL="../VIs/Set Pre Trigger Percent.vi"/>
 	<Item Name="Set Roll Mode.vi" Type="VI" URL="../VIs/Set Roll Mode.vi"/>
-	<Item Name="Set Trigger Level.vi" Type="VI" URL="../VIs/Set Trigger Level.vi"/>
+	<Item Name="Set Self Cmd.vi" Type="VI" URL="../VIs/Set Self Cmd.vi"/>
+	<Item Name="Set Trigger Levelm V.vi" Type="VI" URL="../VIs/Set Trigger Levelm V.vi"/>
 	<Item Name="Set Trigger Mode.vi" Type="VI" URL="../VIs/Set Trigger Mode.vi"/>
 	<Item Name="Set Trigger Pulse Width Ns.vi" Type="VI" URL="../VIs/Set Trigger Pulse Width Ns.vi"/>
-	<Item Name="Set Trigger Sense Div.vi" Type="VI" URL="../VIs/Set Trigger Sense Div.vi"/>
 	<Item Name="Set Trigger Source.vi" Type="VI" URL="../VIs/Set Trigger Source.vi"/>
 	<Item Name="Set Trigger Style.vi" Type="VI" URL="../VIs/Set Trigger Style.vi"/>
 	<Item Name="Trigger Force.vi" Type="VI" URL="../VIs/Trigger Force.vi"/>

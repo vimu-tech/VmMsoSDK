@@ -1,4 +1,4 @@
-﻿#ifndef VMUSBWAVE_H
+#ifndef VMUSBWAVE_H
 #define VMUSBWAVE_H
 
 /********************************************************************************************************************
@@ -40,6 +40,7 @@ public:
 public Q_SLOTS:
     void qmlcallcpp_style2(const int8_t chn);
 
+    void scanDevice();
     void resetDll();
     void resetDevice();
 
@@ -64,8 +65,8 @@ public Q_SLOTS:
     void setTriggerStyle(int style);
     int getTriggerSource();
     void setTriggerSource(int sr);
-    int getTriggerLevel();
-    void setTriggerLevel(int level);
+    int getTriggerLevelmV();
+    void setTriggerLevelmV(int level);
 
     bool isSupportDds();
     //int getDdsWaveIndex();

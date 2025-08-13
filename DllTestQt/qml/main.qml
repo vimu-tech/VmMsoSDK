@@ -10,6 +10,8 @@ ApplicationWindow {
     visible: true
     title: qsTr("VmMso")
 
+    Component.onCompleted: vmusbwave.scanDevice()
+
     function usbDevCallBack(add_remove)
     {
         console.log("QML get message:",add_remove);
@@ -898,7 +900,7 @@ ApplicationWindow {
                                             top: 5000;
                             }
 
-                            onEditingFinished: vmusbwave.setTriggerLevel(Number(text));
+                            onEditingFinished: vmusbwave.setTriggerLevelmV(Number(text));
                         }
                     }
                 }
@@ -1057,7 +1059,7 @@ ApplicationWindow {
             triggerModeCombox.currentIndex = vmusbwave.getTriggerMode();
             triggerStyleCombox.currentIndex = vmusbwave.getTriggerStyle();
             triggerSourceCombox.currentIndex = vmusbwave.getTriggerSource();
-            triggerLevelEdit.text = vmusbwave.getTriggerLevel().toString();
+            triggerLevelEdit.text = vmusbwave.getTriggerLevelmV().toString();
 
             ddsCtrlWave.enabled = vmusbwave.isSupportDds();
             ddsDutyEdit.enabled = vmusbwave.isSupportDds();

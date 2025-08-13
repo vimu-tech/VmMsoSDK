@@ -1,0 +1,15 @@
+1、ScanDevice
+老版本的库，initDll的时候会自动扫描插入系统的设备，
+但是，从1.2开始，需要在初始化完成后，使用ScanDevice来扫描已经插入系统的设备
+
+2、SetOscChannelRangemV
+使用单位mv
+
+3、SetTriggerLevel和SetTriggerSense
+合并为SetTriggerLevelmV，都是用mv为单位
+
+4、采样率部分
+GetOscSupportSampleNum更新为GetOscSupportSampleRateNum
+GetOscSupportSample更新为GetOscSupportSampleRates
+GetOscSample更新为GetOscSampleRate
+SetOscSample更新为SetOscSampleRate

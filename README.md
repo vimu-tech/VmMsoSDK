@@ -1,12 +1,14 @@
 # SDK
-The Sdk support Vimu MSO Series Oscilloscopes. The SDK support MSO20 and MSO21 oscilloscopes.
+The Sdk support Vimu MSO Series Oscilloscopes. The SDK support MSO10, MSO20, MSO21 and MSO41 oscilloscopes.
+
+The vmmso dynamic library support, oscilloscope, DDS and IO control. Starting with 1.20, the vmmultmso dynamic library has been added, which is multi-device controlled and supports stream mode acquisition.
 
 DebugView is a DLL debugging information display tool. 
 	When initDll, turn on the log function and start DebugView.exe to see the debugging information of the Dll.
 
 ######################demo######################
 
-1,demo-VC
+1,demo-VC and MultDevdemo-VC
 	Test platform: windows
 	Test tool: vs2022
 
@@ -24,7 +26,7 @@ DebugView is a DLL debugging information display tool.
 
 	a Demo written with Python,only test in windows
 
-4,DllTest
+4,DllTest-Callback, DllTest-Polling and DllTestForMso41-Callback
 	Test platform: windows; linux(ubuntu x64); linux(Raspberry Pi 32bit); linux(Raspberry Pi 64bit)
 	Test tool: VSCode+vs2022; VSCode+g++; VSCode+arm-linux-gnueabi-g++; VSCode+arm-linux-gnueabihf-g++; VSCode+aarch64-linux
 

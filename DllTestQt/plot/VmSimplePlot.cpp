@@ -1,4 +1,4 @@
-﻿#include "VmSimplePlot.h"
+#include "VmSimplePlot.h"
 #include <QGuiApplication>
 #include <QPainter>
 #include <QPainterPath>
@@ -527,9 +527,9 @@ bool VmSimplePlot::UpdateLine(QPainter* painter, QPixmap& MemPixmap, QRect& rect
                     }
                 }
             }
-           // painter->drawLines(pts, pts_count);
-           for(int i=0; i<pts_count-1; i++)
-                 painter->drawLine(pts[i], pts[i+1]);
+            //painter->drawLines(pts, pts_count/2);
+            for(int i=0; i<pts_count-1; i++)
+                painter->drawLine(pts[i], pts[i+1]);
         }
     }
 
