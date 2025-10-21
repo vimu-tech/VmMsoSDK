@@ -168,10 +168,10 @@ fUpdateDDSArbBuffer = mdll.UpdateDDSArbBuffer
 fUpdateDDSArbBuffer.argtypes = [ctypes.c_ubyte, ctypes.POINTER(ctypes.c_ushort), ctypes.c_uint]
 fUpdateDDSArbBuffer.restype = None
 
-# SetDDSPinlv
-fSetDDSPinlv = mdll.SetDDSPinlv
-fSetDDSPinlv.argtypes = [ctypes.c_ubyte, ctypes.c_uint]
-fSetDDSPinlv.restype = None
+# SetDDSFreq
+fSetDDSFreq = mdll.SetDDSFreq
+fSetDDSFreq.argtypes = [ctypes.c_ubyte, ctypes.c_uint]
+fSetDDSFreq.restype = None
 
 # SetDDSDutyCycle
 fSetDDSDutyCycle = mdll.SetDDSDutyCycle
@@ -556,7 +556,7 @@ def DDS_init(channel_index, out_mode):
         fSetDDSBoxingStyle(channel_index, boxing)
 
         if out_mode == DDS_OUT_MODE_CONTINUOUS:
-            fSetDDSPinlv(channel_index, 1000)
+            fSetDDSFreq(channel_index, 1000)
         elif out_mode == DDS_OUT_MODE_SWEEP:
             fSetDDSSweepStartFreq(channel_index, 1000.0)  # 1K
             fSetDDSSweepStopFreq(channel_index, 100000.0)  # 100K
@@ -700,7 +700,7 @@ def DDS_init(channel_index, out_mode):
         fSetDDSBoxingStyle(channel_index, boxing)
 
         if out_mode == DDS_OUT_MODE_CONTINUOUS:
-            fSetDDSPinlv(channel_index, 1000)
+            fSetDDSFreq(channel_index, 1000)
         elif out_mode == DDS_OUT_MODE_SWEEP:
             fSetDDSSweepStartFreq(channel_index, 1000.0)  # 1K
             fSetDDSSweepStopFreq(channel_index, 100000.0)  # 100K

@@ -317,21 +317,21 @@ bool AdvPlot::DrawAxis(CDC *pMemDC)
 					{
 							yvale=YAxisInterval[m_leftaxis.m_properity];
 							m_leftaxis.danwei.Format(_T("%0.2f mV/%s"), yvale, GRID_DISPLAY_NAME);
-							min=m_leftaxis.minrange;			
+							min=m_leftaxis.minrangemv;
 							m_leftaxis.nr=2;
 					}
 					else if(m_leftaxis.m_properity<39)
 					{
 							yvale=YAxisInterval[m_leftaxis.m_properity];
 							m_leftaxis.danwei.Format(_T("%0.0f mV/%s"), yvale, GRID_DISPLAY_NAME);
-							min=m_leftaxis.minrange;
+							min=m_leftaxis.minrangemv;
 							m_leftaxis.nr=0;
 					}
 					else if(m_leftaxis.m_properity<=Y_AXIS_PROPERITY_MAX)
 					{
 							yvale=YAxisInterval[m_leftaxis.m_properity]/1000;
 							m_leftaxis.danwei.Format(_T("%0.0f V/%s"),yvale, GRID_DISPLAY_NAME);
-							min=m_leftaxis.minrange/1000;
+							min=m_leftaxis.minrangemv /1000;
 							m_leftaxis.nr=0;
 					}
 
@@ -446,21 +446,21 @@ bool AdvPlot::DrawAxis(CDC *pMemDC)
 					{
 							yvale=YAxisInterval[m_rightaxis.m_properity];
 							m_rightaxis.danwei.Format(_T("%0.2f mV/%s"), yvale, GRID_DISPLAY_NAME);
-							min=m_rightaxis.minrange;			
+							min=m_rightaxis.minrangemv;
 							m_rightaxis.nr=2;
 					}
 					else if(m_rightaxis.m_properity<39)
 					{
 							yvale=YAxisInterval[m_rightaxis.m_properity];
 							m_rightaxis.danwei.Format(_T("%0.0f mV/%s"), yvale, GRID_DISPLAY_NAME);
-							min=m_rightaxis.minrange;
+							min=m_rightaxis.minrangemv;
 							m_rightaxis.nr=0;
 					}
 					else if(m_rightaxis.m_properity<=Y_AXIS_PROPERITY_MAX)
 					{
 							yvale=YAxisInterval[m_rightaxis.m_properity]/1000;
 							m_rightaxis.danwei.Format(_T("%0.0f V/%s"),yvale, GRID_DISPLAY_NAME);
-							min=m_rightaxis.minrange/1000;
+							min=m_rightaxis.minrangemv /1000;
 							m_rightaxis.nr=0;
 					}
 
@@ -781,8 +781,8 @@ bool AdvPlot::UpdateLine(CDC *pMemDC, CDC *pDC, const CRect &rect)
 
 		TempDC.BitBlt(rect.left, rect.top,  rect.Width(), rect.Height(), &TransDC, 0, 0, SRCCOPY);
 
-		double	min = (*list_Iter)->m_axis->minrange;
-		double	nRange = (*list_Iter)->m_axis->maxrange - (*list_Iter)->m_axis->minrange;;
+		double	min = (*list_Iter)->m_axis->minrangemv;
+		double	nRange = (*list_Iter)->m_axis->maxrangemv - (*list_Iter)->m_axis->minrangemv;
 		
 		int nH = rect.bottom - rect.top;
 
@@ -1004,41 +1004,41 @@ void AdvPlot::SetYAxisDanwei_TextClr(COLORREF clr, bool bRepaint)
 
 void AdvPlot::SetYLeftRange(double min, double max, bool bRepaint)
 {
-	SetRange(&m_leftaxis.minrange, &m_leftaxis.maxrange, &m_leftaxis.m_properity, m_leftaxis.axis_count_y,min, max);
+	SetRange(&m_leftaxis.minrangemv, &m_leftaxis.maxrangemv, &m_leftaxis.m_properity, m_leftaxis.axis_count_y,min, max);
 	if (bRepaint)
 		Redraw();
 }
 
 void AdvPlot::GetYLeftRange(double *min, double *max)
 {
-	*min=m_leftaxis.minrange;
-	*max=m_leftaxis.maxrange;
+	*min=m_leftaxis.minrangemv;
+	*max=m_leftaxis.maxrangemv;
 }
 
 void AdvPlot::SetYRightRange(double min, double max, bool bRepaint)
 {
-	SetRange(&m_rightaxis.minrange, &m_rightaxis.maxrange, &m_rightaxis.m_properity, m_rightaxis.axis_count_y, min, max);
+	SetRange(&m_rightaxis.minrangemv, &m_rightaxis.maxrangemv, &m_rightaxis.m_properity, m_rightaxis.axis_count_y, min, max);
 	if (bRepaint)
 		Redraw();
 }
 
 void AdvPlot::GetYRightRange(double *min, double *max)
 {
-	*min=m_rightaxis.minrange;
-	*max=m_rightaxis.maxrange;
+	*min=m_rightaxis.minrangemv;
+	*max=m_rightaxis.maxrangemv;
 }
 
 void AdvPlot::SetYCH3Range(double min, double max, bool bRepaint)
 {
-	SetRange(&m_ch3axis.minrange, &m_ch3axis.maxrange, &m_ch3axis.m_properity, m_ch3axis.axis_count_y, min, max);
+	SetRange(&m_ch3axis.minrangemv, &m_ch3axis.maxrangemv, &m_ch3axis.m_properity, m_ch3axis.axis_count_y, min, max);
 	if (bRepaint)
 		Redraw();
 }
 
 void AdvPlot::GetYCH3Range(double* min, double* max)
 {
-	*min = m_ch3axis.minrange;
-	*max = m_ch3axis.maxrange;
+	*min = m_ch3axis.minrangemv;
+	*max = m_ch3axis.maxrangemv;
 }
 
 void AdvPlot::SetRange(double *dstmin, double *dstmax, int *dstproperity, int axis_count, double min, double max)
@@ -1320,17 +1320,17 @@ void AdvPlot::MoveVerTop(bool left_right, bool bRepaint)
 {
 	 if(left_right)
 	{
-		 if(m_leftaxis.minrange-YAxisInterval[m_leftaxis.m_properity]<-YAxisInterval[sizeof(YAxisInterval)/sizeof(double)-1]*10) 
+		 if(m_leftaxis.minrangemv -YAxisInterval[m_leftaxis.m_properity]<-YAxisInterval[sizeof(YAxisInterval)/sizeof(double)-1]*10)
 			 return ;
-		 m_leftaxis.minrange -= YAxisInterval[m_leftaxis.m_properity];
-		 m_leftaxis.maxrange -= YAxisInterval[m_leftaxis.m_properity];
+		 m_leftaxis.minrangemv -= YAxisInterval[m_leftaxis.m_properity];
+		 m_leftaxis.maxrangemv -= YAxisInterval[m_leftaxis.m_properity];
 	}
     else
 	{
-		if(m_rightaxis.minrange-YAxisInterval[m_rightaxis.m_properity]<-YAxisInterval[sizeof(YAxisInterval)/sizeof(double)-1]*10) 
+		if(m_rightaxis.minrangemv -YAxisInterval[m_rightaxis.m_properity]<-YAxisInterval[sizeof(YAxisInterval)/sizeof(double)-1]*10)
 		     return ;
-		 m_rightaxis.minrange -= YAxisInterval[m_rightaxis.m_properity];
-		 m_rightaxis.maxrange -= YAxisInterval[m_rightaxis.m_properity];
+		 m_rightaxis.minrangemv -= YAxisInterval[m_rightaxis.m_properity];
+		 m_rightaxis.maxrangemv -= YAxisInterval[m_rightaxis.m_properity];
 	}
 	if (bRepaint) Redraw();
 }
@@ -1339,17 +1339,17 @@ void AdvPlot::MoveVerBottom(bool left_right, bool bRepaint)
 {
 	if(left_right)
 	{
-		if(m_leftaxis.maxrange+YAxisInterval[m_leftaxis.m_properity]>YAxisInterval[sizeof(YAxisInterval)/sizeof(double)-1]*10) 
+		if(m_leftaxis.maxrangemv +YAxisInterval[m_leftaxis.m_properity]>YAxisInterval[sizeof(YAxisInterval)/sizeof(double)-1]*10)
 	          return ;
-		m_leftaxis.minrange += YAxisInterval[m_leftaxis.m_properity];
-		m_leftaxis.maxrange += YAxisInterval[m_leftaxis.m_properity];
+		m_leftaxis.minrangemv += YAxisInterval[m_leftaxis.m_properity];
+		m_leftaxis.maxrangemv += YAxisInterval[m_leftaxis.m_properity];
 	}
 	else
 	{ 
-		if(m_rightaxis.maxrange+YAxisInterval[m_rightaxis.m_properity]>YAxisInterval[sizeof(YAxisInterval)/sizeof(double)-1]*10) 
+		if(m_rightaxis.maxrangemv +YAxisInterval[m_rightaxis.m_properity]>YAxisInterval[sizeof(YAxisInterval)/sizeof(double)-1]*10)
 		     return ;
-		m_rightaxis.minrange += YAxisInterval[m_rightaxis.m_properity];
-		m_rightaxis.maxrange += YAxisInterval[m_rightaxis.m_properity];
+		m_rightaxis.minrangemv += YAxisInterval[m_rightaxis.m_properity];
+		m_rightaxis.maxrangemv += YAxisInterval[m_rightaxis.m_properity];
 	}
 	 if (bRepaint) Redraw();
 }
@@ -1519,8 +1519,8 @@ void AdvPlot::ZoomVerIn(bool left_right, bool bRepaint)
 	  	     return;
 	     }
 		 m_leftaxis.m_properity-=1;
-		 m_leftaxis.minrange = (m_leftaxis.minrange)/YAxisInterval[m_leftaxis.m_properity+1]*YAxisInterval[m_leftaxis.m_properity];
-		 m_leftaxis.maxrange = (m_leftaxis.maxrange)/YAxisInterval[m_leftaxis.m_properity+1]*YAxisInterval[m_leftaxis.m_properity];
+		 m_leftaxis.minrangemv = (m_leftaxis.minrangemv)/YAxisInterval[m_leftaxis.m_properity+1]*YAxisInterval[m_leftaxis.m_properity];
+		 m_leftaxis.maxrangemv = (m_leftaxis.maxrangemv)/YAxisInterval[m_leftaxis.m_properity+1]*YAxisInterval[m_leftaxis.m_properity];
 	 }
 	 else
 	 {
@@ -1530,8 +1530,8 @@ void AdvPlot::ZoomVerIn(bool left_right, bool bRepaint)
 	  	     return;
 	     }
 		 m_rightaxis.m_properity-=1;
-		 m_rightaxis.minrange = (m_rightaxis.minrange)/YAxisInterval[m_rightaxis.m_properity+1]*YAxisInterval[m_rightaxis.m_properity];
-		 m_rightaxis.maxrange = (m_rightaxis.maxrange)/YAxisInterval[m_rightaxis.m_properity+1]*YAxisInterval[m_rightaxis.m_properity];
+		 m_rightaxis.minrangemv = (m_rightaxis.minrangemv)/YAxisInterval[m_rightaxis.m_properity+1]*YAxisInterval[m_rightaxis.m_properity];
+		 m_rightaxis.maxrangemv = (m_rightaxis.maxrangemv)/YAxisInterval[m_rightaxis.m_properity+1]*YAxisInterval[m_rightaxis.m_properity];
 	 }
 	 if (bRepaint) Redraw();
 }
@@ -1546,13 +1546,13 @@ void AdvPlot::ZoomVerInCenter(bool left_right, bool bRepaint)
 	  	     return;
 	     }
 
-		 double center=m_leftaxis.minrange+YAxisInterval[m_leftaxis.m_properity]*m_leftaxis.axis_count_y/2;
+		 double center=m_leftaxis.minrangemv +YAxisInterval[m_leftaxis.m_properity]*m_leftaxis.axis_count_y/2;
 		 int xx=(int)(center/YAxisInterval[m_leftaxis.m_properity-1]);
 		 center = xx*YAxisInterval[m_leftaxis.m_properity-1];
 
 		 m_leftaxis.m_properity-=1;
-         m_leftaxis.minrange = center-YAxisInterval[m_leftaxis.m_properity]*m_leftaxis.axis_count_y/2;
-		 m_leftaxis.maxrange = center+YAxisInterval[m_leftaxis.m_properity]*m_leftaxis.axis_count_y/2;
+         m_leftaxis.minrangemv = center-YAxisInterval[m_leftaxis.m_properity]*m_leftaxis.axis_count_y/2;
+		 m_leftaxis.maxrangemv = center+YAxisInterval[m_leftaxis.m_properity]*m_leftaxis.axis_count_y/2;
 	 }
 	 else
 	 {
@@ -1562,13 +1562,13 @@ void AdvPlot::ZoomVerInCenter(bool left_right, bool bRepaint)
 	  	     return;
 	     }
 
-		 double center=m_rightaxis.minrange+YAxisInterval[m_rightaxis.m_properity]*m_rightaxis.axis_count_y/2;
+		 double center=m_rightaxis.minrangemv +YAxisInterval[m_rightaxis.m_properity]*m_rightaxis.axis_count_y/2;
 		 int xx=(int)(center/YAxisInterval[m_rightaxis.m_properity-1]);
 		 center = xx*YAxisInterval[m_rightaxis.m_properity-1];
 
 		 m_rightaxis.m_properity-=1;
-         m_rightaxis.minrange = center-YAxisInterval[m_rightaxis.m_properity]*m_rightaxis.axis_count_y/2;
-		 m_rightaxis.maxrange = center+YAxisInterval[m_rightaxis.m_properity]*m_rightaxis.axis_count_y/2;
+         m_rightaxis.minrangemv = center-YAxisInterval[m_rightaxis.m_properity]*m_rightaxis.axis_count_y/2;
+		 m_rightaxis.maxrangemv = center+YAxisInterval[m_rightaxis.m_properity]*m_rightaxis.axis_count_y/2;
 	 }
 	 if (bRepaint) Redraw();
 }
@@ -1583,8 +1583,8 @@ void AdvPlot::ZoomVerOut(bool left_right, bool bRepaint)
 			 return ;
 		 }
 	     m_leftaxis.m_properity+=1;
-		 m_leftaxis.minrange = (m_leftaxis.minrange)/YAxisInterval[m_leftaxis.m_properity-1]*YAxisInterval[m_leftaxis.m_properity];
-		 m_leftaxis.maxrange = (m_leftaxis.maxrange)/YAxisInterval[m_leftaxis.m_properity-1]*YAxisInterval[m_leftaxis.m_properity];
+		 m_leftaxis.minrangemv = (m_leftaxis.minrangemv)/YAxisInterval[m_leftaxis.m_properity-1]*YAxisInterval[m_leftaxis.m_properity];
+		 m_leftaxis.maxrangemv = (m_leftaxis.maxrangemv)/YAxisInterval[m_leftaxis.m_properity-1]*YAxisInterval[m_leftaxis.m_properity];
 	 }
      else 
 	 {
@@ -1594,8 +1594,8 @@ void AdvPlot::ZoomVerOut(bool left_right, bool bRepaint)
 			 return ;
 		 }
 		 m_rightaxis.m_properity+=1;
-		 m_rightaxis.minrange = (m_rightaxis.minrange)/YAxisInterval[m_rightaxis.m_properity-1]*YAxisInterval[m_rightaxis.m_properity];
-		 m_rightaxis.maxrange = (m_rightaxis.maxrange)/YAxisInterval[m_rightaxis.m_properity-1]*YAxisInterval[m_rightaxis.m_properity];
+		 m_rightaxis.minrangemv = (m_rightaxis.minrangemv)/YAxisInterval[m_rightaxis.m_properity-1]*YAxisInterval[m_rightaxis.m_properity];
+		 m_rightaxis.maxrangemv = (m_rightaxis.maxrangemv)/YAxisInterval[m_rightaxis.m_properity-1]*YAxisInterval[m_rightaxis.m_properity];
 	 }
 	 if (bRepaint) Redraw();
 }
@@ -1610,13 +1610,13 @@ void AdvPlot::ZoomVerOutCenter(bool left_right, bool bRepaint)
 			 return ;
 		 }
 
-		 double center=m_leftaxis.minrange+YAxisInterval[m_leftaxis.m_properity]*m_leftaxis.axis_count_y/2;
+		 double center=m_leftaxis.minrangemv +YAxisInterval[m_leftaxis.m_properity]*m_leftaxis.axis_count_y/2;
 		 int xx=(int)(center/YAxisInterval[m_leftaxis.m_properity+1]);
 		 center = xx*YAxisInterval[m_leftaxis.m_properity+1];
 
 		 m_leftaxis.m_properity+=1;
-         m_leftaxis.minrange = center-YAxisInterval[m_leftaxis.m_properity]*m_leftaxis.axis_count_y/2;
-		 m_leftaxis.maxrange = center+YAxisInterval[m_leftaxis.m_properity]*m_leftaxis.axis_count_y/2;
+         m_leftaxis.minrangemv = center-YAxisInterval[m_leftaxis.m_properity]*m_leftaxis.axis_count_y/2;
+		 m_leftaxis.maxrangemv = center+YAxisInterval[m_leftaxis.m_properity]*m_leftaxis.axis_count_y/2;
 	 }
      else 
 	 {
@@ -1626,13 +1626,13 @@ void AdvPlot::ZoomVerOutCenter(bool left_right, bool bRepaint)
 			 return ;
 		 }
 
-		 double center=m_rightaxis.minrange+YAxisInterval[m_rightaxis.m_properity]*m_rightaxis.axis_count_y/2;
+		 double center=m_rightaxis.minrangemv +YAxisInterval[m_rightaxis.m_properity]*m_rightaxis.axis_count_y/2;
 		 int xx=(int)(center/YAxisInterval[m_rightaxis.m_properity+1]);
 		 center = xx*YAxisInterval[m_rightaxis.m_properity+1];
 
 		 m_rightaxis.m_properity+=1;
-         m_rightaxis.minrange = center-YAxisInterval[m_rightaxis.m_properity]*m_rightaxis.axis_count_y/2;
-		 m_rightaxis.maxrange = center+YAxisInterval[m_rightaxis.m_properity]*m_rightaxis.axis_count_y/2;
+         m_rightaxis.minrangemv = center-YAxisInterval[m_rightaxis.m_properity]*m_rightaxis.axis_count_y/2;
+		 m_rightaxis.maxrangemv = center+YAxisInterval[m_rightaxis.m_properity]*m_rightaxis.axis_count_y/2;
 	 }
 	 if (bRepaint) Redraw();
 }

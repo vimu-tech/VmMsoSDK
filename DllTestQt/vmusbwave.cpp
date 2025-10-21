@@ -39,6 +39,11 @@ VmUsbWave::~VmUsbWave()
     FinishDll();
 }
 
+void VmUsbWave::scanDevice()
+{
+    ScanDevice();
+}
+
 void CALLBACK VmUsbWave::UsbDevAddCallBack(void* ppara)
 {
     VmUsbWave* vmusbwave = (VmUsbWave*)ppara;
@@ -87,11 +92,6 @@ void VmUsbWave::qmlcallcpp_style1()
 void VmUsbWave::qmlcallcpp_style2(const int8_t chn)
 {
     qDebug()<<"qmlcallcpp_style2";
-}
-
-void VmUsbWave::scanDevice()
-{
-    ScanDevice();
 }
 
 void VmUsbWave::resetDll()
@@ -345,7 +345,7 @@ void VmUsbWave::setDdsDuty(int duty)
 
 void VmUsbWave::setDdsFreq(int freq)
 {
-    SetDDSPinlv(0, freq);
+    SetDDSFreq(0, freq);
 }
 
 int VmUsbWave::getDdsAmplitudeMv()

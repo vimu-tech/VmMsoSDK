@@ -22,11 +22,17 @@ CString CVlgRoundSliderCtrl::OnFormatText()
 		strFormattedText.Format("%d mV", MvAxis[pos-1]);
 	else if(pos==3)
 		strFormattedText.Format("%d mV", MvAxis[pos-1]);
-	else if(pos==4)
+	else if (pos == 4)
+		strFormattedText.Format("%d mV", MvAxis[pos - 1]);
+	else if (pos == 5)
+		strFormattedText.Format("%d mV", MvAxis[pos - 1]);
+	else if (pos == 6)
+		strFormattedText.Format("%d mV", MvAxis[pos - 1]);
+	else if(pos==7)
 		strFormattedText.Format("%d V", MvAxis[pos-1]/1000);
-	else if(pos==5)
+	else if(pos==8)
 		strFormattedText.Format("%d V", MvAxis[pos-1]/1000);
-	else if(pos==6)
+	else if(pos==9)
 		strFormattedText.Format("%d V", MvAxis[pos-1]/1000);
 
 	return strFormattedText;

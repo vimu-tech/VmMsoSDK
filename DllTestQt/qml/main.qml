@@ -10,12 +10,13 @@ ApplicationWindow {
     visible: true
     title: qsTr("VmMso")
 
-    Component.onCompleted: vmusbwave.scanDevice()
-
     function usbDevCallBack(add_remove)
     {
         console.log("QML get message:",add_remove);
     }
+
+    Component.onCompleted:
+        vmusbwave.scanDevice();
 
     Action {
         id: openCh1Action

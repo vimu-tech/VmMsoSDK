@@ -23,7 +23,7 @@ void DDSInit(unsigned char channel_index, unsigned int out_mode)
 
 		if(out_mode==DDS_OUT_MODE_CONTINUOUS)
 		{
-			SetDDSPinlv(channel_index, 1000);
+			SetDDSFreq(channel_index, 1000);
 		}
 		else if(out_mode==DDS_OUT_MODE_SWEEP)
 		{

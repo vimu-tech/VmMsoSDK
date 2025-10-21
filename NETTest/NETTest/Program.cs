@@ -8,13 +8,16 @@ namespace ConsoleApp
 {
     class Program
     {
-        const string vmmso_dll_path = @"D:\\VmMsoSDK\\SharedLibrary\\Windows\\X64\\Release\\vmmso.dll";
+        const string vmmso_dll_path = @"O:\\MSO\\library\\SharedLibrary\\Windows\\X64\\Release\\vmmso.dll";
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
         extern static int InitDll(int en_log, int en_hard_watchdog);
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
         extern static int FinishDll();
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        extern static int ScanDevice();
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
         extern static int IsDevAvailable();
@@ -35,7 +38,7 @@ namespace ConsoleApp
         extern static void SetDDSBoxingStyle(byte channel_index, int boxing);
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
-        extern static void SetDDSPinlv(byte channel_index, int pinlv);
+        extern static void SetDDSFreq(byte channel_index, int pinlv);
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
         extern static int GetDDSCurBoxingAmplitudeMv(int boxing);
@@ -47,19 +50,19 @@ namespace ConsoleApp
         extern static void SetDDSBiasMv(byte channel_index, int bias);
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
-        extern static int SetOscChannelRange(int channel, int minmv, int maxmv);
+        extern static int SetOscChannelRangemV(int channel, int minmv, int maxmv);
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
-        extern static int GetOscSupportSampleNum();
+        extern static int GetOscSupportSampleRateNum();
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
-        extern static int GetOscSupportSamples(int[] sample, int maxnum);
+        extern static int GetOscSupportSampleRates(int[] sample, int maxnum);
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
-        extern static int SetOscSample(int sample);
+        extern static int SetOscSampleRate(int sample);
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
-        extern static int GetOscSample();
+        extern static int GetOscSampleRate();
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
         extern static int GetMemoryLength();
@@ -158,6 +161,8 @@ namespace ConsoleApp
                 DataReadyCallBack mDataReadyCallBack = new DataReadyCallBack(DataReadyCallBackFunc); //需要传入回调函数名
                 SetDataReadyCallBack(para_temp, mDataReadyCallBack);
 
+                ScanDevice();
+
                 Console.WriteLine("Waiting Device...");
                 while (IsDevAvailable() != 1)
                 {
@@ -180,7 +185,7 @@ namespace ConsoleApp
                     SetDDSOutMode(channel, 0x00);
                     int boxing = 0x0001;
                     SetDDSBoxingStyle(channel, boxing);
-                    SetDDSPinlv(channel, 1000);
+                    SetDDSFreq(channel, 1000);
                     //get max ampl mv
                     int max_ampl_mv = GetDDSCurBoxingAmplitudeMv(boxing);
                     //set dds ampl
@@ -218,18 +223,18 @@ namespace ConsoleApp
                 }
 
                 //capture range -12V~12V
-                SetOscChannelRange(0, -12000, 12000);
-                SetOscChannelRange(1, -12000, 12000);
+                SetOscChannelRangemV(0, -12000, 12000);
+                SetOscChannelRangemV(1, -12000, 12000);
 
                 //sample
-                int sample_num = GetOscSupportSampleNum();
+                int sample_num = GetOscSupportSampleRateNum();
                 int[] sample = new int[sample_num];
-                if (GetOscSupportSamples(sample, sample_num)>0)
+                if (GetOscSupportSampleRates(sample, sample_num)>0)
                 {
                     for (int i = 0; i < sample_num; i++)
                         Console.WriteLine($"{sample[i]}"); 
                 }
-                SetOscSample(sample[sample_num - 2]);
+                SetOscSampleRate(sample[sample_num - 2]);
 
                 int mem_length = GetMemoryLength() * 1024;  //KB
                 double[] buffer = new double[mem_length];
@@ -257,7 +262,7 @@ namespace ConsoleApp
 
                                 double freq = 0;
                                 double phase = 0;
-                                if (CalFreq(buffer, len, GetVoltageResolution(h), GetOscSample()) > 0)
+                                if (CalFreq(buffer, len, GetVoltageResolution(h), GetOscSampleRate()) > 0)
                                 {
                                     freq = GetFreq();
                                     phase = GetPhase();

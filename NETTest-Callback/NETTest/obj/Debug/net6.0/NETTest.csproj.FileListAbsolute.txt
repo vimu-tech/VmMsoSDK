@@ -1,0 +1,14 @@
+O:\MSO\library\NETTest-Callback\NETTest\obj\Debug\net6.0\NETTest.GeneratedMSBuildEditorConfig.editorconfig
+O:\MSO\library\NETTest-Callback\NETTest\obj\Debug\net6.0\NETTest.AssemblyInfoInputs.cache
+O:\MSO\library\NETTest-Callback\NETTest\obj\Debug\net6.0\NETTest.AssemblyInfo.cs
+O:\MSO\library\NETTest-Callback\NETTest\obj\Debug\net6.0\NETTest.csproj.CoreCompileInputs.cache
+O:\MSO\library\NETTest-Callback\NETTest\bin\Debug\net6.0\NETTest.exe
+O:\MSO\library\NETTest-Callback\NETTest\bin\Debug\net6.0\NETTest.deps.json
+O:\MSO\library\NETTest-Callback\NETTest\bin\Debug\net6.0\NETTest.runtimeconfig.json
+O:\MSO\library\NETTest-Callback\NETTest\bin\Debug\net6.0\NETTest.dll
+O:\MSO\library\NETTest-Callback\NETTest\bin\Debug\net6.0\NETTest.pdb
+O:\MSO\library\NETTest-Callback\NETTest\obj\Debug\net6.0\NETTest.dll
+O:\MSO\library\NETTest-Callback\NETTest\obj\Debug\net6.0\refint\NETTest.dll
+O:\MSO\library\NETTest-Callback\NETTest\obj\Debug\net6.0\NETTest.pdb
+O:\MSO\library\NETTest-Callback\NETTest\obj\Debug\net6.0\NETTest.genruntimeconfig.cache
+O:\MSO\library\NETTest-Callback\NETTest\obj\Debug\net6.0\ref\NETTest.dll

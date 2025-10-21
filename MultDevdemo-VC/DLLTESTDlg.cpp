@@ -551,7 +551,10 @@ void WINAPI CDLLTESTDlg::UsbDevNoticeAddCallBack(void* ppara, unsigned int dev_i
 LRESULT CDLLTESTDlg::OnUsbNoticeAddMsg(WPARAM wParam, LPARAM lParam)
 {
 	m_dev_id = lParam;
-	TRACE("插入设备 Only Id %08X %08X\n", GetOnlyId0(m_dev_id), GetOnlyId1(m_dev_id));
+	
+	char des[128] = { '\0' };
+	GetDeviceDesString(m_dev_id, des, 128);
+	TRACE("插入设备 %s Only Id %08X %08X\n", des, GetOnlyId0(m_dev_id), GetOnlyId1(m_dev_id));
 
 	SetOscCaptureMode(m_dev_id, 0);
 
@@ -707,7 +710,7 @@ LRESULT CDLLTESTDlg::OnUsbNoticeAddMsg(WPARAM wParam, LPARAM lParam)
 			
 		m_boxing_style_ctrl.SetCurSel(0);
 			
-		SetDDSPinlv(m_dev_id, 0, m_wave_freq);
+		SetDDSFreq(m_dev_id, 0, m_wave_freq);
 
 		m_wave_amp = GetDDSCurBoxingAmplitudeMv(m_dev_id, BX_SINE);
 		SetDDSAmplitudeMv(m_dev_id, 0, m_wave_amp);
@@ -1252,7 +1255,7 @@ void CDLLTESTDlg::OnEnChangeEditFreq()
 			m_wave_freq=2000000;
 			UpdateData(FALSE);
 		}
-		SetDDSPinlv(m_dev_id, 0, m_wave_freq);
+		SetDDSFreq(m_dev_id, 0, m_wave_freq);
 	}
 }
 

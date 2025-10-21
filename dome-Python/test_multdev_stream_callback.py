@@ -89,7 +89,7 @@ fGetStreamSupportSampleRates.restype = ctypes.c_uint
 
 ## stream capture
 fStreamCapture = mdll.StreamCapture
-fStreamCapture.argtypes = [ctypes.c_uint, ctypes.c_uint64, ctypes.c_ushort, ctypes.c_uint]
+fStreamCapture.argtypes = [ctypes.c_uint, ctypes.c_uint, ctypes.c_uint64, ctypes.c_ushort, ctypes.c_uint]
 fStreamCapture.restype = ctypes.c_uint
 
 ## stream capture
@@ -146,10 +146,10 @@ fUpdateArbLargeVolBuffer = mdll.UpdateArbLargeVolBuffer
 fUpdateArbLargeVolBuffer.argtypes = [ctypes.c_uint, ctypes.c_ubyte, ctypes.POINTER(ctypes.c_double), ctypes.c_uint]
 fUpdateArbLargeVolBuffer.restype = ctypes.c_uint
 
-# SetDDSPinlv
-fSetDDSPinlv = mdll.SetDDSPinlv
-fSetDDSPinlv.argtypes = [ctypes.c_uint, ctypes.c_ubyte, ctypes.c_uint]
-fSetDDSPinlv.restype = None
+# SetDDSFreq
+fSetDDSFreq = mdll.SetDDSFreq
+fSetDDSFreq.argtypes = [ctypes.c_uint, ctypes.c_ubyte, ctypes.c_uint]
+fSetDDSFreq.restype = None
 
 # SetDDSDutyCycle
 fSetDDSDutyCycle = mdll.SetDDSDutyCycle
@@ -592,7 +592,7 @@ def DDS_init(dev_id, channel_index, out_mode):
         fSetDDSBoxingStyle(dev_id, channel_index, boxing)
 
         if out_mode == DDS_OUT_MODE_CONTINUOUS:
-            fSetDDSPinlv(dev_id, channel_index, 1000)
+            fSetDDSFreq(dev_id, channel_index, 1000)
         elif out_mode == DDS_OUT_MODE_SWEEP:
             fSetDDSSweepStartFreq(dev_id, channel_index, 1000.0)  # 1K
             fSetDDSSweepStopFreq(dev_id, channel_index, 100000.0)  # 100K
@@ -676,7 +676,7 @@ while isRuning :
             if not isCaptureWorking:
                 #采集启动
                 length = 30*1000*1024;  #30M
-                fStreamCapture(oscDevId, length//1024, captureChannel, 1000000); #1M采样率
+                fStreamCapture(oscDevId, 2, length//1024, captureChannel, 1000000); #1M采样率  1秒刷新2次
 
                 isCaptureWorking = True
             else:

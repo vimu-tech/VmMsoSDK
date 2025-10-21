@@ -24,7 +24,7 @@ void DDSInit(unsigned char dev_id, unsigned char channel_index, unsigned int out
 
 		if(out_mode==DDS_OUT_MODE_CONTINUOUS)
 		{
-			SetDDSPinlv(dev_id, channel_index, 1000);
+			SetDDSFreq(dev_id, channel_index, 1000);
 		}
 		else if(out_mode==DDS_OUT_MODE_SWEEP)
 		{
@@ -134,7 +134,7 @@ unsigned int* sample = NULL;
 unsigned int mem_length = 0;
 void CALLBACK mDevNoticeAddCallBack(void* ppara, unsigned int dev_id)
 {
-    std::cout << "DevNoticeAddCallBack dev_id " << dev_id << "\n";
+    std::cout << "DevNoticeAddCallBack dev_id " << dev_id << " " << GetOnlyId0(m_dev_id) << GetOnlyId1(m_dev_id) << "\n";
 
 	//DDS
 	DDSInit(dev_id, 0, DDS_OUT_MODE_CONTINUOUS);  // DDS_OUT_MODE_SWEEP   DDS_OUT_MODE_BURST
@@ -168,7 +168,7 @@ void CALLBACK mDevNoticeAddCallBack(void* ppara, unsigned int dev_id)
 	capture_ok_mask = 0;
 
 	uint64_t length = 1024*1024*10;  //10M
-    StreamCapture(m_dev_id, length/1024, capture_channel_mask, 1000000);//1M采样率
+    StreamCapture(m_dev_id, 3, length/1024, capture_channel_mask, 1000000);//1M采样率 1秒刷新3次
 }
 
 void CALLBACK mDevNoticeRemoveCallBack(void* ppara, unsigned int dev_id)
@@ -202,5 +202,8 @@ int main()
 
 	FinishDll();
 	std::cout << "...Stream Test" << std::endl;
+
+	std::cout << "Press any key to exit" << std::endl;
+	getchar();
 	return 0;
 }

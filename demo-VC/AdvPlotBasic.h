@@ -120,8 +120,8 @@ public:
 	
     char format;  //用于格式控制
 	int nl,nr;    //用于格式控制   //%nl.nr format 例如 %0.6f
-	double	minrange;
-	double	maxrange;
+	double	minrangemv;
+	double	maxrangemv;
 	int m_properity;  //使用哪个缩放比例 数组中的值
 
 	advaxis()
@@ -136,8 +136,8 @@ public:
 		format='f';
 		nl=0;
 		nr=0;
-		minrange	= -500.0; //-0.0000005; //-500.0;//-5000000.0; 
-		maxrange	= 500.0; //0.0000005; //500.0;//5000000.0;
+		minrangemv = -500.0; //-0.0000005; //-500.0;//-5000000.0; 
+		maxrangemv = 500.0; //0.0000005; //500.0;//5000000.0;
 		m_properity = 36; //9; //36;//48;  //100mv
 		textclr = RGB(255,0,255);
         axisclr     = RGB(255,0,0);

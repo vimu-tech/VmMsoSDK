@@ -23,7 +23,7 @@ void DDSInit(unsigned char channel_index, unsigned int out_mode)
 
 		if(out_mode==DDS_OUT_MODE_CONTINUOUS)
 		{
-			SetDDSPinlv(channel_index, 1000);
+			SetDDSFreq(channel_index, 1000);
 		}
 		else if(out_mode==DDS_OUT_MODE_SWEEP)
 		{
@@ -108,48 +108,60 @@ void ReadDatas()
 	std::cout << std::dec << "trigger_point " << trigger_point << '\n';
 
 	unsigned int len = ReadVoltageDatas(0, buffer_ch1, mem_length);             
-	double minv=buffer_ch1[0];
-	double maxv=buffer_ch1[0];
-	for(unsigned int i=0; i<len; i++)
+	if(len) 
 	{
-		minv = buffer_ch1[i]<minv? buffer_ch1[i]:minv;
-		maxv = buffer_ch1[i]>maxv? buffer_ch1[i]:maxv;
+		double minv=buffer_ch1[0];
+		double maxv=buffer_ch1[0];
+		for(unsigned int i=0; i<len; i++)
+		{
+			minv = buffer_ch1[i]<minv? buffer_ch1[i]:minv;
+			maxv = buffer_ch1[i]>maxv? buffer_ch1[i]:maxv;
+		}
+		bool isoutrange = IsVoltageDatasOutRange(0);
+		std::cout << "Channel 1 isoutrange " <<  isoutrange << " ReadVoltageDatas " << len <<" minv " << minv << " maxv " << maxv << '\n';
 	}
-	bool isoutrange = IsVoltageDatasOutRange(0);
-	std::cout << "Channel 1 isoutrange " <<  isoutrange << " ReadVoltageDatas " << len <<" minv " << minv << " maxv " << maxv << '\n';
 
-	len = ReadVoltageDatas(1, buffer_ch2, mem_length);         
-	minv=buffer_ch2[0];
-	maxv=buffer_ch2[0];
-	for(unsigned int i=0; i<len; i++)
+	len = ReadVoltageDatas(1, buffer_ch2, mem_length);  
+	if(len)       
 	{
-		minv = buffer_ch2[i]<minv? buffer_ch2[i]:minv;
-		maxv = buffer_ch2[i]>maxv? buffer_ch2[i]:maxv;
+		double minv=buffer_ch2[0];
+		double maxv=buffer_ch2[0];
+		for(unsigned int i=0; i<len; i++)
+		{
+			minv = buffer_ch2[i]<minv? buffer_ch2[i]:minv;
+			maxv = buffer_ch2[i]>maxv? buffer_ch2[i]:maxv;
+		}
+		bool isoutrange = IsVoltageDatasOutRange(1);
+		std::cout << "Channel 2 isoutrange " <<  isoutrange << " ReadVoltageDatas " << len <<" minv " << minv << " maxv " << maxv << '\n';
 	}
-	isoutrange = IsVoltageDatasOutRange(1);
-	std::cout << "Channel 2 isoutrange " <<  isoutrange << " ReadVoltageDatas " << len <<" minv " << minv << " maxv " << maxv << '\n';
 
 	len = ReadVoltageDatas(2, buffer_ch3, mem_length);         
-	minv=buffer_ch3[0];
-	maxv=buffer_ch3[0];
-	for(unsigned int i=0; i<len; i++)
+	if(len)       
 	{
-		minv = buffer_ch3[i]<minv? buffer_ch3[i]:minv;
-		maxv = buffer_ch3[i]>maxv? buffer_ch3[i]:maxv;
+		double minv=buffer_ch3[0];
+		double maxv=buffer_ch3[0];
+		for(unsigned int i=0; i<len; i++)
+		{
+			minv = buffer_ch3[i]<minv? buffer_ch3[i]:minv;
+			maxv = buffer_ch3[i]>maxv? buffer_ch3[i]:maxv;
+		}
+		bool isoutrange = IsVoltageDatasOutRange(2);
+		std::cout << "Channel 3 isoutrange " <<  isoutrange << " ReadVoltageDatas " << len <<" minv " << minv << " maxv " << maxv << '\n';
 	}
-	isoutrange = IsVoltageDatasOutRange(2);
-	std::cout << "Channel 3 isoutrange " <<  isoutrange << " ReadVoltageDatas " << len <<" minv " << minv << " maxv " << maxv << '\n';
 
 	len = ReadVoltageDatas(3, buffer_ch4, mem_length);         
-	minv=buffer_ch4[0];
-	maxv=buffer_ch4[0];
-	for(unsigned int i=0; i<len; i++)
+	if(len)       
 	{
-		minv = buffer_ch4[i]<minv? buffer_ch4[i]:minv;
-		maxv = buffer_ch4[i]>maxv? buffer_ch4[i]:maxv;
+		double minv=buffer_ch4[0];
+		double maxv=buffer_ch4[0];
+		for(unsigned int i=0; i<len; i++)
+		{
+			minv = buffer_ch4[i]<minv? buffer_ch4[i]:minv;
+			maxv = buffer_ch4[i]>maxv? buffer_ch4[i]:maxv;
+		}
+		bool isoutrange = IsVoltageDatasOutRange(3);
+		std::cout << "Channel 4 isoutrange " <<  isoutrange << " ReadVoltageDatas " << len <<" minv " << minv << " maxv " << maxv << '\n';
 	}
-	isoutrange = IsVoltageDatasOutRange(3);
-	std::cout << "Channel 4 isoutrange " <<  isoutrange << " ReadVoltageDatas " << len <<" minv " << minv << " maxv " << maxv << '\n';
 }
 
 void NextCapture()

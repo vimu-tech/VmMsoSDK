@@ -33,6 +33,8 @@ public:
     QString fileName() const { return mFileName; }
     void setFileName(QString fileName);
 
+    Q_INVOKABLE void scanDevice();
+
     Q_INVOKABLE void qmlcallcpp_style1();
     Q_INVOKABLE void setPlotRangeCh1(QVariantList list);
     Q_INVOKABLE void setPlotRangeCh2(QVariantList list);
@@ -40,7 +42,6 @@ public:
 public Q_SLOTS:
     void qmlcallcpp_style2(const int8_t chn);
 
-    void scanDevice();
     void resetDll();
     void resetDevice();
 
