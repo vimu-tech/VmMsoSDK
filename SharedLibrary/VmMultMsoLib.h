@@ -19,8 +19,8 @@
 #define MULT_DLL_API VMMULTMSO_DLL_IMPORT
 #endif
 
-/*************************************************
-　　V1.20 20250813
+/************************************************
+　　V1.21 20251015
 *************************************************/
 
 //////////////////////////////////////////////////////////////////////Initialization/Finished Dll//////////////////////////////////////////////////////////////////
@@ -82,6 +82,15 @@ MULT_DLL_API int WINAPI ScanDevice();
 MULT_DLL_API int WINAPI ResetDevice(unsigned int dev_id);
 
 /*************************************************
+　　Description   Close Device
+	Input:       -
+  　Output:      -Close Status
+　　             Return value 1 Success
+　　	                      0 Failed
+   *************************************************/
+MULT_DLL_API int WINAPI CloseDevice(unsigned int dev_id);
+
+/*************************************************
 　　Description   Get device description string
 	Input:      des   description string buffer
 				des_length description string buffer length
@@ -89,6 +98,28 @@ MULT_DLL_API int WINAPI ResetDevice(unsigned int dev_id);
 　　	                      0 Failed
    *************************************************/
 MULT_DLL_API int WINAPI GetDeviceDesString(unsigned int dev_id, char* des, int des_length);
+
+/**********************************Communication Error callback functio****************************************
+	 Description    This routines sets the callback function for when the device controller encounters an abnormal communication with the hardware.
+     Input:			ppara			the parameter of the callback function
+　　				callback		a pointer to a function with the following prototype:
+										void DevCommunicationErrorCallBack(void* ppara, int error_code)
+     Output      
+*******************************************************************************************/
+#define COMMUNICATION_ERROR_CTRLIN 0x00000001
+#define COMMUNICATION_ERROR_CTRLOUT 0x00000002
+#define COMMUNICATION_ERROR_DATAIN 0x00000003
+#define COMMUNICATION_ERROR_DATAOUT 0x00000004
+typedef void (CALLBACK *DevCommunicationErrorCallBack)(void* ppara, unsigned int dev_id, int error_code);
+MULT_DLL_API void WINAPI SetDevCommunicationErrorCallBack(void* ppara, DevCommunicationErrorCallBack callback);
+
+/**************************************Event*************************************************
+	Description  This routines return the device communication is error or not.
+　　Input:      -
+　　Output     Return value >1 error
+　　						0 no error
+*******************************************************************************************/
+MULT_DLL_API int WINAPI GetDevCommunicationError(unsigned int dev_id);
 
 ///////////////////////////////////////////////////////////////////////////Device/////////////////////////////////////////////////////////////////////////
 
@@ -643,9 +674,22 @@ MULT_DLL_API int WINAPI GetStreamSupportSampleRateNum(unsigned int dev_id);
 *************************************************************************************************/
 MULT_DLL_API int WINAPI GetStreamSupportSampleRates(unsigned int dev_id, unsigned int* sample, int maxnum);
 
+/******************************************************************************************
+Description  This routines return the current voltage resolution value
+	One ADC resolution for the voltage value: 
+		Full scale is 1000mv 
+		the ADC is 8 bits
+		voltage resolution value = 1000mV/256
+	Input:     channel     read channel	0 :channel 1
+　　									1 :channel 2
+	Output     Return value : voltage resolution value
+ ******************************************************************************************/
+MULT_DLL_API double WINAPI GetStreamVoltageResolution(unsigned int dev_id, char channel);
+
 /******************************************Stream Capture***********************************************
 	Description  This routines set the capture length and start capture.
-　　Input:      length  capture length(KB)
+　　Input:      count_every_1s: How many times is updated in one second
+				length  capture length(KB)
 				capture_channel: //ch1=0x0001 ch2=0x0020 ch3=0x0040 ch4=0x0080 logic=0x0100
 								ch1+ch2 0x03 
 								ch1+ch2+ch3 0x07
@@ -654,7 +698,7 @@ MULT_DLL_API int WINAPI GetStreamSupportSampleRates(unsigned int dev_id, unsigne
 					-1 sample_rate error
 			   		-2 device id error
 *************************************************************************************************/
-MULT_DLL_API int WINAPI StreamCapture(unsigned int dev_id, unsigned long long int length_kb, unsigned short capture_channel, unsigned int sample_rate);
+MULT_DLL_API int WINAPI StreamCapture(unsigned int dev_id, unsigned int count_every_1s, unsigned long long int length_kb, unsigned short capture_channel, unsigned int sample_rate);
 
 /******************************************Stop Stream Capture***********************************************
 	Description  This routines stop the capture 
@@ -733,6 +777,22 @@ MULT_DLL_API int WINAPI GetDDSSupportBoxingStyle(unsigned int dev_id, int* style
 MULT_DLL_API void WINAPI SetDDSBoxingStyle(unsigned int dev_id, unsigned char channel_index, unsigned int boxing);
 
 /******************************************************************************************
+　　Description  This routines get wave style  
+　　Input:      channel_index	0 :channel 1
+								1 :channel 2
+				boxing  
+						W_SINE = 0x0001, 
+						W_SQUARE = 0x0002, 
+						W_RAMP = 0x0004, 
+						W_PULSE = 0x0008, 
+						W_NOISE = 0x0010, 
+						W_DC = 0x0020, 
+						W_ARB = 0x0040 
+　　Output:     -
+******************************************************************************************/
+MULT_DLL_API unsigned int WINAPI GetDDSBoxingStyle(unsigned int dev_id, unsigned char channel_index);
+
+/******************************************************************************************
 　　Description  This routines update arb buffer
 　　Input:      channel_index	0 :channel 1
 								1 :channel 2
@@ -775,10 +835,18 @@ MULT_DLL_API int WINAPI UpdateArbLargeVolBuffer(unsigned int dev_id, unsigned ch
 　　Description  This routines set frequence
 　　Input:      channel_index	0 :channel 1
 								1 :channel 2
-				pinlv	frequence
+				freq	frequence
 　　Output:     -
 ******************************************************************************************/
-MULT_DLL_API void WINAPI SetDDSPinlv(unsigned int dev_id, unsigned char channel_index, unsigned int pinlv);
+MULT_DLL_API void WINAPI SetDDSFreq(unsigned int dev_id, unsigned char channel_index, double freq);
+
+/******************************************************************************************
+　　Description  This routines get frequence
+　　Input:      channel_index	0 :channel 1
+								1 :channel 2
+　　Output:     freq	frequence
+******************************************************************************************/
+MULT_DLL_API double WINAPI GetDDSFreq(unsigned int dev_id, unsigned char channel_index);
 
 /******************************************************************************************
 　　Description  This routines set duty cycle
@@ -787,7 +855,32 @@ MULT_DLL_API void WINAPI SetDDSPinlv(unsigned int dev_id, unsigned char channel_
 				cycle  duty cycle
 	Output:      -
 ******************************************************************************************/
-MULT_DLL_API void WINAPI SetDDSDutyCycle(unsigned int dev_id, unsigned char channel_index, int cycle);
+MULT_DLL_API void WINAPI SetDDSDutyCycle(unsigned int dev_id, unsigned char channel_index, double cycle);
+
+/******************************************************************************************
+　　Description  This routines get duty cycle
+	Input:      channel_index	0 :channel 1
+								1 :channel 2	
+	Output:     cycle  duty cycle
+******************************************************************************************/
+MULT_DLL_API double WINAPI GetDDSDutyCycle(unsigned int dev_id, unsigned char channel_index);
+
+/******************************************************************************************
+　　Description  This routines set phase
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+				phase  phase
+	Output:      -
+******************************************************************************************/
+MULT_DLL_API void WINAPI SetDDSPhase(unsigned int dev_id, unsigned char channel_index, double phase);
+
+/******************************************************************************************
+　　Description  This routines get phase
+	Input:      channel_index	0 :channel 1
+								1 :channel 2	
+	Output:     phase  phase
+******************************************************************************************/
+MULT_DLL_API double WINAPI GetDDSPhase(unsigned int dev_id, unsigned char channel_index);
 
 /******************************************************************************************
 　　Description  This routines get dds amplitdude of wave

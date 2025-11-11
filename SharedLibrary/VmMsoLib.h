@@ -20,7 +20,7 @@
 #endif
 
 /*************************************************
-　　V1.20 20250813
+　　V1.21 20251015
 *************************************************/
 
 //////////////////////////////////////////////////////////////////////Initialization/Finished Dll//////////////////////////////////////////////////////////////////
@@ -80,6 +80,29 @@ DLL_API unsigned int WINAPI GetOnlyId1();
 　　	                      0 Failed
    *************************************************/
 DLL_API int WINAPI ResetDevice();
+
+/**********************************Communication Error callback functio****************************************
+	 Description    This routines sets the callback function for when the device controller encounters an abnormal communication with the hardware.
+     Input:			ppara			the parameter of the callback function
+　　				callback		a pointer to a function with the following prototype:
+										void DevCommunicationErrorCallBack(void* ppara, int error_code)
+     Output      
+*******************************************************************************************/
+#define COMMUNICATION_ERROR_CTRLIN 0x00000001
+#define COMMUNICATION_ERROR_CTRLOUT 0x00000002
+#define COMMUNICATION_ERROR_DATAIN 0x00000003
+#define COMMUNICATION_ERROR_DATAOUT 0x00000004
+typedef void (CALLBACK *DevCommunicationErrorCallBack)(void* ppara, int error_code);
+DLL_API void WINAPI SetDevCommunicationErrorCallBack(void* ppara, DevCommunicationErrorCallBack callback);
+
+/**************************************Event*************************************************
+	Description  This routines return the device communication is error or not.
+　　Input:      -
+　　Output     Return value >1 error
+　　						0 no error
+*******************************************************************************************/
+DLL_API int WINAPI GetDevCommunicationError();
+
 ///////////////////////////////////////////////////////////////////////////Device/////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////USB status/////////////////////////////////////////////////////////////////////////
@@ -671,10 +694,19 @@ DLL_API void WINAPI UpdateDDSArbBuffer(unsigned char channel_index, unsigned sho
 　　Description  This routines set frequence
 　　Input:      channel_index	0 :channel 1
 								1 :channel 2
-				pinlv	frequence
+				freq	frequence
 　　Output:     -
 ******************************************************************************************/
-DLL_API void WINAPI SetDDSPinlv(unsigned char channel_index, unsigned int pinlv);
+DLL_API void WINAPI SetDDSFreq(unsigned char channel_index, double freq);
+
+/******************************************************************************************
+　　Description  This routines get frequence
+　　Input:      channel_index	0 :channel 1
+								1 :channel 2
+				
+　　Output:    freq	frequence
+******************************************************************************************/
+DLL_API double WINAPI GetDDSFreq(unsigned char channel_index);
 
 /******************************************************************************************
 　　Description  This routines set duty cycle
@@ -683,7 +715,32 @@ DLL_API void WINAPI SetDDSPinlv(unsigned char channel_index, unsigned int pinlv)
 				cycle  duty cycle
 	Output:      -
 ******************************************************************************************/
-DLL_API void WINAPI SetDDSDutyCycle(unsigned char channel_index, int cycle);
+DLL_API void WINAPI SetDDSDutyCycle(unsigned char channel_index, double cycle);
+
+/******************************************************************************************
+　　Description  This routines get duty cycle
+	Input:      channel_index	0 :channel 1
+								1 :channel 2	
+	Output:     cycle  duty cycle
+******************************************************************************************/
+DLL_API double WINAPI GetDDSDutyCycle(unsigned char channel_index);
+
+/******************************************************************************************
+　　Description  This routines set phase
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+				phase  phase
+	Output:      -
+******************************************************************************************/
+DLL_API void WINAPI SetDDSPhase(unsigned char channel_index, double phase);
+
+/******************************************************************************************
+　　Description  This routines get phase
+	Input:      channel_index	0 :channel 1
+								1 :channel 2	
+	Output:     phase  phase
+******************************************************************************************/
+DLL_API double WINAPI GetDDSPhase(unsigned char channel_index);
 
 /******************************************************************************************
 　　Description  This routines get dds amplitdude of wave
@@ -1184,6 +1241,8 @@ DLL_API void WINAPI SetSelfCmd(int channel, int cmd);
 				{
 					double freq = GetFreq();
 					double phase = GetPhase();
+					double posduty = GetPositiveDuty();
+					double negduty GetNegativeDuty();
 				}
 ******************************************************************************************/
 DLL_API int WINAPI CalFreq(double* buffer, unsigned int buffer_length, double voltage_resolution, unsigned int sample);
