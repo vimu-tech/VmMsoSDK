@@ -20,7 +20,7 @@
 #endif
 
 /*************************************************
-　　V1.21 20251015
+　　V1.22 20260115
 *************************************************/
 
 //////////////////////////////////////////////////////////////////////Initialization/Finished Dll//////////////////////////////////////////////////////////////////
@@ -81,6 +81,24 @@ DLL_API unsigned int WINAPI GetOnlyId1();
    *************************************************/
 DLL_API int WINAPI ResetDevice();
 
+/*************************************************
+　　Description   Close Device
+	Input:       -
+  　Output:      -Close Status
+　　             Return value 1 Success
+　　	                      0 Failed
+   *************************************************/
+DLL_API int WINAPI CloseDevice();
+
+/*************************************************
+　　Description   Get device description string
+	Input:      des   description string buffer
+				des_length description string buffer length
+  　Output:     Return value 1 Success
+　　	                      0 Failed
+   *************************************************/
+DLL_API int WINAPI GetDeviceDesString(char* des, int des_length);
+
 /**********************************Communication Error callback functio****************************************
 	 Description    This routines sets the callback function for when the device controller encounters an abnormal communication with the hardware.
      Input:			ppara			the parameter of the callback function
@@ -139,6 +157,13 @@ DLL_API int WINAPI IsDevAvailable();
 
 
 ///////////////////////////////////////////////////////////////////////////Oscilloscope///////////////////////////////////////////////////////////////////////////
+/**************************************Osc Channel Num*************************************************
+	Description  This routines get the num of osd channel.
+　　Input:     
+　　Output     Return 
+*************************************************************************************************/
+DLL_API int WINAPI GetOscChannelNum();
+
 /**************************************Device Capture range*************************************************
 	Description  This routines set the range of input signal.
 　　Output     Return value 
@@ -222,10 +247,10 @@ DLL_API void WINAPI SetTriggerMode(unsigned int mode);
 #define TRIGGER_STYLE_FALL_EDGE 0x0002 		//Falling edge
 #define TRIGGER_STYLE_EDGE 0x0004 			//Edge
 #define TRIGGER_STYLE_P_MORE 0x0008 		//Positive Pulse width(>)
-#define TRIGGER_STYLE_P_LESS 0x0010 		//Positive Pulse width(>)
+#define TRIGGER_STYLE_P_LESS 0x0010 		//Positive Pulse width(<)
 #define TRIGGER_STYLE_P      0x0020 		//Positive Pulse width(<>)
 #define TRIGGER_STYLE_N_MORE 0x0040 		//Negative Pulse width(>)
-#define TRIGGER_STYLE_N_LESS 0x0080 		//Negative Pulse width(>)
+#define TRIGGER_STYLE_N_LESS 0x0080 		//Negative Pulse width(<)
 #define TRIGGER_STYLE_N      0x0100  		//Negative Pulse width(<>)
 /**************************************Trigger Style***********************************************
 	Description  This routines get the trigger style.
@@ -566,7 +591,7 @@ DLL_API double WINAPI ReadADCToVoltageBias(char channel);
 	Input:
 	Output     Return the trigger point
 ******************************************************************************************/
-DLL_API unsigned int WINAPI ReadVoltageDatasTriggerPoint();
+DLL_API double WINAPI ReadVoltageDatasTriggerPoint();
 
 /******************************************************************************************
 Description  This routines return the voltage datas is out range or not.
@@ -604,7 +629,7 @@ DLL_API unsigned int WINAPI ReadLogicDatas(unsigned char* buffer, unsigned int l
 	Input:     
 	Output     Return the trigger point
 ******************************************************************************************/
-DLL_API unsigned int WINAPI ReadLogicDatasTriggerPoint();
+DLL_API double WINAPI ReadLogicDatasTriggerPoint();
 
 //******************************************Read Data***********************************************
 
@@ -619,6 +644,13 @@ DLL_API unsigned int WINAPI ReadLogicDatasTriggerPoint();
 ******************************************************************************************/
 DLL_API int WINAPI IsSupportDDSDevice();
 
+/**************************************DDS Channel Num*************************************************
+	Description  This routines get the num of dds channel.
+　　Input:     
+　　Output     Return 
+*************************************************************************************************/
+DLL_API int WINAPI GetDDSChannelNum();
+
 /******************************************************************************************
 　　Description  This routines set dds depth
 　　Input:      
@@ -629,6 +661,7 @@ DLL_API int WINAPI GetDDSDepth();
 #define DDS_OUT_MODE_CONTINUOUS  0x00
 #define DDS_OUT_MODE_SWEEP 0x01
 #define DDS_OUT_MODE_BURST 0x02
+#define DDS_OUT_MODE_BURST_LARGE 0x03
 /******************************************************************************************
 　　Description  This routines set dds out mode
 　　Input:      channel_index	0 :channel 1
@@ -664,6 +697,7 @@ DLL_API unsigned int WINAPI GetDDSOutMode(unsigned char channel_index);
                              else store the styles to array, and return number of wave style
 ******************************************************************************************/
 DLL_API int WINAPI GetDDSSupportBoxingStyle(int* style);
+
 /******************************************************************************************
 　　Description  This routines set wave style  
 　　Input:      channel_index	0 :channel 1
@@ -679,6 +713,22 @@ DLL_API int WINAPI GetDDSSupportBoxingStyle(int* style);
 　　Output:     -
 ******************************************************************************************/
 DLL_API void WINAPI SetDDSBoxingStyle(unsigned char channel_index, unsigned int boxing);
+
+/******************************************************************************************
+　　Description  This routines get wave style  
+　　Input:      channel_index	0 :channel 1
+								1 :channel 2
+				boxing  
+						W_SINE = 0x0001, 
+						W_SQUARE = 0x0002, 
+						W_RAMP = 0x0004, 
+						W_PULSE = 0x0008, 
+						W_NOISE = 0x0010, 
+						W_DC = 0x0020, 
+						W_ARB = 0x0040 
+　　Output:     -
+******************************************************************************************/
+DLL_API unsigned int WINAPI GetDDSBoxingStyle(unsigned char channel_index);
 
 /******************************************************************************************
 　　Description  This routines update arb buffer
@@ -1250,6 +1300,49 @@ DLL_API double WINAPI GetFreq();
 DLL_API double WINAPI GetPhase();
 DLL_API double WINAPI GetPositiveDuty();
 DLL_API double WINAPI GetNegativeDuty();
+
+/******************************************************************************************
+　　Description  This routines cal the freq and phase difference of buffer1 with buffer2
+　　Input:       buffer1		cal buffer1
+				 voltage_resolution1		using the GetVoltageResolution to get 
+				 buffer2		cal buffer2
+				 voltage_resolution2		using the GetVoltageResolution to get 
+				 buffer_length	the length of the cal buffer	
+				 
+				 sample		the sample of setting
+				 freq_deviation_threshold    If the frequency difference between buffer1 and buffer2 is greater 
+				 							than this value, the phase difference will not be calculated.
+	Output:     1 	freq1 freq2 and phasedir success
+				2   freq1 freq2 success
+				3   freq1 success
+				4   freq2 success
+	example:	int success = CalFreqAndPhaseDif(m_buffer_ch1, GetVoltageResolution(0), m_buffer_ch2, GetVoltageResolution(1), m_real_length, GetOscSampleRate(), 10);
+				if(success==1)
+				{
+					double freq1 = GetFreq1();
+					double freq2 = GetFreq2();
+					double phasedir = GetPhaseDif();
+				}
+				else if(success==2)
+				{
+					double freq1 = GetFreq1();
+					double freq2 = GetFreq2();
+					double phasedir = 0;
+				}
+				else if(success==3)
+				{
+					double freq1 = GetFreq1();
+				}
+				else if(success==4)
+				{
+					double freq2 = GetFreq2();
+				}
+******************************************************************************************/
+DLL_API int WINAPI CalFreqAndPhaseDif(double* buffer1, double voltage_resolution1, double* buffer2, double voltage_resolution2, 
+							unsigned int buffer_length, unsigned int sample, double freq_deviation_threshold);
+DLL_API double WINAPI GetFreq1();
+DLL_API double WINAPI GetFreq2();
+DLL_API double WINAPI GetPhaseDif();
 
 ///////////////////////////////////////////////////////////////////////////algorithm///////////////////////////////////////////////////////////////////////////
 

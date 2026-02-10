@@ -1,1 +1,0 @@
-windows library use the vs2022 compiler

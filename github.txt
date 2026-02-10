@@ -1,1 +1,1 @@
-https://github.com/vimu-tech/SDK
+https://github.com/vimu-tech/VmMsoSDK

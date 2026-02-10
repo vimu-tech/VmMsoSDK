@@ -1,0 +1,4 @@
+说明：该例子由vimu用户提供
+
+# requirements.txt
+numpy>=1.21.0

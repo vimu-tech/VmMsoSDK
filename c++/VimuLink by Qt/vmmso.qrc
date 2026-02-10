@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qtquickcontrols2.conf</file>
+        <file>qml/main.qml</file>
+        <file>VMMSO_zh_CN.ts</file>
+        <file>qml/Dds.qml</file>
+        <file>qml/Io.qml</file>
+        <file>qml/ChannelInfo.qml</file>
+        <file>qml/IOCtrlRow.qml</file>
+        <file>qml/FFT.qml</file>
+        <file>qml/Filter.qml</file>
+        <file>qml/Power.qml</file>
+        <file>qml/Meter.qml</file>
+    </qresource>
+</RCC>

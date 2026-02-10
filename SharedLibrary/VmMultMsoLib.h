@@ -20,7 +20,7 @@
 #endif
 
 /************************************************
-　　V1.21 20251015
+　　V1.22 20260115
 *************************************************/
 
 //////////////////////////////////////////////////////////////////////Initialization/Finished Dll//////////////////////////////////////////////////////////////////
@@ -145,6 +145,20 @@ MULT_DLL_API void WINAPI SetDevNoticeCallBack(void* ppara, AddCallBack addcallba
 *******************************************************************************************/
 MULT_DLL_API int WINAPI IsDevAvailable();
 ///////////////////////////////////////////////////////////////////////////USB status/////////////////////////////////////////////////////////////////////////
+/**************************************Osc Channel Num*************************************************
+	Description  This routines get the num of osd channel.
+　　Input:     
+　　Output     Return 
+*************************************************************************************************/
+MULT_DLL_API int WINAPI GetOscChannelNum(unsigned int dev_id);
+
+/**************************************Osc Channel Num*************************************************
+	Description  This routines get the bit num of osd adc.
+　　Input:     
+　　Output     Return 
+*************************************************************************************************/
+MULT_DLL_API int WINAPI GetOscAdcBit(unsigned int dev_id);
+
 /**************************************Get Osc Capture Mode*************************************************
 	Description  This routines set the osc capture mode.
 　　Input:     dev_id     the dev id
@@ -246,10 +260,10 @@ MULT_DLL_API void WINAPI SetTriggerMode(unsigned int dev_id, unsigned int mode);
 #define TRIGGER_STYLE_FALL_EDGE 0x0002 		//Falling edge
 #define TRIGGER_STYLE_EDGE 0x0004 			//Edge
 #define TRIGGER_STYLE_P_MORE 0x0008 		//Positive Pulse width(>)
-#define TRIGGER_STYLE_P_LESS 0x0010 		//Positive Pulse width(>)
+#define TRIGGER_STYLE_P_LESS 0x0010 		//Positive Pulse width(<)
 #define TRIGGER_STYLE_P      0x0020 		//Positive Pulse width(<>)
 #define TRIGGER_STYLE_N_MORE 0x0040 		//Negative Pulse width(>)
-#define TRIGGER_STYLE_N_LESS 0x0080 		//Negative Pulse width(>)
+#define TRIGGER_STYLE_N_LESS 0x0080 		//Negative Pulse width(<)
 #define TRIGGER_STYLE_N      0x0100  		//Negative Pulse width(<>)
 /**************************************Trigger Style***********************************************
 	Description  This routines get the trigger style.
@@ -581,7 +595,7 @@ MULT_DLL_API double WINAPI ReadADCToVoltageBias(unsigned int dev_id, char channe
 	Input:
 	Output     Return the trigger point
 ******************************************************************************************/
-MULT_DLL_API unsigned int WINAPI ReadVoltageDatasTriggerPoint(unsigned int dev_id);
+MULT_DLL_API double WINAPI ReadVoltageDatasTriggerPoint(unsigned int dev_id);
 
 /******************************************************************************************
 Description  This routines return the voltage datas is out range or not.
@@ -619,7 +633,7 @@ MULT_DLL_API unsigned int WINAPI ReadLogicDatas(unsigned int dev_id, unsigned ch
 	Input:     
 	Output     Return the trigger point
 ******************************************************************************************/
-MULT_DLL_API unsigned int WINAPI ReadLogicDatasTriggerPoint(unsigned int dev_id);
+MULT_DLL_API double WINAPI ReadLogicDatasTriggerPoint(unsigned int dev_id);
 
 //******************************************Read Data***********************************************
 
@@ -631,12 +645,52 @@ MULT_DLL_API unsigned int WINAPI ReadLogicDatasTriggerPoint(unsigned int dev_id)
 	Description    This routines sets the callback function of capture complete. 
     Input:       ppara        the parameter of the callback function
 　　             datacallback  a pointer to a function with the following prototype:
-                                 void DataReadyCallBack ( void * ppara)
+                                 void SetStreamDataReadyCallBack ( void * ppara)
     Output       -
 ******************************************************************************************/
 typedef void (CALLBACK *StreamDataReadyCallBack)(void* ppara, unsigned int dev_id, unsigned char channel_index, double* buffer, unsigned int buffer_length, 
 		unsigned int failed, unsigned int success, unsigned long long int need_total_sample, unsigned long long int total_sample, unsigned long long int menoryuse);
 MULT_DLL_API void WINAPI SetStreamDataReadyCallBack(void* ppara, StreamDataReadyCallBack datacallback);
+
+/******************************************************************************************
+	Description    This routines sets the callback function of capture complete. 
+    Input:       ppara        the parameter of the callback function
+　　             datacallback  a pointer to a function with the following prototype:
+                                 void StreamRawDataReadyCallBack ( void * ppara)
+    Output       -
+******************************************************************************************/
+typedef void (CALLBACK *StreamRawDataReadyCallBack)(void* ppara, unsigned int dev_id, unsigned char* buffer, unsigned int buffer_size, 
+		unsigned int failed, unsigned int success, unsigned long long int need_total_sample, unsigned long long int total_sample, unsigned long long int menoryuse);
+MULT_DLL_API void WINAPI SetStreamRawDataReadyCallBack(void* ppara, StreamRawDataReadyCallBack datacallback);
+
+//******************************************Read ADC Data***********************************************
+/******************************************************************************************
+	Description  This routines read the adc datas, zoom and bias
+    Input:      channel     read channel  0 :channel 1
+　　                                   		1 :channel 2
+											2 :channel 3
+											3 :channel 4
+　　           buffer      the buffer to store adc datas   
+　　           length      the buffer length
+	Output     Return value the read length
+
+--------------------for 8bit adc:---------------------------
+double zoom, bias;
+unsigned char* buffer = new unsigned char[length];
+int readlength = ReadADCDatas(0, buffer, length, &zoom, &bias);
+for(int k=0; k<readlength; k++)
+	double voltage = buffer[k]*zoom+bias;
+
+--------------------for 12bit adc:---------------------------
+double zoom, bias;
+unsigned short* buffer = new unsigned short[length];
+int readlength = ReadADCDatas(0, (unsigned char)buffer, length, &zoom, &bias);
+for(int k=0; k<readlength; k++)
+	double voltage = buffer[k]*zoom+bias;
+
+******************************************************************************************/
+MULT_DLL_API double WINAPI ReadStreamADCToVoltageZoom(unsigned int dev_id, char channel);
+MULT_DLL_API double WINAPI ReadStreamADCToVoltageBias(unsigned int dev_id, char channel);
 
 /**************************************Stream Capture range*************************************************
 	Description  This routines set the range of input signal.
@@ -673,6 +727,38 @@ MULT_DLL_API int WINAPI GetStreamSupportSampleRateNum(unsigned int dev_id);
 	Output		Return value	the sample number of array stored
 *************************************************************************************************/
 MULT_DLL_API int WINAPI GetStreamSupportSampleRates(unsigned int dev_id, unsigned int* sample, int maxnum);
+
+
+/********************************************Support AC/DC****************************************
+	Description  This routines get the device support AC/DC switch or not.
+　　Input:      channel     the set channel 
+　　                                    0  channel 1
+　　                                    1  channel 2
+　　Output     Return value  0 :not support AC/DC switch
+							 1 :support AC/DC switch
+*************************************************************************************************/
+MULT_DLL_API int WINAPI IsStreamSupportAcDc(unsigned int dev_id, unsigned int channel);
+
+/********************************************Set AC/DC****************************************
+	Description  This routines set the device AC coupling.
+　　Input:       channel     the set channel 
+　　                                    0  channel 1
+　　                                    1  channel 2
+				ac			1 : set AC coupling
+　　						0 : set DC coupling
+	Output     -
+*************************************************************************************************/
+MULT_DLL_API void WINAPI SetStreamAcDc(unsigned int dev_id, unsigned int channel, int ac);
+
+/********************************************Get AC/DC****************************************
+	Description  This routines get the device AC coupling.
+　　Input:     channel     the set channel 
+　　                                    0  channel 1
+　　                                    1  channel 2
+　　Output     Return value  1 : AC coupling
+　　                         0 : DC coupling
+*************************************************************************************************/
+MULT_DLL_API int WINAPI GetStreamAcDc(unsigned int dev_id, unsigned int channel);
 
 /******************************************************************************************
 Description  This routines return the current voltage resolution value
@@ -715,6 +801,13 @@ MULT_DLL_API void WINAPI StreamStopCapture(unsigned int dev_id);
 ******************************************************************************************/
 MULT_DLL_API int WINAPI IsSupportDDSDevice(unsigned int dev_id);
 
+/**************************************DDS Channel Num*************************************************
+	Description  This routines get the num of dds channel.
+　　Input:     
+　　Output     Return 
+*************************************************************************************************/
+MULT_DLL_API int WINAPI GetDDSChannelNum(unsigned int dev_id);
+
 /******************************************************************************************
 　　Description  This routines set dds depth
 　　Input:      
@@ -725,6 +818,7 @@ MULT_DLL_API int WINAPI GetDDSDepth(unsigned int dev_id);
 #define DDS_OUT_MODE_CONTINUOUS  0x00
 #define DDS_OUT_MODE_SWEEP 0x01
 #define DDS_OUT_MODE_BURST 0x02
+#define DDS_OUT_MODE_BURST_LARGE 0x03
 /******************************************************************************************
 　　Description  This routines set dds out mode
 　　Input:      channel_index	0 :channel 1
@@ -1358,7 +1452,127 @@ MULT_DLL_API int WINAPI GetDACmV(unsigned int dev_id, unsigned char channel_inde
 
 ///////////////////////////////////////////////////////////////////////////IO///////////////////////////////////////////////////////////////////////////
 
-//Self define Cmd
+//******************************************************************Mult Meter**********************************************************************************************
+/******************************************************************************************
+	Description  This routines get support IO ctrl or not
+　　Input:      -
+	Output     Return value support io ctrl or not
+******************************************************************************************/
+MULT_DLL_API int WINAPI IsSupportMultMeterDevice(unsigned int dev_id);
+
+/******************************************************************************************
+　　Description  This routines enable dds output or not
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+				enable		1 enable
+　　						0 not enable
+　　Output:      -
+******************************************************************************************/
+MULT_DLL_API void WINAPI MultMeterEnable(unsigned int dev_id, unsigned char channel_index, int enable);
+
+/******************************************************************************************
+	Description  This routines get dds output enable or not
+　　Input:      channel_index	0 :channel 1
+								1 :channel 2
+　　Output     Return value dds enable or not
+******************************************************************************************/
+MULT_DLL_API int WINAPI IsMultMeterEnable(unsigned int dev_id, unsigned char channel_index);
+
+
+#define METER_DC_V 0x000001 
+#define METER_AC_V 0x000002
+#define METER_DCAC_MV 0x000004
+#define METER_DC_A 0x000008
+#define METER_DC_MA 0x000010
+#define METER_DC_UA 0x000020
+#define METER_AC_A 0x000040
+#define METER_AC_MA 0x000080
+#define METER_DCAC_A 0x000100
+#define METER_DCAC_MA 0x000200
+#define METER_DCAC_UA 0x000400
+#define METER_OM2 0x000800
+#define METER_OM4 0x001000
+#define METER_OM2_ISHI 0x002000
+#define METER_C 0x004000
+#define METER_Hz 0x008000
+#define METER_DIODE 0x010000
+#define METER_0OM 0x020000
+#define METER_DIODE_BEERER 0x040000
+#define METER_0OM_BEERER 0x080000
+#define METER_ZERO 0x100000
+MULT_DLL_API int WINAPI SetMultMeterMode(unsigned int dev_id, unsigned char channel_index, unsigned int mode, unsigned int para);
+
+
+/******************************************************************************************
+	Description    This routines sets the callback function of capture complete.
+	Input:       ppara        the parameter of the callback function
+　　             datacallback  a pointer to a function with the following prototype:
+								 void MultMeterUpdateCallBack ( void * ppara)
+	Output       -
+******************************************************************************************/
+typedef int (CALLBACK* MultMeterUpdateCallBack)(void* ppara, unsigned int dev_id, const char* text, const char* top, const char* bottom);
+MULT_DLL_API void WINAPI SetMultMeterCallBack(void* ppara, MultMeterUpdateCallBack datacallback);
+
+/******************************************************************************************
+	Description  This routines get multmeter string
+　　Input:      channel_index	0 :channel 1
+								1 :channel 2
+				text
+				top
+				bottom     multmeter display string
+　　Output      Return value 0 :not success
+　　						1 :success
+******************************************************************************************/
+MULT_DLL_API int WINAPI ReadMultMeterValues(unsigned int dev_id, unsigned char channel_index, char* text, char* top, char* bottom);
+
+//******************************************************************Mult Meter**********************************************************************************************
+
+//******************************************************************PowerSupply**********************************************************************************************
+/******************************************************************************************
+	Description  This routines get support power or not
+　　Input:      -
+	Output     Return value support power or not
+******************************************************************************************/
+MULT_DLL_API int WINAPI IsSupportPowerSupplyDevice(unsigned int dev_id);
+
+/******************************************************************************************
+　　Description  This routines enable power output or not
+	Input:      channel_index	0 :channel 1
+								1 :channel 2
+				enable		1 enable
+　　						0 not enable
+　　Output:      -
+******************************************************************************************/
+MULT_DLL_API void WINAPI PowerSupplyEnable(unsigned int dev_id, unsigned char channel_index, int enable);
+
+/******************************************************************************************
+	Description  This routines get power output enable or not
+　　Input:      channel_index	0 :channel 1
+								1 :channel 2
+　　Output     Return value power enable or not
+******************************************************************************************/
+MULT_DLL_API int WINAPI IsPowerSupplyEnable(unsigned int dev_id, unsigned char channel_index);
+
+/******************************************************************************************
+    Description  This routines set power voltage
+　　Input:      channel_index 0 :channel 1
+                                1 :channel 2
+				vol_mv   voltage(mv)
+　　Output     Return 
+******************************************************************************************/
+MULT_DLL_API int WINAPI SetPowerSupplyVoltage(unsigned int dev_id, unsigned char channel_index, int vol_mv);
+
+/******************************************************************************************
+    Description  This routines get power voltage(mv)
+　　Input:      channel_index 0 :channel 1
+                                1 :channel 2
+　　Output     Return  voltage(mv)
+******************************************************************************************/
+MULT_DLL_API int WINAPI GetPowerSupplyVoltage(unsigned int dev_id, unsigned char channel_index);
+
+//******************************************************************PowerSupply**********************************************************************************************
+
+///////////////////////////////////////////////////////////////Self define Cmd//////////////////////////////////////////
 MULT_DLL_API void WINAPI SetSelfCmd(unsigned int dev_id, int channel, int cmd);
 
 ///////////////////////////////////////////////////////////////////////////algorithm///////////////////////////////////////////////////////////////////////////
@@ -1380,6 +1594,49 @@ MULT_DLL_API double WINAPI GetFreq();
 MULT_DLL_API double WINAPI GetPhase();
 MULT_DLL_API double WINAPI GetPositiveDuty();
 MULT_DLL_API double WINAPI GetNegativeDuty();
+
+/******************************************************************************************
+　　Description  This routines cal the freq and phase difference of buffer1 with buffer2
+　　Input:       buffer1		cal buffer1
+				 voltage_resolution1		using the GetVoltageResolution to get 
+				 buffer2		cal buffer2
+				 voltage_resolution2		using the GetVoltageResolution to get 
+				 buffer_length	the length of the cal buffer	
+				 
+				 sample		the sample of setting
+				 freq_deviation_threshold    If the frequency difference between buffer1 and buffer2 is greater 
+				 							than this value, the phase difference will not be calculated.
+	Output:     1 	freq1 freq2 and phasedir success
+				2   freq1 freq2 success
+				3   freq1 success
+				4   freq2 success
+	example:	int success = CalFreqAndPhaseDif(m_buffer_ch1, GetVoltageResolution(0), m_buffer_ch2, GetVoltageResolution(1), m_real_length, GetOscSampleRate(), 10);
+				if(success==1)
+				{
+					double freq1 = GetFreq1();
+					double freq2 = GetFreq2();
+					double phasedir = GetPhaseDif();
+				}
+				else if(success==2)
+				{
+					double freq1 = GetFreq1();
+					double freq2 = GetFreq2();
+					double phasedir = 0;
+				}
+				else if(success==3)
+				{
+					double freq1 = GetFreq1();
+				}
+				else if(success==4)
+				{
+					double freq2 = GetFreq2();
+				}
+******************************************************************************************/
+MULT_DLL_API int WINAPI CalFreqAndPhaseDif(double* buffer1, double voltage_resolution1, double* buffer2, double voltage_resolution2, 
+							unsigned int buffer_length, unsigned int sample, double freq_deviation_threshold);
+MULT_DLL_API double WINAPI GetFreq1();
+MULT_DLL_API double WINAPI GetFreq2();
+MULT_DLL_API double WINAPI GetPhaseDif();
 
 ///////////////////////////////////////////////////////////////////////////algorithm///////////////////////////////////////////////////////////////////////////
 
