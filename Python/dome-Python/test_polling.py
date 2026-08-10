@@ -31,11 +31,8 @@ fFinishDll.restype = ctypes.c_int
 
 ########################### Device ##############################
 ## get equipment information id0
-fGetOnlyId0 = mdll.GetOnlyId0
-fGetOnlyId0.restype = ctypes.c_uint
-## get equipment information id1
-fGetOnlyId1 = mdll.GetOnlyId1
-fGetOnlyId1.restype = ctypes.c_uint
+fGetOnlyId = mdll.GetOnlyId
+fGetOnlyId.restype = ctypes.c_uint
 ## reset device
 fResetDevice = mdll.ResetDevice
 fResetDevice.restype = ctypes.c_int
@@ -118,7 +115,7 @@ fSetDataReadyCallBack = mdll.SetDataReadyCallBack
 
 ############################ Read Data ##############################
 fReadVoltageDatasTriggerPoint = mdll.ReadVoltageDatasTriggerPoint
-fReadVoltageDatasTriggerPoint.restype = ctypes.c_uint
+fReadVoltageDatasTriggerPoint.restype = ctypes.c_double
 
 fReadVoltageDatas = mdll.ReadVoltageDatas
 fReadVoltageDatas.restype = ctypes.c_uint
@@ -129,6 +126,13 @@ fIsVoltageDatasOutRange.restype = ctypes.c_int
 fGetVoltageResolution = mdll.GetVoltageResolution
 fGetVoltageResolution.restype = ctypes.c_double
 
+fGetVoltageExtremeMin = mdll.GetVoltageExtremeMin
+fGetVoltageExtremeMin.argtypes = [ctypes.c_char]
+fGetVoltageExtremeMin.restype = ctypes.c_double
+
+fGetVoltageExtremeMax = mdll.GetVoltageExtremeMax
+fGetVoltageExtremeMax.argtypes = [ctypes.c_char]
+fGetVoltageExtremeMax.restype = ctypes.c_double
 ############################ Read Data ##############################
 
 
@@ -467,21 +471,169 @@ IO_DISABLE = 0
 IO_ENABLE = 1
 ############################ IO ##############################
 
-############################ CalFreq ##############################
-fGetVoltageResolution = mdll.GetVoltageResolution
-fGetVoltageResolution.restype = ctypes.c_double
+############################ Parameter calculation ##############################
 
-fCalFreq = mdll.CalFreq
-#fCalFreq.argtypes = [ctype.c_void_p, ctypes.c_uint, ctypes.c_double, ctypes.c_uint]
-fCalFreq.restype = ctypes.c_uint
+PARA_CAL_OK = 0
+############################ ParaCalReset ##############################
+fParaCalReset = mdll.ParaCalReset
+fParaCalReset.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.c_int, ctypes.c_double, ctypes.c_double, ctypes.c_double]
+fParaCalReset.restype = ctypes.c_int
+
+############################ IsMinOk / GetMin ##############################
+fIsMinOk = mdll.IsMinOk
+fIsMinOk.argtypes = [ctypes.c_int]
+fIsMinOk.restype = ctypes.c_int
+
+fGetMin = mdll.GetMin
+fGetMin.argtypes = [ctypes.c_int]
+fGetMin.restype = ctypes.c_double
+
+############################ IsMaxOk / GetMax ##############################
+fIsMaxOk = mdll.IsMaxOk
+fIsMaxOk.argtypes = [ctypes.c_int]
+fIsMaxOk.restype = ctypes.c_int
+
+fGetMax = mdll.GetMax
+fGetMax.argtypes = [ctypes.c_int]
+fGetMax.restype = ctypes.c_double
+
+############################ IsVppOk / GetVpp ##############################
+fIsVppOk = mdll.IsVppOk
+fIsVppOk.argtypes = [ctypes.c_int]
+fIsVppOk.restype = ctypes.c_int
+
+fGetVpp = mdll.GetVpp
+fGetVpp.argtypes = [ctypes.c_int]
+fGetVpp.restype = ctypes.c_double
+
+############################ IsTopOk / GetTop ##############################
+fIsTopOk = mdll.IsTopOk
+fIsTopOk.argtypes = [ctypes.c_int]
+fIsTopOk.restype = ctypes.c_int
+
+fGetTop = mdll.GetTop
+fGetTop.argtypes = [ctypes.c_int]
+fGetTop.restype = ctypes.c_double
+
+############################ IsBaseOk / GetBase ##############################
+fIsBaseOk = mdll.IsBaseOk
+fIsBaseOk.argtypes = [ctypes.c_int]
+fIsBaseOk.restype = ctypes.c_int
+
+fGetBase = mdll.GetBase
+fGetBase.argtypes = [ctypes.c_int]
+fGetBase.restype = ctypes.c_double
+
+############################ IsAmplOk / GetAmpl ##############################
+fIsAmplOk = mdll.IsAmplOk
+fIsAmplOk.argtypes = [ctypes.c_int]
+fIsAmplOk.restype = ctypes.c_int
+
+fGetAmpl = mdll.GetAmpl
+fGetAmpl.argtypes = [ctypes.c_int]
+fGetAmpl.restype = ctypes.c_double
+
+############################ IsMeanOk / GetMean ##############################
+fIsMeanOk = mdll.IsMeanOk
+fIsMeanOk.argtypes = [ctypes.c_int]
+fIsMeanOk.restype = ctypes.c_int
+
+fGetMean = mdll.GetMean
+fGetMean.argtypes = [ctypes.c_int]
+fGetMean.restype = ctypes.c_double
+
+############################ IsRmsOk / GetRms ##############################
+fIsRmsOk = mdll.IsRmsOk
+fIsRmsOk.argtypes = [ctypes.c_int]
+fIsRmsOk.restype = ctypes.c_int
+
+fGetRms = mdll.GetRms
+fGetRms.argtypes = [ctypes.c_int]
+fGetRms.restype = ctypes.c_double
+
+############################ IsFreqOk / GetFreq ##############################
+fIsFreqOk = mdll.IsFreqOk
+fIsFreqOk.argtypes = [ctypes.c_int]
+fIsFreqOk.restype = ctypes.c_int
 
 fGetFreq = mdll.GetFreq
+fGetFreq.argtypes = [ctypes.c_int]
 fGetFreq.restype = ctypes.c_double
 
+############################ IsPhaseOk / GetPhase ##############################
+fIsPhaseOk = mdll.IsPhaseOk
+fIsPhaseOk.argtypes = [ctypes.c_int]
+fIsPhaseOk.restype = ctypes.c_int
+
 fGetPhase = mdll.GetPhase
+fGetPhase.argtypes = [ctypes.c_int]
 fGetPhase.restype = ctypes.c_double
 
-############################ CalFreq ##############################
+############################ IsCycleRmsOk / GetCycleRms ##############################
+fIsCycleRmsOk = mdll.IsCycleRmsOk
+fIsCycleRmsOk.argtypes = [ctypes.c_int]
+fIsCycleRmsOk.restype = ctypes.c_int
+
+fGetCycleRms = mdll.GetCycleRms
+fGetCycleRms.argtypes = [ctypes.c_int]
+fGetCycleRms.restype = ctypes.c_double
+
+############################ IsCycleMeanOk / GetCycleMean ##############################
+fIsCycleMeanOk = mdll.IsCycleMeanOk
+fIsCycleMeanOk.argtypes = [ctypes.c_int]
+fIsCycleMeanOk.restype = ctypes.c_int
+
+fGetCycleMean = mdll.GetCycleMean
+fGetCycleMean.argtypes = [ctypes.c_int]
+fGetCycleMean.restype = ctypes.c_double
+
+############################ IsPositiveDutyOk / GetPositiveDuty ##############################
+fIsPositiveDutyOk = mdll.IsPositiveDutyOk
+fIsPositiveDutyOk.argtypes = [ctypes.c_int]
+fIsPositiveDutyOk.restype = ctypes.c_int
+
+fGetPositiveDuty = mdll.GetPositiveDuty
+fGetPositiveDuty.argtypes = [ctypes.c_int]
+fGetPositiveDuty.restype = ctypes.c_double
+
+############################ IsPositivePulseWidthOk / GetPositivePulseWidth ##############################
+fIsPositivePulseWidthOk = mdll.IsPositivePulseWidthOk
+fIsPositivePulseWidthOk.argtypes = [ctypes.c_int]
+fIsPositivePulseWidthOk.restype = ctypes.c_int
+
+fGetPositivePulseWidth = mdll.GetPositivePulseWidth
+fGetPositivePulseWidth.argtypes = [ctypes.c_int]
+fGetPositivePulseWidth.restype = ctypes.c_double
+
+############################ IsNegativeDutyOk / GetNegativeDuty ##############################
+fIsNegativeDutyOk = mdll.IsNegativeDutyOk
+fIsNegativeDutyOk.argtypes = [ctypes.c_int]
+fIsNegativeDutyOk.restype = ctypes.c_int
+
+fGetNegativeDuty = mdll.GetNegativeDuty
+fGetNegativeDuty.argtypes = [ctypes.c_int]
+fGetNegativeDuty.restype = ctypes.c_double
+
+############################ IsNegativePulseWidthOk / GetNegativePulseWidth ##############################
+fIsNegativePulseWidthOk = mdll.IsNegativePulseWidthOk
+fIsNegativePulseWidthOk.argtypes = [ctypes.c_int]
+fIsNegativePulseWidthOk.restype = ctypes.c_int
+
+fGetNegativePulseWidth = mdll.GetNegativePulseWidth
+fGetNegativePulseWidth.argtypes = [ctypes.c_int]
+fGetNegativePulseWidth.restype = ctypes.c_double
+
+############################ CalPhaseDif / GetPhaseDif ##############################
+fCalPhaseDif = mdll.CalPhaseDif
+fCalPhaseDif.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_double, ctypes.c_int, ctypes.c_double]
+fCalPhaseDif.restype = ctypes.c_int
+
+fGetPhaseDif = mdll.GetPhaseDif
+fGetPhaseDif.argtypes = []
+fGetPhaseDif.restype = ctypes.c_double
+
+############################ Parameter calculation ##############################
+
 
 # 全局变量初始化 
 # Global variables
@@ -493,43 +645,60 @@ inited = False
 def ReadDatas():
     global mem_length
 
-    arraytypedouble = ctypes.c_double * mem_length
+    totallength = fGetMemoryLength()*1024;
+    arraytypedouble = ctypes.c_double * totallength
     datas = arraytypedouble()
 
     trigger_point = fReadVoltageDatasTriggerPoint()
     print(f"trigger_point {trigger_point}")
 
-    len_ch1 = fReadVoltageDatas(ctypes.c_char(0), datas, mem_length)
-    
-    minv = maxv = datas[0]
-    for i in range(len_ch1):
-        minv = min(datas[i], minv)
-        maxv = max(datas[i], maxv)
-    
+    num = fReadVoltageDatas(ctypes.c_char(0), datas, totallength);
     isoutrange = fIsVoltageDatasOutRange(ctypes.c_char(0))
-    freq = phase = 0
+    print(f"Channel 0 isoutrange {isoutrange} ReadVoltageDatas {num} ", end="")
     
-    if fCalFreq(datas, len_ch1, ctypes.c_double(fGetVoltageResolution(ctypes.c_char(0))), fGetOscSampleRate()):
-        freq = fGetFreq()
-        phase = fGetPhase()
-    
-    print(f"Channel 0 isoutrange {isoutrange} ReadVoltageDatas {len_ch1} minv {minv} maxv {maxv} freq {freq} phase {phase}")
+    if fParaCalReset(0, datas, totallength, fGetOscSampleRate(), fGetVoltageResolution(0), 
+                  fGetVoltageExtremeMin(0), fGetVoltageExtremeMax(0)) == PARA_CAL_OK:
+        if fIsMinOk(0) == PARA_CAL_OK:
+            print(f" min {fGetMin(0)}", end="")
+        if fIsMaxOk(0) == PARA_CAL_OK:
+            print(f" max {fGetMax(0)}", end="")
+        if fIsVppOk(0) == PARA_CAL_OK:
+            print(f" vpp {fGetVpp(0)}", end="")
+        if fIsRmsOk(0) == PARA_CAL_OK:                    # 有效值
+            print(f" rms {fGetRms(0)}", end="")
+        if fIsTopOk(0) == PARA_CAL_OK:                    # 顶端值
+            print(f" top {fGetTop(0)}", end="")
+        if fIsBaseOk(0) == PARA_CAL_OK:                   # 底端值
+            print(f" base {fGetBase(0)}", end="")
+        if fIsAmplOk(0) == PARA_CAL_OK:                   # 幅值 (Top - Base)
+            print(f" ampl {fGetAmpl(0)}", end="")
+        if fIsFreqOk(0) == PARA_CAL_OK:
+            print(f" freq {fGetFreq(0)}", end="")
+    print()  # 换行
 
-    len_ch2 = fReadVoltageDatas(ctypes.c_char(1), datas, mem_length)
-    
-    minv = maxv = datas[0]
-    for i in range(len_ch2):
-        minv = min(datas[i], minv)
-        maxv = max(datas[i], maxv)
-    
+    num = fReadVoltageDatas(ctypes.c_char(1), datas, totallength);
     isoutrange = fIsVoltageDatasOutRange(ctypes.c_char(1))
-    freq = phase = 0
-    
-    if fCalFreq(datas, len_ch2, ctypes.c_double(fGetVoltageResolution(ctypes.c_char(1))), fGetOscSampleRate()):
-        freq = fGetFreq()
-        phase = fGetPhase()
-    
-    print(f"Channel 1 isoutrange {isoutrange} ReadVoltageDatas {len_ch2} minv {minv} maxv {maxv} freq {freq} phase {phase}")
+    print(f"Channel 1 isoutrange {isoutrange} ReadVoltageDatas {num}", end="")
+        
+    if fParaCalReset(1, datas, totallength, fGetOscSampleRate(), fGetVoltageResolution(1), 
+                  fGetVoltageExtremeMin(1), fGetVoltageExtremeMax(1)) == PARA_CAL_OK:
+        if fIsMinOk(1) == PARA_CAL_OK:
+            print(f" min {fGetMin(1)}", end="")
+        if fIsMaxOk(1) == PARA_CAL_OK:
+            print(f" max {fGetMax(1)}", end="")
+        if fIsVppOk(1) == PARA_CAL_OK:
+            print(f" vpp {fGetVpp(1)}", end="")
+        if fIsRmsOk(1) == PARA_CAL_OK:                    # 有效值
+            print(f" rms {fGetRms(1)}", end="")
+        if fIsTopOk(1) == PARA_CAL_OK:                    # 顶端值
+            print(f" top {fGetTop(1)}", end="")
+        if fIsBaseOk(1) == PARA_CAL_OK:                   # 底端值
+            print(f" base {fGetBase(1)}", end="")
+        if fIsAmplOk(1) == PARA_CAL_OK:                   # 幅值 (Top - Base)
+            print(f" ampl {fGetAmpl(1)}", end="")
+        if fIsFreqOk(1) == PARA_CAL_OK:
+            print(f" freq {fGetFreq(1)}", end="")
+    print()  # 换行
 
 
 def NextCapture():

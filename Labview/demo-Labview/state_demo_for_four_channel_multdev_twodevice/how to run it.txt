@@ -1,0 +1,2 @@
+1、这个例子需要2个设备同时插入电脑才可以运行；初始化以后会等待2个设备就绪，才会进行下面的操作。
+1. This example requires two devices to be connected to the computer simultaneously in order to run; after initialization, it will wait for both devices to be ready before proceeding with the following operations.

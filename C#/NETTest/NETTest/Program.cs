@@ -1,7 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using System.Runtime.InteropServices;
 using System;
+using System.Runtime.InteropServices;
 using System.Threading;  //导入命名空间,类Thread就在此空间中
 
 namespace ConsoleApp
@@ -38,7 +38,7 @@ namespace ConsoleApp
         extern static void SetDDSBoxingStyle(byte channel_index, int boxing);
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
-        extern static void SetDDSFreq(byte channel_index, int pinlv);
+        extern static void SetDDSFreq(byte channel_index, double pinlv);
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
         extern static int GetDDSCurBoxingAmplitudeMv(int boxing);
@@ -50,7 +50,10 @@ namespace ConsoleApp
         extern static void SetDDSBiasMv(byte channel_index, int bias);
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
-        extern static int SetOscChannelRangemV(int channel, int minmv, int maxmv);
+        static extern void DDSOutputEnable(byte channel_index, int enable);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        extern static int SetOscChannelRangemV(byte channel, int minmv, int maxmv);
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
         extern static int GetOscSupportSampleRateNum();
@@ -70,39 +73,15 @@ namespace ConsoleApp
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
         extern static int ReadVoltageDatas(byte channel, double[] buffer, int length);
 
+        // 读取电压数据的触发点位置
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
-        extern static int Capture(int length, short capture_channel, byte force_length);
+        extern static double ReadVoltageDatasTriggerPoint();
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        extern static int Capture(int length, ushort capture_channel, byte force_length);
 
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
         extern static double GetVoltageResolution(byte channel);
-
-        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
-        extern static int CalFreq(double[] buffer, int buffer_length, double voltage_resolution, int sample);
-
-        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
-        extern static double GetFreq();
-
-        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
-        extern static double GetPhase();
-
-        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
-        extern static double GetPositiveDuty();
-
-        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
-        extern static double GetNegativeDuty();
-
-        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
-        extern static int CalFreqAndPhaseDif(double[] buffer1, double voltage_resolution1, double[] buffer2, double voltage_resolution2,
-                            int buffer_length, int sample, double freq_deviation_threshold);
-
-        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
-        extern static double GetFreq1();
-
-        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
-        extern static double GetFreq2();
-
-        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
-        extern static double GetPhaseDif();
 
         public delegate void AddCallBackDelegate(IntPtr ppara); //声明委托
         public delegate void RemoveCallBackDelegate(IntPtr ppara); //声明委托
@@ -135,9 +114,121 @@ namespace ConsoleApp
         [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
         static extern void SetIOReadStateCallBack(IntPtr ppara, IOStateCallBack datacallback);
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern double GetVoltageExtremeMin(char channel);
 
-    // 回调函数  
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern double GetVoltageExtremeMax(char channel);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern int ParaCalReset(int para_chn, double[] buffer, int buffer_length,
+            int sample, double voltage_resolution, double extreme_min, double extreme_max);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern int IsMinOk(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern double GetMin(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern int IsMaxOk(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern double GetMax(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern int IsVppOk(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern double GetVpp(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern int IsTopOk(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern double GetTop(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern int IsBaseOk(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern double GetBase(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern int IsAmplOk(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern double GetAmpl(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern int IsMeanOk(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern double GetMean(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern int IsRmsOk(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern double GetRms(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern int IsFreqOk(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern double GetFreq(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern int IsPhaseOk(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern double GetPhase(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern int IsCycleRmsOk(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern double GetCycleRms(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern int IsCycleMeanOk(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern double GetCycleMean(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern int IsPositiveDutyOk(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern double GetPositiveDuty(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern int IsPositivePulseWidthOk(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern double GetPositivePulseWidth(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern int IsNegativeDutyOk(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern double GetNegativeDuty(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern int IsNegativePulseWidthOk(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern double GetNegativePulseWidth(int para_chn);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern int CalPhaseDif(int para_chn_a, int para_chn_b, double freq_deviation_threshold, int ref_freq, double force_freq);
+
+        [DllImport(Program.vmmso_dll_path, CallingConvention = CallingConvention.StdCall)]
+        static extern double GetPhaseDif();
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // 回调函数  
         public static void AddCallBackFunc(IntPtr ppara)
         {
             Console.WriteLine("AddCallBackFunc");
@@ -157,6 +248,36 @@ namespace ConsoleApp
         {
             Console.WriteLine("IOStateCallBack state {0:X} \n", state);  // {0:X} 表示十六进制格式
         }
+
+        // Trigger Source 常量
+        public const uint TRIGGER_SOURCE_CH1 = 0;
+        public const uint TRIGGER_SOURCE_CH2 = 1;
+        public const uint TRIGGER_SOURCE_CH3 = 2;
+        public const uint TRIGGER_SOURCE_CH4 = 3;
+        public const uint TRIGGER_SOURCE_LOGIC0 = 16;
+
+        // Trigger Style 常量
+        public const uint TRIGGER_STYLE_NONE = 0x0000;
+        public const uint TRIGGER_STYLE_RISE_EDGE = 0x0001;
+        public const uint TRIGGER_STYLE_FALL_EDGE = 0x0002;
+        public const uint TRIGGER_STYLE_EDGE = 0x0004;
+
+        // DDS Boxing Style 常量
+        public const int BX_SINE = 0x0001;
+        public const int BX_SQUARE = 0x0002;
+        public const int BX_RAMP = 0x0004;
+        public const int BX_PULSE = 0x0008;
+        public const int BX_NOISE = 0x0010;
+        public const int BX_DC = 0x0020;
+        public const int BX_ARB = 0x0040;
+
+        // DDS Out Mode 常量
+        public const uint DDS_OUT_MODE_CONTINUOUS = 0x00;
+        public const uint DDS_OUT_MODE_SWEEP = 0x01;
+        public const uint DDS_OUT_MODE_BURST = 0x02;
+
+        // PARA_CAL_OK
+        public const int PARA_CAL_OK = 0;
 
         public static void Main(string[] args)
         {
@@ -199,7 +320,7 @@ namespace ConsoleApp
                             Console.WriteLine("{0:X}", style[i]);
                     }
                     SetDDSOutMode(channel, 0x00);
-                    int boxing = 0x0001;
+                    int boxing = BX_SINE;
                     SetDDSBoxingStyle(channel, boxing);
                     SetDDSFreq(channel, 1000);
                     //get max ampl mv
@@ -208,6 +329,7 @@ namespace ConsoleApp
                     SetDDSAmplitudeMv(channel, max_ampl_mv / 2);
                     SetDDSBiasMv(channel, 0);
 
+                    DDSOutputEnable(channel, 1);
                     Console.WriteLine("DDS0 is started!\n");
                 }
 
@@ -264,69 +386,60 @@ namespace ConsoleApp
                         Thread.Sleep(1000); //延时1s
                         if (IsDataReady() > 0)
                         {
+                            double trigger_point =  ReadVoltageDatasTriggerPoint();
+                            Console.WriteLine($" trigger_point {trigger_point}");
+
                             int len = ReadVoltageDatas(0, buffer_ch1, mem_length);
-                            double minv_ch1 = buffer_ch1[0];
-                            double maxv_ch1 = buffer_ch1[0];
-                            for (int i = 0; i < len; i++)
+
+                            int result = ParaCalReset(0, buffer_ch1, len, GetOscSampleRate(), GetVoltageResolution(0), GetVoltageExtremeMin((char)0), GetVoltageExtremeMax((char)0));
+                            if (result == PARA_CAL_OK)
                             {
-                                minv_ch1 = buffer_ch1[i] < minv_ch1 ? buffer_ch1[i] : minv_ch1;
-                                maxv_ch1 = buffer_ch1[i] > maxv_ch1 ? buffer_ch1[i] : maxv_ch1;
+                                const int PARA_CAL_OK = 0;
+
+                                if (IsMinOk(0) == PARA_CAL_OK)
+                                    Console.Write($" min {GetMin(0)}");
+                                if (IsMaxOk(0) == PARA_CAL_OK)
+                                    Console.Write($" max {GetMax(0)}");
+                                if (IsVppOk(0) == PARA_CAL_OK)
+                                    Console.Write($" vpp {GetVpp(0)}");
+                                if (IsRmsOk(0) == PARA_CAL_OK)                    // 有效值
+                                    Console.Write($" rms {GetRms(0)}");
+                                if (IsTopOk(0) == PARA_CAL_OK)                    // 顶端值
+                                    Console.Write($" top {GetTop(0)}");
+                                if (IsBaseOk(0) == PARA_CAL_OK)                   // 底端值
+                                    Console.Write($" base {GetBase(0)}");
+                                if (IsAmplOk(0) == PARA_CAL_OK)                   // 幅值 (Top - Base)
+                                    Console.Write($" ampl {GetAmpl(0)}");
+                                if (IsFreqOk(0) == PARA_CAL_OK)
+                                    Console.Write($" freq {GetFreq(0)}");
+                                Console.WriteLine();
                             }
 
                             len = ReadVoltageDatas(1, buffer_ch2, mem_length);
-                            double minv_ch2 = buffer_ch2[0];
-                            double maxv_ch2 = buffer_ch2[0];
-                            for (int i = 0; i < len; i++)
+                            result = ParaCalReset(1, buffer_ch2, len, GetOscSampleRate(), GetVoltageResolution(1), GetVoltageExtremeMin((char)1), GetVoltageExtremeMax((char)1));
+                            if (result == PARA_CAL_OK)
                             {
-                                minv_ch2 = buffer_ch2[i] < minv_ch2 ? buffer_ch2[i] : minv_ch2;
-                                maxv_ch2 = buffer_ch2[i] > maxv_ch2 ? buffer_ch2[i] : maxv_ch2;
+                                const int PARA_CAL_OK = 0;
+
+                                if (IsMinOk(1) == PARA_CAL_OK)
+                                    Console.Write($" min {GetMin(1)}");
+                                if (IsMaxOk(1) == PARA_CAL_OK)
+                                    Console.Write($" max {GetMax(1)}");
+                                if (IsVppOk(1) == PARA_CAL_OK)
+                                    Console.Write($" vpp {GetVpp(1)}");
+                                if (IsRmsOk(1) == PARA_CAL_OK)                    // 有效值
+                                    Console.Write($" rms {GetRms(1)}");
+                                if (IsTopOk(1) == PARA_CAL_OK)                    // 顶端值
+                                    Console.Write($" top {GetTop(1)}");
+                                if (IsBaseOk(1) == PARA_CAL_OK)                   // 底端值
+                                    Console.Write($" base {GetBase(1)}");
+                                if (IsAmplOk(1) == PARA_CAL_OK)                   // 幅值 (Top - Base)
+                                    Console.Write($" ampl {GetAmpl(1)}");
+                                if (IsFreqOk(1) == PARA_CAL_OK)
+                                    Console.Write($" freq {GetFreq(1)}");
+                                Console.WriteLine();
                             }
 
-                            //计算一个通道频率，使用
-                            /*double freq = 0;
-                            double phase = 0;
-                            if (CalFreq(buffer, len, GetVoltageResolution(h), GetOscSampleRate()) > 0)
-                            {
-                                freq = GetFreq();
-                                phase = GetPhase();
-                            }
-                            Console.WriteLine($"CH{h} ReadVoltageDatas {len} minv {minv} maxv {maxv} freq {freq} phase {phase}");*/
-
-                            //计算2个通道频率和相位
-                            int res = CalFreqAndPhaseDif(buffer_ch1, GetVoltageResolution(0), buffer_ch2, GetVoltageResolution(1),
-                                        len, GetOscSampleRate(), 10);
-                            if (res == 1)
-                            {
-                                double freq1 = GetFreq1();
-                                double freq2 = GetFreq2();
-                                double phasedir = GetPhaseDif();
-                                Console.WriteLine($"CH1 ReadVoltageDatas {len} minv {minv_ch1} maxv {maxv_ch1} freq {freq1} \t " +
-                                    $"CH2 ReadVoltageDatas {len} minv {minv_ch2} maxv {maxv_ch2} freq {freq2}  phasedir {phasedir} ");
-                            }
-                            else if (res == 2)
-                            {
-                                double freq1 = GetFreq1();
-                                double freq2 = GetFreq2();
-                                Console.WriteLine($"CH1 ReadVoltageDatas {len} minv {minv_ch1} maxv {maxv_ch1} freq {freq1} \t " +
-                                    $"CH2 ReadVoltageDatas {len} minv {minv_ch2} maxv {maxv_ch2} freq {freq2}  phasedir *** ");
-                            }
-                            else if (res == 3)
-                            {
-                                double freq1 = GetFreq1();
-                                Console.WriteLine($"CH1 ReadVoltageDatas {len} minv {minv_ch1} maxv {maxv_ch1} freq {freq1} \t " +
-                                     $"CH2 ReadVoltageDatas {len} minv {minv_ch2} maxv {maxv_ch2} freq ***  phasedir *** ");
-                            }
-                            else if (res == 4)
-                            {
-                                double freq2 = GetFreq2();
-                                Console.WriteLine($"CH1 ReadVoltageDatas {len} minv {minv_ch1} maxv {maxv_ch1} freq *** \t " +
-                                    $"CH2 ReadVoltageDatas {len} minv {minv_ch2} maxv {maxv_ch2} freq {freq2}  phasedir *** ");
-                            }
-                            else
-                            {
-                                Console.WriteLine($"CH1 ReadVoltageDatas {len} minv {minv_ch1} maxv {maxv_ch1} freq *** \t " +
-                                    $"CH2 ReadVoltageDatas {len} minv {minv_ch2} maxv {maxv_ch2} freq ***  phasedir *** ");
-                            }
 
                             Capture(mem_length / 1024, 3, 0);
                         }

@@ -31,13 +31,9 @@ fFinishDll.restype = ctypes.c_int
 
 ########################### Device ##############################
 ## get equipment information id0
-fGetOnlyId0 = mdll.GetOnlyId0
-fGetOnlyId0.argtypes = [ctypes.c_uint]
-fGetOnlyId0.restype = ctypes.c_uint
-## get equipment information id1
-fGetOnlyId1 = mdll.GetOnlyId1
-fGetOnlyId1.argtypes = [ctypes.c_uint]
-fGetOnlyId1.restype = ctypes.c_uint
+fGetOnlyId = mdll.GetOnlyId
+fGetOnlyId.argtypes = [ctypes.c_uint]
+fGetOnlyId.restype = ctypes.c_uint
 ## reset device
 fResetDevice = mdll.ResetDevice
 fResetDevice.argtypes = [ctypes.c_uint]
@@ -440,21 +436,169 @@ IO_DISABLE = 0
 IO_ENABLE = 1
 ############################ IO ##############################
 
-############################ CalFreq ##############################
-fGetVoltageResolution = mdll.GetVoltageResolution
-fGetVoltageResolution.restype = ctypes.c_double
 
-fCalFreq = mdll.CalFreq
-#fCalFreq.argtypes = [ctype.c_void_p, ctypes.c_uint, ctypes.c_double, ctypes.c_uint]
-fCalFreq.restype = ctypes.c_uint
+############################ Parameter calculation ##############################
+
+PARA_CAL_OK = 0
+############################ ParaCalReset ##############################
+fParaCalReset = mdll.ParaCalReset
+fParaCalReset.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.c_int, ctypes.c_double, ctypes.c_double, ctypes.c_double]
+fParaCalReset.restype = ctypes.c_int
+
+############################ IsMinOk / GetMin ##############################
+fIsMinOk = mdll.IsMinOk
+fIsMinOk.argtypes = [ctypes.c_int]
+fIsMinOk.restype = ctypes.c_int
+
+fGetMin = mdll.GetMin
+fGetMin.argtypes = [ctypes.c_int]
+fGetMin.restype = ctypes.c_double
+
+############################ IsMaxOk / GetMax ##############################
+fIsMaxOk = mdll.IsMaxOk
+fIsMaxOk.argtypes = [ctypes.c_int]
+fIsMaxOk.restype = ctypes.c_int
+
+fGetMax = mdll.GetMax
+fGetMax.argtypes = [ctypes.c_int]
+fGetMax.restype = ctypes.c_double
+
+############################ IsVppOk / GetVpp ##############################
+fIsVppOk = mdll.IsVppOk
+fIsVppOk.argtypes = [ctypes.c_int]
+fIsVppOk.restype = ctypes.c_int
+
+fGetVpp = mdll.GetVpp
+fGetVpp.argtypes = [ctypes.c_int]
+fGetVpp.restype = ctypes.c_double
+
+############################ IsTopOk / GetTop ##############################
+fIsTopOk = mdll.IsTopOk
+fIsTopOk.argtypes = [ctypes.c_int]
+fIsTopOk.restype = ctypes.c_int
+
+fGetTop = mdll.GetTop
+fGetTop.argtypes = [ctypes.c_int]
+fGetTop.restype = ctypes.c_double
+
+############################ IsBaseOk / GetBase ##############################
+fIsBaseOk = mdll.IsBaseOk
+fIsBaseOk.argtypes = [ctypes.c_int]
+fIsBaseOk.restype = ctypes.c_int
+
+fGetBase = mdll.GetBase
+fGetBase.argtypes = [ctypes.c_int]
+fGetBase.restype = ctypes.c_double
+
+############################ IsAmplOk / GetAmpl ##############################
+fIsAmplOk = mdll.IsAmplOk
+fIsAmplOk.argtypes = [ctypes.c_int]
+fIsAmplOk.restype = ctypes.c_int
+
+fGetAmpl = mdll.GetAmpl
+fGetAmpl.argtypes = [ctypes.c_int]
+fGetAmpl.restype = ctypes.c_double
+
+############################ IsMeanOk / GetMean ##############################
+fIsMeanOk = mdll.IsMeanOk
+fIsMeanOk.argtypes = [ctypes.c_int]
+fIsMeanOk.restype = ctypes.c_int
+
+fGetMean = mdll.GetMean
+fGetMean.argtypes = [ctypes.c_int]
+fGetMean.restype = ctypes.c_double
+
+############################ IsRmsOk / GetRms ##############################
+fIsRmsOk = mdll.IsRmsOk
+fIsRmsOk.argtypes = [ctypes.c_int]
+fIsRmsOk.restype = ctypes.c_int
+
+fGetRms = mdll.GetRms
+fGetRms.argtypes = [ctypes.c_int]
+fGetRms.restype = ctypes.c_double
+
+############################ IsFreqOk / GetFreq ##############################
+fIsFreqOk = mdll.IsFreqOk
+fIsFreqOk.argtypes = [ctypes.c_int]
+fIsFreqOk.restype = ctypes.c_int
 
 fGetFreq = mdll.GetFreq
+fGetFreq.argtypes = [ctypes.c_int]
 fGetFreq.restype = ctypes.c_double
 
+############################ IsPhaseOk / GetPhase ##############################
+fIsPhaseOk = mdll.IsPhaseOk
+fIsPhaseOk.argtypes = [ctypes.c_int]
+fIsPhaseOk.restype = ctypes.c_int
+
 fGetPhase = mdll.GetPhase
+fGetPhase.argtypes = [ctypes.c_int]
 fGetPhase.restype = ctypes.c_double
 
-############################ CalFreq ##############################
+############################ IsCycleRmsOk / GetCycleRms ##############################
+fIsCycleRmsOk = mdll.IsCycleRmsOk
+fIsCycleRmsOk.argtypes = [ctypes.c_int]
+fIsCycleRmsOk.restype = ctypes.c_int
+
+fGetCycleRms = mdll.GetCycleRms
+fGetCycleRms.argtypes = [ctypes.c_int]
+fGetCycleRms.restype = ctypes.c_double
+
+############################ IsCycleMeanOk / GetCycleMean ##############################
+fIsCycleMeanOk = mdll.IsCycleMeanOk
+fIsCycleMeanOk.argtypes = [ctypes.c_int]
+fIsCycleMeanOk.restype = ctypes.c_int
+
+fGetCycleMean = mdll.GetCycleMean
+fGetCycleMean.argtypes = [ctypes.c_int]
+fGetCycleMean.restype = ctypes.c_double
+
+############################ IsPositiveDutyOk / GetPositiveDuty ##############################
+fIsPositiveDutyOk = mdll.IsPositiveDutyOk
+fIsPositiveDutyOk.argtypes = [ctypes.c_int]
+fIsPositiveDutyOk.restype = ctypes.c_int
+
+fGetPositiveDuty = mdll.GetPositiveDuty
+fGetPositiveDuty.argtypes = [ctypes.c_int]
+fGetPositiveDuty.restype = ctypes.c_double
+
+############################ IsPositivePulseWidthOk / GetPositivePulseWidth ##############################
+fIsPositivePulseWidthOk = mdll.IsPositivePulseWidthOk
+fIsPositivePulseWidthOk.argtypes = [ctypes.c_int]
+fIsPositivePulseWidthOk.restype = ctypes.c_int
+
+fGetPositivePulseWidth = mdll.GetPositivePulseWidth
+fGetPositivePulseWidth.argtypes = [ctypes.c_int]
+fGetPositivePulseWidth.restype = ctypes.c_double
+
+############################ IsNegativeDutyOk / GetNegativeDuty ##############################
+fIsNegativeDutyOk = mdll.IsNegativeDutyOk
+fIsNegativeDutyOk.argtypes = [ctypes.c_int]
+fIsNegativeDutyOk.restype = ctypes.c_int
+
+fGetNegativeDuty = mdll.GetNegativeDuty
+fGetNegativeDuty.argtypes = [ctypes.c_int]
+fGetNegativeDuty.restype = ctypes.c_double
+
+############################ IsNegativePulseWidthOk / GetNegativePulseWidth ##############################
+fIsNegativePulseWidthOk = mdll.IsNegativePulseWidthOk
+fIsNegativePulseWidthOk.argtypes = [ctypes.c_int]
+fIsNegativePulseWidthOk.restype = ctypes.c_int
+
+fGetNegativePulseWidth = mdll.GetNegativePulseWidth
+fGetNegativePulseWidth.argtypes = [ctypes.c_int]
+fGetNegativePulseWidth.restype = ctypes.c_double
+
+############################ CalPhaseDif / GetPhaseDif ##############################
+fCalPhaseDif = mdll.CalPhaseDif
+fCalPhaseDif.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_double, ctypes.c_int, ctypes.c_double]
+fCalPhaseDif.restype = ctypes.c_int
+
+fGetPhaseDif = mdll.GetPhaseDif
+fGetPhaseDif.argtypes = []
+fGetPhaseDif.restype = ctypes.c_double
+
+############################ Parameter calculation ##############################
 
 
 ################################################################################################################
@@ -511,8 +655,7 @@ def DevNoticeAddCallBack_func(p, dev_id):
     print('DevNoticeAddCallBack_func', dev_id)
     
     ## onyid
-    print ('## ID0: ', fGetOnlyId0(dev_id))
-    print ('## ID1: ', fGetOnlyId1(dev_id))
+    print ('## ID: ', fGetOnlyId(dev_id))
 
     des_length = 256  # 缓冲区大小
     des_buffer = ctypes.create_string_buffer(des_length)  # 创建缓冲区

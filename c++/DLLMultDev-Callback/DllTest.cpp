@@ -4,7 +4,12 @@
 #include "DllTest.h"
 #include "VmMultMsoLib.h"
 #include <thread>
+#include <string>
 
+void TestC(std::string_view v)
+{
+	printf("%s", v.data());
+}
 //////////////////////////////////////////////DDS////////////////////////////////////////////////////////
 void DDSInit(unsigned int dev_id, unsigned char channel_index, unsigned int out_mode)
 {

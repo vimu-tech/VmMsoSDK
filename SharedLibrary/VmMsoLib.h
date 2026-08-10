@@ -20,7 +20,7 @@
 #endif
 
 /*************************************************
-　　V1.22 20260115
+　　V1.24 20260424
 *************************************************/
 
 //////////////////////////////////////////////////////////////////////Initialization/Finished Dll//////////////////////////////////////////////////////////////////
@@ -53,15 +53,7 @@ DLL_API int WINAPI FinishDll();
 	Output:      -only id(0-31)
 	　　         Return only id(0-31)
 *************************************************/
-DLL_API unsigned int WINAPI GetOnlyId0();
-
-/*************************************************
-　　Description  This routines return only id(32-63)
-	Input:       -
-	Output:      -only id(32-63)
-  　　			Return only id(32-63)
-*************************************************/
-DLL_API unsigned int WINAPI GetOnlyId1();
+DLL_API unsigned int WINAPI GetOnlyId();
 
 /*************************************************
 　　Description   Rescan Device
@@ -592,6 +584,15 @@ DLL_API double WINAPI ReadADCToVoltageBias(char channel);
 	Output     Return the trigger point
 ******************************************************************************************/
 DLL_API double WINAPI ReadVoltageDatasTriggerPoint();
+
+/******************************************************************************************
+Description  This routines return the min and max range of capture  .
+	Input:     channel     read channel	0 :channel 1
+　　									1 :channel 2
+	Output     Return value
+ ******************************************************************************************/
+DLL_API double WINAPI GetVoltageExtremeMin(char channel);
+DLL_API double WINAPI GetVoltageExtremeMax(char channel);
 
 /******************************************************************************************
 Description  This routines return the voltage datas is out range or not.
@@ -1187,7 +1188,8 @@ DLL_API unsigned char WINAPI GetIOInOut(unsigned char channel);
 						1--1
 						2--z
 						3--pulse
-						4--dds gate
+						4--dds1 gate
+						5--dds2 gate
 ******************************************************************************************/
 DLL_API void WINAPI SetIOOutState(unsigned char channel, unsigned char state);
 
@@ -1279,71 +1281,405 @@ DLL_API int WINAPI GetDACmV(unsigned char channel_index);
 //Self define Cmd
 DLL_API void WINAPI SetSelfCmd(int channel, int cmd);
 
-///////////////////////////////////////////////////////////////////////////algorithm///////////////////////////////////////////////////////////////////////////
-/******************************************************************************************
-　　Description  This routines cal the freq of buffer
-　　Input:       buffer		cal buffer
-				 buffer_length	the length of the cal buffer	
-				 voltage_resolution		using the GetVoltageResolution to get 
-				 sample		the sample of setting
-	Output:      freq
-	example:	if(CalFreq(m_buffer, m_real_length, GetVoltageResolution(channel), GetOscSample()))
+///////////////////////////////////////////////////////////////////Parameter calculation///////////////////////////////////////////////////////
+/**
+ *  Note: Four independent parameter calculation modules are provided, one for each channel (0 through 3). 
+ * Each module operates independently and maintains its own configuration and calculation state. 
+**/
+
+#define PARA_CAL_OK 0
+
+/**
+ * Description  This routine updates the data buffer and calculation parameters for a specified
+ *              channel and resets all previously stored calculation results. After calling this
+ *              function, all internal min/max validity flags for this channel are cleared,
+ *              requiring a fresh calculation cycle before results can be retrieved via
+ *              GetMin/GetMax.
+ * 
+ * Input:       para_chn            the channel number to configure and reset (0-based index)
+ *              buffer              pointer to the new input data buffer
+ *              buffer_length       total number of elements in the new buffer
+ *              voltage_resolution  voltage resolution factor
+ *              sample              the sample index interval or stride (e.g., step size)
+ *              extreme_min  		the voltage buffer min of capture range
+ * 				extreme_max			the voltage buffer max of capture range
+ * 
+ * Output:      PARA_CAL_OK         parameters updated and reset successfully
+ *              -1                  invalid channel number (>= PARAMAX)
+ *              -2                  invalid buffer pointer (NULL) or configuration error
+ * 
+ * Note:        This is a SETUP/RESET function. It does NOT perform the min/max calculation
+ *              immediately. It stores the new configuration and invalidates the previous
+ *              results. The actual calculation will occur in a subsequent processing step.
+ *              Until that calculation completes, IsMinOk and IsMaxOk will return -2 (invalid).
+ *
+ * example:	
+            int para_chn = 0;
+ 			if(!IsVoltageDatasOutRange(channel))
+			{
+				if(ParaCalReset(para_chn, m_buffer, m_real_length, 
+				GetOscSample(), GetVoltageResolution(channel), GetVoltageExtremeMin(channel), GetVoltageExtremeMax(channel)))
 				{
-					double freq = GetFreq();
-					double phase = GetPhase();
-					double posduty = GetPositiveDuty();
-					double negduty GetNegativeDuty();
+					if(IsMinOk(para_chn))
+						double min =  GetMin(para_chn);
+					if(IsMaxOk(para_chn))
+						double max =  GetMax(para_chn);
+					if(IsVppOk(para_chn))
+						double vpp =  GetVpp(para_chn);
+					.......
 				}
-******************************************************************************************/
-DLL_API int WINAPI CalFreq(double* buffer, unsigned int buffer_length, double voltage_resolution, unsigned int sample);
-DLL_API double WINAPI GetFreq();
-DLL_API double WINAPI GetPhase();
-DLL_API double WINAPI GetPositiveDuty();
-DLL_API double WINAPI GetNegativeDuty();
+ 			}
+ *			
+ */
+DLL_API int WINAPI ParaCalReset(int para_chn, double* buffer, int buffer_length, 
+               int sample, double voltage_resolution, double extreme_min, double extreme_max);
+
+/**
+ * Description  This routine checks if the minimum value calculation for the specified channel is valid
+ * Input:       para_chn    the channel number to check (0-based index)
+ * 
+ * Output:      PARA_CAL_OK    the minimum value is valid and available
+ *              -2             the minimum value is invalid or not calculated
+ *              -1             the channel number is out of range (>= PARAMAX)
+ */
+DLL_API int WINAPI IsMinOk(int para_chn);
+
+/**
+ * Description  This routine returns the calculated minimum value for the specified channel
+ * Input:       para_chn    the channel number to query (0-based index)
+ * 
+ * Output:      double      the minimum value if channel is valid
+ *              0.0         if the channel number is out of range (>= PARAMAX)
+ */
+DLL_API double WINAPI GetMin(int para_chn);
+
+/**
+ * Description  This routine checks if the maximum value calculation for the specified channel is valid
+ * Input:       para_chn    the channel number to check (0-based index)
+ * 
+ * Output:      PARA_CAL_OK    the maximum value is valid and available
+ *              -2             the maximum value is invalid or not calculated
+ *              -1             the channel number is out of range (>= PARAMAX)
+ */
+DLL_API int WINAPI IsMaxOk(int para_chn);
+
+/**
+ * Description  This routine returns the calculated maximum value for the specified channel
+ * Input:       para_chn    the channel number to query (0-based index)
+ * 
+ * Output:      double      the maximum value if channel is valid
+ *              0.0         if the channel number is out of range (>= PARAMAX)
+ */
+DLL_API double WINAPI GetMax(int para_chn);
+
+/**
+ * Description  This routine checks if the peak-to-peak voltage calculation for the specified channel is valid
+ * Input:       para_chn    the channel number to check (0-based index)
+ * 
+ * Output:      PARA_CAL_OK    the peak-to-peak value is valid and available
+ *              -2             the peak-to-peak value is invalid or not calculated
+ *              -1             the channel number is out of range (>= PARAMAX)
+ */
+DLL_API int WINAPI IsVppOk(int para_chn);
+
+/**
+ * Description  This routine returns the calculated peak-to-peak voltage for the specified channel
+ * Input:       para_chn    the channel number to query (0-based index)
+ * 
+ * Output:      double      the peak-to-peak value if channel is valid
+ *              0.0         if the channel number is out of range (>= PARAMAX)
+ */
+DLL_API double WINAPI GetVpp(int para_chn);
+
+/**
+ * Description  This routine checks if the top value calculation for the specified channel is valid
+ * Input:       para_chn    the channel number to check (0-based index)
+ * 
+ * Output:      PARA_CAL_OK    the top value is valid and available
+ *              -2             the top value is invalid or not calculated
+ *              -1             the channel number is out of range (>= PARAMAX)
+ */
+DLL_API int WINAPI IsTopOk(int para_chn);
+
+/**
+ * Description  This routine returns the calculated top value for the specified channel
+ * Input:       para_chn    the channel number to query (0-based index)
+ * 
+ * Output:      double      the top value if channel is valid
+ *              0.0         if the channel number is out of range (>= PARAMAX)
+ */
+DLL_API double WINAPI GetTop(int para_chn);
+
+/**
+ * Description  This routine checks if the base value calculation for the specified channel is valid
+ * Input:       para_chn    the channel number to check (0-based index)
+ * 
+ * Output:      PARA_CAL_OK    the base value is valid and available
+ *              -2             the base value is invalid or not calculated
+ *              -1             the channel number is out of range (>= PARAMAX)
+ */
+DLL_API int WINAPI IsBaseOk(int para_chn);
+
+/**
+ * Description  This routine returns the calculated base value for the specified channel
+ * Input:       para_chn    the channel number to query (0-based index)
+ * 
+ * Output:      double      the base value if channel is valid
+ *              0.0         if the channel number is out of range (>= PARAMAX)
+ */
+DLL_API double WINAPI GetBase(int para_chn);
+
+/**
+ * Description  This routine checks if the amplitude calculation for the specified channel is valid
+ * Input:       para_chn    the channel number to check (0-based index)
+ * 
+ * Output:      PARA_CAL_OK    the amplitude value is valid and available
+ *              -2             the amplitude value is invalid or not calculated
+ *              -1             the channel number is out of range (>= PARAMAX)
+ */
+DLL_API int WINAPI IsAmplOk(int para_chn);
+
+/**
+ * Description  This routine returns the calculated amplitude for the specified channel
+ * Input:       para_chn    the channel number to query (0-based index)
+ * 
+ * Output:      double      the amplitude value if channel is valid
+ *              0.0         if the channel number is out of range (>= PARAMAX)
+ */
+DLL_API double WINAPI GetAmpl(int para_chn);
+
+/**
+ * Description  This routine checks if the mean value calculation for the specified channel is valid
+ * Input:       para_chn    the channel number to check (0-based index)
+ * 
+ * Output:      PARA_CAL_OK    the mean value is valid and available
+ *              -2             the mean value is invalid or not calculated
+ *              -1             the channel number is out of range (>= PARAMAX)
+ */
+DLL_API int WINAPI IsMeanOk(int para_chn);
+
+/**
+ * Description  This routine returns the calculated mean value for the specified channel
+ * Input:       para_chn    the channel number to query (0-based index)
+ * 
+ * Output:      double      the mean value if channel is valid
+ *              0.0         if the channel number is out of range (>= PARAMAX)
+ */
+DLL_API double WINAPI GetMean(int para_chn);
+
+/**
+ * Description  This routine checks if the RMS value calculation for the specified channel is valid
+ * Input:       para_chn    the channel number to check (0-based index)
+ * 
+ * Output:      PARA_CAL_OK    the RMS value is valid and available
+ *              -2             the RMS value is invalid or not calculated
+ *              -1             the channel number is out of range (>= PARAMAX)
+ */
+DLL_API int WINAPI IsRmsOk(int para_chn);
+
+/**
+ * Description  This routine returns the calculated RMS value for the specified channel
+ * Input:       para_chn    the channel number to query (0-based index)
+ * 
+ * Output:      double      the RMS value if channel is valid
+ *              0.0         if the channel number is out of range (>= PARAMAX)
+ */
+DLL_API double WINAPI GetRms(int para_chn);
+
+/**
+ * Description  This routine checks if the frequency calculation for the specified channel is valid
+ * Input:       para_chn    the channel number to check (0-based index)
+ * 
+ * Output:      PARA_CAL_OK    the frequency value is valid and available
+ *              -2             the frequency value is invalid or not calculated
+ *              -1             the channel number is out of range (>= PARAMAX)
+ */
+DLL_API int WINAPI IsFreqOk(int para_chn);
+
+/**
+ * Description  This routine returns the calculated frequency for the specified channel
+ * Input:       para_chn    the channel number to query (0-based index)
+ * 
+ * Output:      double      the frequency value if channel is valid
+ *              0.0         if the channel number is out of range (>= PARAMAX)
+ */
+DLL_API double WINAPI GetFreq(int para_chn);
+
+/**
+ * Description  This routine checks if the phase calculation for the specified channel is valid
+ * Input:       para_chn    the channel number to check (0-based index)
+ * 
+ * Output:      PARA_CAL_OK    the phase value is valid and available
+ *              -2             the phase value is invalid or not calculated
+ *              -1             the channel number is out of range (>= PARAMAX)
+ */
+DLL_API int WINAPI IsPhaseOk(int para_chn);
+
+/**
+ * Description  This routine returns the calculated phase for the specified channel
+ * Input:       para_chn    the channel number to query (0-based index)
+ * 
+ * Output:      double      the phase value if channel is valid
+ *              0.0         if the channel number is out of range (>= PARAMAX)
+ */
+DLL_API double WINAPI GetPhase(int para_chn);
+
+/**
+ * Description  This routine checks if the cycle RMS value calculation for the specified channel is valid
+ * Input:       para_chn    the channel number to check (0-based index)
+ * 
+ * Output:      PARA_CAL_OK    the cycle RMS value is valid and available
+ *              -2             the cycle RMS value is invalid or not calculated
+ *              -1             the channel number is out of range (>= PARAMAX)
+ */
+DLL_API int WINAPI IsCycleRmsOk(int para_chn);
+
+/**
+ * Description  This routine returns the calculated cycle RMS value for the specified channel
+ * Input:       para_chn    the channel number to query (0-based index)
+ * 
+ * Output:      double      the cycle RMS value if channel is valid
+ *              0.0         if the channel number is out of range (>= PARAMAX)
+ */
+DLL_API double WINAPI GetCycleRms(int para_chn);
+
+/**
+ * Description  This routine checks if the cycle mean value calculation for the specified channel is valid
+ * Input:       para_chn    the channel number to check (0-based index)
+ * 
+ * Output:      PARA_CAL_OK    the cycle mean value is valid and available
+ *              -2             the cycle mean value is invalid or not calculated
+ *              -1             the channel number is out of range (>= PARAMAX)
+ */
+DLL_API int WINAPI IsCycleMeanOk(int para_chn);
+
+/**
+ * Description  This routine returns the calculated cycle mean value for the specified channel
+ * Input:       para_chn    the channel number to query (0-based index)
+ * 
+ * Output:      double      the cycle mean value if channel is valid
+ *              0.0         if the channel number is out of range (>= PARAMAX)
+ */
+DLL_API double WINAPI GetCycleMean(int para_chn);
+
+/**
+ * Description  This routine checks if the positive duty cycle calculation for the specified channel is valid
+ * Input:       para_chn    the channel number to check (0-based index)
+ * 
+ * Output:      PARA_CAL_OK    the positive duty cycle value is valid and available
+ *              -2             the positive duty cycle value is invalid or not calculated
+ *              -1             the channel number is out of range (>= PARAMAX)
+ */
+DLL_API int WINAPI IsPositiveDutyOk(int para_chn);
+
+/**
+ * Description  This routine returns the calculated positive duty cycle for the specified channel
+ * Input:       para_chn    the channel number to query (0-based index)
+ * 
+ * Output:      double      the positive duty cycle value if channel is valid
+ *              0.0         if the channel number is out of range (>= PARAMAX)
+ */
+DLL_API double WINAPI GetPositiveDuty(int para_chn);
+
+/**
+ * Description  This routine checks if the positive pulse width calculation for the specified channel is valid
+ * Input:       para_chn    the channel number to check (0-based index)
+ * 
+ * Output:      PARA_CAL_OK    the positive pulse width value is valid and available
+ *              -2             the positive pulse width value is invalid or not calculated
+ *              -1             the channel number is out of range (>= PARAMAX)
+ */
+DLL_API int WINAPI IsPositivePulseWidthOk(int para_chn);
+
+/**
+ * Description  This routine returns the calculated positive pulse width for the specified channel
+ * Input:       para_chn    the channel number to query (0-based index)
+ * 
+ * Output:      double      the positive pulse width value if channel is valid
+ *              0.0         if the channel number is out of range (>= PARAMAX)
+ */
+DLL_API double WINAPI GetPositivePulseWidth(int para_chn);
+
+/**
+ * Description  This routine checks if the negative duty cycle calculation for the specified channel is valid
+ * Input:       para_chn    the channel number to check (0-based index)
+ * 
+ * Output:      PARA_CAL_OK    the negative duty cycle value is valid and available
+ *              -2             the negative duty cycle value is invalid or not calculated
+ *              -1             the channel number is out of range (>= PARAMAX)
+ */
+DLL_API int WINAPI IsNegativeDutyOk(int para_chn);
+
+/**
+ * Description  This routine returns the calculated negative duty cycle for the specified channel
+ * Input:       para_chn    the channel number to query (0-based index)
+ * 
+ * Output:      double      the negative duty cycle value if channel is valid
+ *              0.0         if the channel number is out of range (>= PARAMAX)
+ */
+DLL_API double WINAPI GetNegativeDuty(int para_chn);
+
+/**
+ * Description  This routine checks if the negative pulse width calculation for the specified channel is valid
+ * Input:       para_chn    the channel number to check (0-based index)
+ * 
+ * Output:      PARA_CAL_OK    the negative pulse width value is valid and available
+ *              -2             the negative pulse width value is invalid or not calculated
+ *              -1             the channel number is out of range (>= PARAMAX)
+ */
+DLL_API int WINAPI IsNegativePulseWidthOk(int para_chn);
+
+/**
+ * Description  This routine returns the calculated negative pulse width for the specified channel
+ * Input:       para_chn    the channel number to query (0-based index)
+ * 
+ * Output:      double      the negative pulse width value if channel is valid
+ *              0.0         if the channel number is out of range (>= PARAMAX)
+ */
+DLL_API double WINAPI GetNegativePulseWidth(int para_chn);
 
 /******************************************************************************************
 　　Description  This routines cal the freq and phase difference of buffer1 with buffer2
-　　Input:       buffer1		cal buffer1
-				 voltage_resolution1		using the GetVoltageResolution to get 
-				 buffer2		cal buffer2
-				 voltage_resolution2		using the GetVoltageResolution to get 
-				 buffer_length	the length of the cal buffer	
-				 
-				 sample		the sample of setting
-				 freq_deviation_threshold    If the frequency difference between buffer1 and buffer2 is greater 
+　　Input:      para_chn_a  	using which channel of the ParaCalReset  
+				para_chn_b 		using which channel of the ParaCalReset  
+				freq_deviation_threshold    If the frequency difference between buffer1 and buffer2 is greater 
 				 							than this value, the phase difference will not be calculated.
-	Output:     1 	freq1 freq2 and phasedir success
-				2   freq1 freq2 success
-				3   freq1 success
-				4   freq2 success
-	example:	int success = CalFreqAndPhaseDif(m_buffer_ch1, GetVoltageResolution(0), m_buffer_ch2, GetVoltageResolution(1), m_real_length, GetOscSampleRate(), 10);
+				
+				int ref_freq  	1 freq1
+								2 freq2
+								3 (freq1+freq2)/2
+								4 force_freq
+				double force_freq     manually set frequency
+
+
+
+	Output:     1 	freq_a freq_b and phasedir success
+				2   freq_a freq_b success
+				3   freq_a success
+				4   freq_b success
+	example:	int success = CalPhaseDif(para_chn_a, para_chn_b, 10, 3, 0);
 				if(success==1)
 				{
-					double freq1 = GetFreq1();
-					double freq2 = GetFreq2();
+					double freq_a = GetFreq(para_chn_a);
+					double freq_b = GetFreq(para_chn_b);
 					double phasedir = GetPhaseDif();
 				}
 				else if(success==2)
 				{
-					double freq1 = GetFreq1();
-					double freq2 = GetFreq2();
+					double freq_a = GetFreq(para_chn_a);
+					double freq_b = GetFreq(para_chn_b);
 					double phasedir = 0;
 				}
 				else if(success==3)
 				{
-					double freq1 = GetFreq1();
+					double freq_a = GetFreq(para_chn_a);
 				}
 				else if(success==4)
 				{
-					double freq2 = GetFreq2();
+					double freq_b = GetFreq(para_chn_b);
 				}
 ******************************************************************************************/
-DLL_API int WINAPI CalFreqAndPhaseDif(double* buffer1, double voltage_resolution1, double* buffer2, double voltage_resolution2, 
-							unsigned int buffer_length, unsigned int sample, double freq_deviation_threshold);
-DLL_API double WINAPI GetFreq1();
-DLL_API double WINAPI GetFreq2();
+DLL_API int WINAPI CalPhaseDif(int para_chn_a, int para_chn_b, double freq_deviation_threshold, int ref_freq, double force_freq);
 DLL_API double WINAPI GetPhaseDif();
-
-///////////////////////////////////////////////////////////////////////////algorithm///////////////////////////////////////////////////////////////////////////
 
 #endif
